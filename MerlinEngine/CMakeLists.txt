@@ -7,6 +7,8 @@ file(GLOB_RECURSE ENGINE_HEADERS "include/*.h" "src/*.h")
 # todo: consider using a dll instead
 add_library(MerlinEngine SHARED ${ENGINE_SOURCES} ${ENGINE_HEADERS})
 
+target_include_directories(MerlinEngine PUBLIC "${CMAKE_SOURCE_DIR}/external/glm")
+
 target_include_directories(MerlinEngine PUBLIC include)
 target_include_directories(MerlinEngine PRIVATE src)
 target_compile_definitions(MerlinEngine PRIVATE MERLIN_EXPORT_DLL)

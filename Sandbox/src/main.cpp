@@ -1,7 +1,7 @@
-#include <MerlinCore.h>
+#include <Merlin/Core.h>
 
 int main() {
-	Merlin::Engine engine; // todo: heap
-	engine.Run();
+	auto engine = std::make_unique<Merlin::Engine>();
+	engine->Run();
 	return 0;
 }
