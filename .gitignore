@@ -1,0 +1,3 @@
+# put stuff to gitignore here
+.vs/
+build/
