@@ -1,7 +1,9 @@
-#include <Merlin/Core.h>
+#include <Merlin/EntryPoint.h>
 
-int main() {
-	auto engine = std::make_unique<Merlin::Engine>();
-	engine->Run();
-	return 0;
-}
+class Sandbox : public Merlin::Application {
+public:
+	Sandbox() {}
+	~Sandbox() {}
+};
+
+MERLIN_APPLICATION(Sandbox)

@@ -1,6 +1,8 @@
 #include <Merlin/Logger.h>
 
 namespace Merlin {
+    static const auto startTime = std::chrono::steady_clock::now();
+
 	Logger& logger = Logger::instance();
 	Logger& Logger::instance() {
 		static Logger inst;
@@ -8,17 +10,20 @@ namespace Merlin {
 	}
 
     std::string Logger::getTimestamp() {
-        auto now = std::chrono::system_clock::now();
-        auto time = std::chrono::system_clock::to_time_t(now);
-        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
-        std::tm tm{};
-#ifdef _WIN32
-        localtime_s(&tm, &time);
-#else
-        localtime_r(&time, &tm);
-#endif
+        auto now = std::chrono::steady_clock::now();
+        auto duration = now - startTime;
+
+        auto total_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
+        uint64_t seconds = (total_ms / 1000) % 60;
+        uint64_t minutes = (total_ms / (1000 * 60));
+        uint64_t ms = total_ms % 1000;
+
         std::ostringstream oss;
-        oss << std::put_time(&tm, "%M:%S.") << std::setfill('0') << std::setw(3) << ms.count() << "ms";
+        oss << std::setfill('0') << std::setw(2) << minutes << ":"
+            << std::setfill('0') << std::setw(2) << seconds << "."
+            << std::setfill('0') << std::setw(3) << ms << "s";
+
         return oss.str();
     }
 
