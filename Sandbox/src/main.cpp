@@ -1,5 +1,4 @@
-#include <Merlin/EntryPoint.h>
-#include <Merlin/Logger.h>
+#include <Merlin.h>
 
 class ExampleLayer : public Merlin::Layer {
 public:

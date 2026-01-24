@@ -1,15 +1,15 @@
-[submodule "external/glm"]
-	path = external/glm
-	url = https://github.com/g-truc/glm
-[submodule "external/assimp"]
-	path = external/assimp
-	url = https://github.com/assimp/assimp
-[submodule "external/glfw"]
-	path = external/glfw
-	url = https://github.com/glfw/glfw
-[submodule "external/imgui"]
-	path = external/imgui
-	url = https://github.com/ocornut/imgui
-[submodule "external/ImGuiFileDialog"]
-	path = external/ImGuiFileDialog
-	url = https://github.com/aiekick/ImGuiFileDialog
+[submodule "Merlin/external/assimp"]
+	path = Merlin/external/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "Merlin/external/glfw"]
+	path = Merlin/external/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "Merlin/external/glm"]
+	path = Merlin/external/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "Merlin/external/imgui"]
+	path = Merlin/external/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "Merlin/external/imguifiledialog"]
+	path = Merlin/external/imguifiledialog
+	url = https://github.com/aiekick/ImGuiFileDialog.git
