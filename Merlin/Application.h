@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
+#include "mepch.h"
 
 #include <Merlin/Core.h>
 #include <Merlin/Logger.h>
