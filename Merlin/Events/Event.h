@@ -34,6 +34,8 @@ namespace Merlin {
 
 
 	// This implementation of an EventBus is a modified version from KestrelGL
+	// TODO: I should make this asynchronous or threaded
+	//	as the current implementation is blocking
 	class EventBus {
 	public:
 		template<typename T>
@@ -47,16 +49,13 @@ namespace Merlin {
 			return id;
 		}
 
-		template<typename T>
-		void Publish(const T& event) {
-			auto it = m_Callbacks.find(typeid(T));
+		void Publish(Event& e) {
+			auto it = m_Callbacks.find(typeid(e));
 			if (it == m_Callbacks.end()) return;
 
 			for (auto& base : it->second) {
-				if (event.handled) break;
-				
-				auto wrapper = std::static_pointer_cast<CallbackWrapper<T>>(base);
-				wrapper->Callback(event);
+				if (e.handled) break;
+				base->Execute(e); // Calls the specific wrapper
 			}
 		}
 
@@ -65,12 +64,17 @@ namespace Merlin {
 			int ID;
 			CallbackBase(int id) : ID(id) {}
 			virtual ~CallbackBase() = default;
+			virtual void Execute(Event& e) = 0;
 		};
 
 		template<typename T>
 		struct CallbackWrapper : public CallbackBase {
 			EventCallback<T> Callback;
 			CallbackWrapper(int id, EventCallback<T> cb) : CallbackBase(id), Callback(cb) {}
+
+			void Execute(Event& e) override {
+				Callback(static_cast<T&>(e));
+			}
 		};
 
 		std::unordered_map<std::type_index, std::vector<std::shared_ptr<CallbackBase>>> m_Callbacks;
