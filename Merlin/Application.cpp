@@ -1,4 +1,4 @@
-#include <Merlin/Core.h>
+#include <Merlin/Application.h>
 #include <iostream>
 
 namespace Merlin {

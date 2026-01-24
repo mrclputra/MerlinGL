@@ -2,8 +2,9 @@
 
 #include <glad/glad.h>
 
+#include <Merlin/Core.h>
 #include <Merlin/Logger.h>
-#include <Merlin/Config.h>
+#include <Merlin/Events/Event.h>
 
 namespace Merlin {
     class MERLIN_API Application {
@@ -14,6 +15,6 @@ namespace Merlin {
         void Run();
     };
 
-    // to be defined by client
+    // this must be defined by the client
     Application* CreateApplication();
 };

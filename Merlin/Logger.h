@@ -10,7 +10,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
-#include "Merlin/Config.h"
+#include "Merlin/Core.h"
 
 namespace Merlin {
 
