@@ -25,7 +25,7 @@ namespace Merlin {
 
         void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
         void SetVSync(bool enabled);
-        bool IsVSync() const { return m_Data.VSync; }
+        bool IsVSync() const;
 
     private:
         void Init(const WindowProps& props);

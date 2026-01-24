@@ -13,20 +13,35 @@ namespace Merlin {
 
 	Application::~Application() {}
 
-	void Application::OnEvent(Event& e) {
-		m_EventBus.Publish(e);
-		if (!e.handled) {
-			logger.info(e.ToString());
-		}
-	}
-
 	void Application::Run() {
 		logger.info("MerlinGL Engine is flying!!!");
 		while (m_Running) {
+			//glClearColor(1, 0, 1, 1);
+			//glClear(GL_COLOR_BUFFER_BIT);
+
+			for (Layer* layer : m_LayerStack)
+				layer->OnUpdate();
+
 			m_Window->OnUpdate();
 		}
 	}
 
+	void Application::PushLayer(Layer* layer) {
+		m_LayerStack.PushLayer(layer);
+	}
+	void Application::PushOverlay(Layer* layer) {
+		m_LayerStack.PushOverlay(layer);
+	}
+
+	void Application::OnEvent(Event& e) {
+		m_EventBus.Publish(e);
+
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
+			(*--it)->OnEvent(e);
+			if (e.handled) 
+				break;
+		}
+	}
 
 	// callback functions
 	bool Application::OnWindowClose(WindowCloseEvent& e) {

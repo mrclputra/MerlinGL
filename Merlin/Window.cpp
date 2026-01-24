@@ -104,8 +104,15 @@ namespace Merlin {
 	}
 
 	void Window::SetVSync(bool enabled) {
-		if (enabled) glfwSwapInterval(1);
-		else glfwSwapInterval(0);
+		if (enabled) 
+			glfwSwapInterval(1);
+		else 
+			glfwSwapInterval(0);
+		
 		m_Data.VSync = enabled;
+	}
+
+	bool Window::IsVSync() const {
+		return m_Data.VSync;
 	}
 }
