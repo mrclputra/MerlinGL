@@ -14,6 +14,13 @@ public:
 	}
 
 	void OnEvent(Event& event) override {
+		if (
+			event.GetEventType() == EventType::AppTick ||
+			event.GetEventType() == EventType::AppUpdate|| 
+			event.GetEventType() == EventType::AppRender
+		) {
+			return;
+		}
 		MERLIN_INFO("{0} | {1}", event.ToString(), this->GetName());
 
 		if (event.GetEventType() == EventType::KeyPressed) {

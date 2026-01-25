@@ -17,6 +17,7 @@ namespace Merlin {
 			return ss.str();
 		}
 
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 		EVENT_CLASS_TYPE(WindowResize)
 
 	private:
@@ -26,24 +27,28 @@ namespace Merlin {
 	class MERLIN_API WindowCloseEvent : public Event {
 	public:
 		WindowCloseEvent() {}
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 		EVENT_CLASS_TYPE(WindowClose)
 	};
 
 	class MERLIN_API AppTickEvent : public Event {
 	public:
 		AppTickEvent() {}
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 		EVENT_CLASS_TYPE(AppTick)
 	};
 
 	class MERLIN_API AppUpdateEvent : public Event {
 	public:
 		AppUpdateEvent() {}
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 		EVENT_CLASS_TYPE(AppUpdate)
 	};
 
 	class MERLIN_API AppRenderEvent: public Event {
 	public:
 		AppRenderEvent() {}
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 		EVENT_CLASS_TYPE(AppRender)
 	};
 }

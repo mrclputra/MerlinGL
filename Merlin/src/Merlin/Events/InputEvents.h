@@ -26,6 +26,7 @@ namespace Merlin {
 			return ss.str();
 		}
 
+		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryKeyboard)
 		EVENT_CLASS_TYPE(KeyPressed)
 
 	private:
@@ -43,6 +44,7 @@ namespace Merlin {
 			return ss.str();
 		}
 
+		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryKeyboard)
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
@@ -61,6 +63,7 @@ namespace Merlin {
 			return ss.str();
 		}
 
+		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryMouse)
 		EVENT_CLASS_TYPE(MouseMoved)
 	private:
 		float m_MouseX, m_MouseY;
@@ -81,6 +84,7 @@ namespace Merlin {
 			return ss.str();
 		}
 
+		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryMouse)
 		EVENT_CLASS_TYPE(MouseScrolled)
 	private:
 		float m_XOffset, m_YOffset;
@@ -107,6 +111,7 @@ namespace Merlin {
 			return ss.str();
 		}
 
+		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryMouse)
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
@@ -121,6 +126,7 @@ namespace Merlin {
 			return ss.str();
 		}
 
+		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryMouse)
 		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};
 }

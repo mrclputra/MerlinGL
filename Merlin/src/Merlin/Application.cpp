@@ -19,11 +19,17 @@ namespace Merlin {
 		MERLIN_CORE_INFO("Merlin Engine is flying!!!");
 
 		while (m_Running) {
+			AppUpdateEvent updateEvent;
+			OnEvent(updateEvent);
+
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
+
+			AppRenderEvent renderEvent;
+			OnEvent(renderEvent);
 
 			m_Window->OnUpdate();
 		}
