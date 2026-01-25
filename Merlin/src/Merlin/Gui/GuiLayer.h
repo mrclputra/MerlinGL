@@ -10,16 +10,16 @@
 namespace Merlin {
 	class MERLIN_API GuiLayer : public Layer {
 	public:
-		GuiLayer() :Layer("Gui Layer") {}
+		GuiLayer();
+		~GuiLayer();
 
 		void OnAttach() override;
 		void OnDetach() override;
-
 		void OnUpdate() override;
+		void OnEvent(Event& event) override;
+
 		void Begin();
 		void End();
-
-		void OnEvent(Event& event) override;
 	private:
 		float m_Time = 0.0f;
 	};

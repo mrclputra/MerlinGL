@@ -5,13 +5,14 @@
 // TODO: expose libraries into a singular functional API
 #include <Merlin/Core.h>
 #include <Merlin/Logger.h>
-#include <Merlin/Window.h>
 #include <Merlin/LayerStack.h>
+
+#include <Merlin/Gui/GuiLayer.h>
+#include <Merlin/Platform/GLFW/Window.h>
 
 #include <Merlin/Events/Event.h>
 #include <Merlin/Events/AppEvents.h>
 #include <Merlin/Events/InputEvents.h>
-#include <Merlin/Gui/GuiLayer.h>
 
 namespace Merlin {
     class MERLIN_API Application {

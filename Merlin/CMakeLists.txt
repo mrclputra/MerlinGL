@@ -4,8 +4,8 @@ set(EXT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external")
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 
 # collect sources
-file(GLOB_RECURSE ENGINE_SOURCES "src/*.cpp")
-file(GLOB_RECURSE ENGINE_HEADERS "src/*.h")
+file(GLOB_RECURSE ENGINE_SOURCES "src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/window/*.cpp")
+file(GLOB_RECURSE ENGINE_HEADERS "src/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/window/*.h")
 file(GLOB IMGUI_SOURCES "${EXT_DIR}/imgui/*.cpp")
 set(IMGUI_BACKENDS 
     "${EXT_DIR}/imgui/backends/imgui_impl_glfw.cpp"

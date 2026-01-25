@@ -24,10 +24,10 @@ namespace Merlin {
         ~Window();
 
         void OnUpdate();
-        uint32_t GetWidth() const { return m_Data.Width; }
-        uint32_t GetHeight() const { return m_Data.Height; }
+        uint32_t GetWidth() const { return m_Width; }
+        uint32_t GetHeight() const { return m_Height; }
 
-        void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
+        void SetEventCallback(const EventCallbackFn& callback) { m_EventCallback = callback; }
         void SetVSync(bool enabled);
         bool IsVSync() const;
 
@@ -38,12 +38,11 @@ namespace Merlin {
         void Shutdown();
 
         GLFWwindow* m_Window;
-        struct WindowData {
-            std::string Title;
-            uint32_t Width, Height;
-            bool VSync;
-            EventCallbackFn EventCallback;
-        };
-        WindowData m_Data;
+
+        std::string m_Title;
+        uint32_t m_Width, m_Height;
+        bool m_VSync;
+
+        EventCallbackFn m_EventCallback;
     };
 }

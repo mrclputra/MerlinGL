@@ -1,6 +1,6 @@
 #include "mepch.h"
 
-#include <Merlin/Window.h>
+#include "Window.h"
 #include <Merlin/Logger.h>
 #include <Merlin/Events/AppEvents.h>
 #include <Merlin/Events/InputEvents.h>
@@ -10,9 +10,9 @@ namespace Merlin {
 	Window::~Window() { Shutdown(); }
 
 	void Window::Init(const WindowProps& props) {
-		m_Data.Title = props.title;
-		m_Data.Width = props.width;
-		m_Data.Height = props.height;
+		m_Title = props.title;
+		m_Width = props.width;
+		m_Height = props.height;
 
 		if (!glfwInit()) {
 			logger.error("Failed to initialize GLFW");
@@ -20,10 +20,10 @@ namespace Merlin {
 		}
 		logger.info("Initialized GLFW");
 
-		m_Window = glfwCreateWindow(props.width, props.height, m_Data.Title.c_str(), nullptr, nullptr);
-		glfwSetWindowUserPointer(m_Window, &m_Data);
+		m_Window = glfwCreateWindow(props.width, props.height, m_Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
-		SetVSync(false);
+		glfwSetWindowUserPointer(m_Window, this);
+		SetVSync(true);
 
 		// load GLAD opengl function pointers
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -35,71 +35,73 @@ namespace Merlin {
 		logger.info("GLSL Version: ", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
-			auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			data.Width = width; 
-			data.Height = height;
-			
+			Window& win = *(Window*)glfwGetWindowUserPointer(window);
+			win.m_Width = width;
+			win.m_Height = height;
+
 			WindowResizeEvent event(width, height);
-			data.EventCallback(event);
+			win.m_EventCallback(event);
 			});
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
-			auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
-			data.EventCallback(event);
+			win.m_EventCallback(event);
 			});
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-			auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 
 			switch (action) {
 				case GLFW_PRESS: {
 					KeyPressedEvent event(key, 0);
-					data.EventCallback(event);
+					win.m_EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE: {
 					KeyReleasedEvent event(key);
-					data.EventCallback(event);
+					win.m_EventCallback(event);
 					break;
 				}
-				case GLFW_REPEAT: {
-					KeyPressedEvent event(key, 1);
-					data.EventCallback(event);
-					break;
-				}
+
+				// enable this if we want repeating event calls
+				//case GLFW_REPEAT: {
+				//	KeyPressedEvent event(key, 1);
+				//	win.m_EventCallback(event);
+				//	break;
+				//}
 			}
 			});
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
-			auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 
 			switch (action) {
 				case GLFW_PRESS: {
 					MouseButtonPressedEvent event(button);
-					data.EventCallback(event);
+					win.m_EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE: {
 					MouseButtonReleasedEvent event(button);
-					data.EventCallback(event);
+					win.m_EventCallback(event);
 					break;
 				}
 			}
 			});
 
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
-			auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 
 			MouseScrolledEvent event((float)xOffset, (float)yOffset);
-			data.EventCallback(event);
+			win.m_EventCallback(event);
 			});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos) {
-			auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 
 			MouseMovedEvent event((float)xPos, (float)yPos);
-			data.EventCallback(event);
+			win.m_EventCallback(event);
 			});
 	}
 
@@ -118,10 +120,10 @@ namespace Merlin {
 		else 
 			glfwSwapInterval(0);
 		
-		m_Data.VSync = enabled;
+		m_VSync = enabled;
 	}
 
 	bool Window::IsVSync() const {
-		return m_Data.VSync;
+		return m_VSync;
 	}
 }
