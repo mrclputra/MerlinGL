@@ -22,7 +22,7 @@ namespace Merlin {
 
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "KeyPressedEvent - " << m_KeyCode << " (" << m_RepeatCount << ")";
+			ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << ")";
 			return ss.str();
 		}
 
@@ -39,7 +39,7 @@ namespace Merlin {
 		
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "KeyReleasedEvent - " << m_KeyCode;
+			ss << "KeyReleasedEvent: " << m_KeyCode;
 			return ss.str();
 		}
 
@@ -57,7 +57,7 @@ namespace Merlin {
 
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "MouseMovedEvent - " << m_MouseX << ", " << m_MouseY;
+			ss << "MouseMovedEvent: " << m_MouseX << ", " << m_MouseY;
 			return ss.str();
 		}
 
@@ -77,7 +77,7 @@ namespace Merlin {
 
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "MouseScrolledEvent - " << m_XOffset << ", " << m_YOffset;
+			ss << "MouseScrolledEvent: " << m_XOffset << ", " << m_YOffset;
 			return ss.str();
 		}
 
@@ -103,7 +103,7 @@ namespace Merlin {
 		
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "MouseButtonPressedEvent - " << m_Button;
+			ss << "MouseButtonPressedEvent: " << m_Button;
 			return ss.str();
 		}
 
@@ -117,7 +117,7 @@ namespace Merlin {
 		
 		std::string ToString() const override {
 			std::stringstream ss;
-			ss << "MouseButtonReleasedEvent - " << m_Button;
+			ss << "MouseButtonReleasedEvent: " << m_Button;
 			return ss.str();
 		}
 

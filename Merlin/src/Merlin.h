@@ -7,3 +7,7 @@
 #include <Merlin/Logger.h>
 
 #include <Merlin/EntryPoint.h>
+
+#include <Merlin/Events/Event.h>
+#include <Merlin/Events/InputEvents.h>
+#include <Merlin/Events/AppEvents.h>

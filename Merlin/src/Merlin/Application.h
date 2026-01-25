@@ -12,7 +12,6 @@
 
 #include <Merlin/Events/Event.h>
 #include <Merlin/Events/AppEvents.h>
-#include <Merlin/Events/InputEvents.h>
 
 namespace Merlin {
     class MERLIN_API Application {
@@ -29,9 +28,15 @@ namespace Merlin {
         inline static Application& Get() { return *s_Instance; }
         inline Window& GetWindow() { return *m_Window; }
 
+        // public APIs for the eventbus
+        template<typename T>
+        void Subscribe(EventBus::EventCallback<T> callback) {
+            m_EventBus.Subscribe<T>(callback);
+        }
+        void Dispatch(Event& e) { OnEvent(e); }
+
     private:
         bool OnWindowClose(WindowCloseEvent& e);
-        bool OnKeyPressed(KeyPressedEvent& e);
 
         LayerStack m_LayerStack;
         std::unique_ptr<Window> m_Window;

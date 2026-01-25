@@ -21,7 +21,13 @@ public:
 			if (e.GetKeyCode() == GLFW_KEY_TAB) {
 				// input event
 			}
-			MERLIN_INFO("{0}", e.GetKeyCode());
+
+			if (e.GetKeyCode() == GLFW_KEY_ESCAPE) {
+				// this is how we can dispatch events into the internal engine eventbus
+				// note that this is layer-specific
+				WindowCloseEvent closeEvent;
+				Application::Get().Dispatch(closeEvent);
+			}
 		}
 
 		if (event.GetEventType() == EventType::WindowResize) {

@@ -14,6 +14,7 @@ namespace Merlin {
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.IniFilename = nullptr;
 
         ImGui::StyleColorsDark();
         //ImGui::StyleColorsClassic();
@@ -23,6 +24,8 @@ namespace Merlin {
 
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 460");
+
+        ImGui::SetNextWindowSize(ImVec2(100, 200));
     }
 
     void GuiLayer::OnDetach() {
@@ -34,7 +37,19 @@ namespace Merlin {
     void GuiLayer::OnUpdate() {
         Begin();
 
-        //ImGui::DockSpaceOverViewport();
+        ImGuiID dockspace_id = ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), 
+            ImGuiDockNodeFlags_PassthruCentralNode | 
+            ImGuiDockNodeFlags_NoTabBar
+        );
+
+        static bool first_run = true;
+        if (first_run) {
+            first_run = false;
+
+            ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
+            ImGui::DockBuilderDockWindow("Debug", dock_left_id);
+            ImGui::DockBuilderFinish(dockspace_id);
+        }
 
         ImGui::Begin("Debug");
         ImGui::Text("Hello Merlin Engine!");

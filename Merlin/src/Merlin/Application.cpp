@@ -15,7 +15,6 @@ namespace Merlin {
 		PushOverlay(m_GuiLayer);
 
 		m_EventBus.Subscribe<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
-		m_EventBus.Subscribe<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
 	}
 
 	Application::~Application() {}
@@ -55,13 +54,5 @@ namespace Merlin {
 	bool Application::OnWindowClose(WindowCloseEvent& e) {
 		m_Running = false;
 		return true;
-	}
-
-	bool Application::OnKeyPressed(KeyPressedEvent& e) {
-		if (e.GetKeyCode() == GLFW_KEY_ESCAPE) {
-			m_Running = false;
-			return true;
-		}
-		return false;
 	}
 }

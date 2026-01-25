@@ -12,10 +12,12 @@
 #include <chrono>
 #include <mutex>
 
-
 #ifdef _WIN32
 	#include <Windows.h>
 #endif
+
+// TODO: external builds should not include the libraries below
+//	except maybe GLFW, cuz i refuse to write my own keycodes :)
 
 // external
 #include <glad/glad.h>

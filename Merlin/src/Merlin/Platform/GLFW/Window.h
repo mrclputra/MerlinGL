@@ -12,8 +12,8 @@ namespace Merlin {
     struct WindowProps {
         std::string title;
         unsigned int width, height;
-        WindowProps(const std::string& t = "MerlinGL", uint32_t w = 640, uint32_t h = 480)
-            : title(t), width(w), height(h) {}
+        WindowProps(const std::string& title = "MerlinGL", uint32_t width = 1280, uint32_t height = 720)
+            : title(title), width(width), height(height) {}
     };
 
     class MERLIN_API Window {
