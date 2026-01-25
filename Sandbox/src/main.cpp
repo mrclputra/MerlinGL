@@ -26,6 +26,7 @@ public:
 	Sandbox() {
 		PushLayer(new ExampleLayer("Layer 1"));
 		PushLayer(new ExampleLayer("Layer 2"));
+		//PushOverlay(new Merlin::GuiLayer());
 	}
 	~Sandbox() {}
 };

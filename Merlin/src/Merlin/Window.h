@@ -4,6 +4,10 @@
 #include <Merlin/Core.h>
 #include <Merlin/Events/Event.h>
 
+// might turn this class into a template further down the line in development
+// this is so that we can implement different window APIs instead of just GLFW such as SDL
+// but need to make sure all features are cross-compatible first; such as a mapping for keycodes and inputs to events
+
 namespace Merlin {
     struct WindowProps {
         std::string title;
@@ -26,6 +30,8 @@ namespace Merlin {
         void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
         void SetVSync(bool enabled);
         bool IsVSync() const;
+
+        inline GLFWwindow* GetNativeWindow() const { return m_Window; }
 
     private:
         void Init(const WindowProps& props);

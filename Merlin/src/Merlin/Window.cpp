@@ -25,6 +25,15 @@ namespace Merlin {
 		glfwMakeContextCurrent(m_Window);
 		SetVSync(false);
 
+		// load GLAD opengl function pointers
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+			logger.error("Failed to initialize GLAD");
+			std::exit(EXIT_FAILURE);
+		}
+
+		logger.info("OpenGL Version: ", glGetString(GL_VERSION));
+		logger.info("GLSL Version: ", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
 			auto& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			data.Width = width; 
