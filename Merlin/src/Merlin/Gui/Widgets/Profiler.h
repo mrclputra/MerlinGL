@@ -4,10 +4,10 @@
 #include <Merlin/Gui/Widget.h>
 
 namespace Merlin {
-	// make a widget base class?
 	class MERLIN_API Profiler : public Widget {
 	public:
 		void OnImGuiRender() override;
+	
 	private:
 		static constexpr int FRAME_HIST_COUNT = 100;
 		float m_History[FRAME_HIST_COUNT] = { 0 };

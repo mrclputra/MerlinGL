@@ -29,7 +29,7 @@ namespace Merlin {
 
         void SetEventCallback(const EventCallbackFn& callback) { m_EventCallback = callback; }
         void SetVSync(bool enabled);
-        bool IsVSync() const;
+        inline bool IsVSync() const;
 
         inline GLFWwindow* GetNativeWindow() const { return m_Window; }
 

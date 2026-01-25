@@ -9,41 +9,39 @@ public:
 	void OnUpdate() override {
 		if (Input::IsKeyPressed(GLFW_KEY_TAB)) {
 			// input poll
-			MERLIN_INFO("{0} (poll)", GLFW_KEY_TAB);
+			MERLIN_INFO("{0} polled by {1}", GLFW_KEY_TAB, this->GetName());
 		}
 	}
 
 	void OnEvent(Event& event) override {
-		if (
-			event.GetEventType() == EventType::AppTick ||
-			event.GetEventType() == EventType::AppUpdate|| 
-			event.GetEventType() == EventType::AppRender
-		) {
-			return;
-		}
-		MERLIN_INFO("{0} | {1}", event.ToString(), this->GetName());
+		if (event.IsInCategory(EventCategoryApplication)) return;
+		if (event.GetEventType() == EventType::MouseMoved) return;
 
-		if (event.GetEventType() == EventType::KeyPressed) {
-			KeyPressedEvent& e = (KeyPressedEvent&)event;
-			if (e.GetKeyCode() == GLFW_KEY_TAB) {
-				// input event
-			}
+		MERLIN_INFO("{0} from {1}", event.ToString(), this->GetName());
+		event.handled = true;
 
-			if (e.GetKeyCode() == GLFW_KEY_ESCAPE) {
-				// this is how we can dispatch events into the internal engine
-				// note that this is layer-specific
-				WindowCloseEvent closeEvent;
-				Application::Get().OnEvent(closeEvent);
-			}
-		}
+		//if (event.GetEventType() == EventType::KeyPressed) {
+		//	KeyPressedEvent& e = (KeyPressedEvent&)event;
+		//	if (e.GetKeyCode() == GLFW_KEY_TAB) {
+		//		// input event
+		//	}
 
-		if (event.GetEventType() == EventType::WindowResize) {
-			// example of a shared event
-		}
-		else {
-			// example of a non-shared event
-			event.handled = true;
-		}
+		//	if (e.GetKeyCode() == GLFW_KEY_ESCAPE) {
+		//		// this is how we can dispatch events into the internal engine
+		//		// note that this is layer-specific
+
+		//		//WindowCloseEvent closeEvent;
+		//		//Application::Get().OnEvent(closeEvent);
+		//	}
+		//}
+
+		//if (event.GetEventType() == EventType::WindowResize) {
+		//	// example of a shared event
+		//}
+		//else {
+		//	// example of a non-shared event
+		//	event.handled = true;
+		//}
 	}
 };
 

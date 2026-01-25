@@ -9,6 +9,8 @@
 #include <Merlin/Layer.h>
 
 #include "Widgets/Profiler.h"
+#include "Widgets/Console.h"
+#include "Style.h"
 
 namespace Merlin {
 	class MERLIN_API GuiLayer : public Layer {
@@ -25,5 +27,6 @@ namespace Merlin {
 		void End();
 	private:
 		Profiler m_Profiler;
+		Console m_Console;
 	};
 }

@@ -18,7 +18,8 @@ namespace Merlin {
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         io.IniFilename = nullptr;
 
-        ImGui::StyleColorsDark();
+        Style::ApplyTheme();
+        //ImGui::StyleColorsDark();
         //ImGui::StyleColorsClassic();
 
         Application& app = Application::Get();
@@ -39,17 +40,30 @@ namespace Merlin {
     void GuiLayer::OnUpdate() {
         Begin();
 
+        // menu bar
+        if (ImGui::BeginMainMenuBar()) {
+            // might move this to own widget
+            ImGui::EndMainMenuBar();
+        }
+
+
+        // build dockspace
         ImGuiID dockspace_id = ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), 
             ImGuiDockNodeFlags_PassthruCentralNode | 
             ImGuiDockNodeFlags_NoTabBar
         );
-
         static bool first_run = true;
         if (first_run) {
             first_run = false;
 
-            ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
+            ImGuiID dock_main_id = dockspace_id;
+            ImGuiID dock_bottom_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
+
+            ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.2f, nullptr, &dock_main_id);
+
+            ImGui::DockBuilderDockWindow("Console", dock_bottom_id);
             ImGui::DockBuilderDockWindow("Debug", dock_left_id);
+
             ImGui::DockBuilderFinish(dockspace_id);
         }
 
@@ -59,7 +73,16 @@ namespace Merlin {
         ImGui::Text("Hello Merlin Engine!");
         ImGui::Separator();
         m_Profiler.OnImGuiRender();
+        ImGui::Separator();
+
+        bool vsync = Application::Get().GetWindow().IsVSync();
+        if (ImGui::Checkbox("VSync Enabled", &vsync)) {
+            Application::Get().GetWindow().SetVSync(vsync);
+        }
+
         ImGui::End();
+
+        m_Console.OnImGuiRender();
 
         End();
     }

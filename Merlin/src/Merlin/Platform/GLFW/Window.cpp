@@ -24,6 +24,7 @@ namespace Merlin {
 		
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, this);
+		glfwMaximizeWindow(m_Window);
 		SetVSync(false);
 
 		// load GLAD opengl function pointers
@@ -120,6 +121,7 @@ namespace Merlin {
 		else 
 			glfwSwapInterval(0);
 		
+		MERLIN_CORE_INFO("VSync: {0}", enabled);
 		m_VSync = enabled;
 	}
 
