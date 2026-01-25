@@ -1,6 +1,7 @@
 
 #include "mepch.h"
 #include "GuiLayer.h"
+#include "Widgets/Profiler.h"
 
 #include <Merlin/Application.h>
 #include <Merlin/Events/InputEvents.h>
@@ -52,8 +53,12 @@ namespace Merlin {
             ImGui::DockBuilderFinish(dockspace_id);
         }
 
+
+        // ui
         ImGui::Begin("Debug");
         ImGui::Text("Hello Merlin Engine!");
+        ImGui::Separator();
+        m_Profiler.OnImGuiRender();
         ImGui::End();
 
         End();

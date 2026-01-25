@@ -24,7 +24,7 @@ namespace Merlin {
 		
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, this);
-		SetVSync(true);
+		SetVSync(false);
 
 		// load GLAD opengl function pointers
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {

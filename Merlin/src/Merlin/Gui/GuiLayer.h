@@ -8,6 +8,8 @@
 
 #include <Merlin/Layer.h>
 
+#include "Widgets/Profiler.h"
+
 namespace Merlin {
 	class MERLIN_API GuiLayer : public Layer {
 	public:
@@ -22,6 +24,6 @@ namespace Merlin {
 		void Begin();
 		void End();
 	private:
-		float m_Time = 0.0f;
+		Profiler m_Profiler;
 	};
 }
