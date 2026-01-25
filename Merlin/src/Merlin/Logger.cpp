@@ -3,11 +3,18 @@
 namespace Merlin {
     static const auto startTime = std::chrono::steady_clock::now();
 
-	Logger& logger = Logger::instance();
-	Logger& Logger::instance() {
-		static Logger inst;
-		return inst;
-	}
+    Logger& coreLogger = Logger::getCoreLogger();
+    Logger& clientLogger = Logger::getClientLogger();
+
+    Logger& Logger::getCoreLogger() {
+        static Logger inst("Engine");
+        return inst;
+    }
+
+    Logger& Logger::getClientLogger() {
+        static Logger inst("App");
+        return inst;
+    }
 
     std::string Logger::getTimestamp() {
         auto now = std::chrono::steady_clock::now();

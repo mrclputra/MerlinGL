@@ -21,7 +21,8 @@ namespace Merlin {
 	Application::~Application() {}
 
 	void Application::Run() {
-		logger.info("MerlinGL Engine is flying!!!");
+		MERLIN_CORE_INFO("Merlin Engine is flying!!!");
+
 		while (m_Running) {
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);

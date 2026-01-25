@@ -15,24 +15,25 @@ namespace Merlin {
 		m_Height = props.height;
 
 		if (!glfwInit()) {
-			logger.error("Failed to initialize GLFW");
+			MERLIN_CORE_ERROR("Failed to initialize GLFW");
 			std::exit(EXIT_FAILURE);
 		}
-		logger.info("Initialized GLFW");
+		MERLIN_CORE_INFO("Initialized GLFW");
 
 		m_Window = glfwCreateWindow(props.width, props.height, m_Title.c_str(), nullptr, nullptr);
+		
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, this);
 		SetVSync(true);
 
 		// load GLAD opengl function pointers
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			logger.error("Failed to initialize GLAD");
+			MERLIN_CORE_ERROR("Failed to Initialize GLAD");
 			std::exit(EXIT_FAILURE);
 		}
 
-		logger.info("OpenGL Version: ", glGetString(GL_VERSION));
-		logger.info("GLSL Version: ", glGetString(GL_SHADING_LANGUAGE_VERSION));
+		MERLIN_CORE_INFO("OpenGL Version: {0}", glGetString(GL_VERSION));
+		MERLIN_CORE_INFO("GLSL Version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
 			Window& win = *(Window*)glfwGetWindowUserPointer(window);
