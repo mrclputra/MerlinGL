@@ -3,6 +3,7 @@
 #include "GuiLayer.h"
 
 #include <Merlin/Application.h>
+#include <Merlin/Events/InputEvents.h>
 
 namespace Merlin {
     GuiLayer::GuiLayer() : Layer("Gui Layer") {}
@@ -75,7 +76,23 @@ namespace Merlin {
 
     void GuiLayer::OnEvent(Event& event) {
         ImGuiIO& io = ImGui::GetIO();
+
+        if (event.GetEventType() == EventType::KeyPressed) {
+            // this is a niche case, but we can do this if we want this layer to ignore certain keys
+            // this is implemented on engine side, which is bad but I did anyways due to the guilayer being "forced"
+            auto& e = (KeyPressedEvent&)event;
+            if (e.GetKeyCode() == GLFW_KEY_ESCAPE) return; // fall-through
+        }
+
         if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
+            if (event.GetEventType() == EventType::KeyPressed) {
+                auto& e = (KeyPressedEvent&)event;
+                MERLIN_CORE_INFO("imgui {0}", event.ToString());
+            }
+            if (event.GetEventType() == EventType::MouseButtonPressed) {
+                auto& e = (MouseButtonPressedEvent&)event;
+                MERLIN_CORE_INFO("imgui {0}", event.ToString());
+            }
             event.handled = true;
         }
     }

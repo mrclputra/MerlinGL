@@ -28,19 +28,12 @@ namespace Merlin {
         inline static Application& Get() { return *s_Instance; }
         inline Window& GetWindow() { return *m_Window; }
 
-        // public APIs for the eventbus
-        template<typename T>
-        void Subscribe(EventBus::EventCallback<T> callback) {
-            m_EventBus.Subscribe<T>(callback);
-        }
-        void Dispatch(Event& e) { OnEvent(e); }
-
     private:
         bool OnWindowClose(WindowCloseEvent& e);
+        bool OnWindowResize(WindowResizeEvent& e);
 
         LayerStack m_LayerStack;
         std::unique_ptr<Window> m_Window;
-        EventBus m_EventBus;
         bool m_Running = true;
 
     private:

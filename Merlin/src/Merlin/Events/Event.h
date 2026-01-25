@@ -33,9 +33,29 @@ namespace Merlin {
 	};
 
 
+	class EventDispatcher {
+	public:
+		EventDispatcher(Event& event) : m_Event(event) {}
+
+		template<typename T, typename F>
+		bool Dispatch(const F& func) {
+			if (m_Event.GetEventType() == T::GetStaticType()) {
+				m_Event.handled = func(static_cast<T&>(m_Event));
+				return true;
+			}
+			return false;
+		}
+	private:
+		Event& m_Event;
+	};
+
 	// This implementation of an EventBus is a modified version from KestrelGL
 	// TODO: I should make this asynchronous or threaded
 	//	as the current implementation is blocking
+
+	// in the current implementation, we do not need an EventBus as the layers should exclusively handle event logic
+	// but if we want events in the future to handle engine-wide events, we can use this
+
 	class EventBus {
 	public:
 		template<typename T>

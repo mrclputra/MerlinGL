@@ -1,8 +1,6 @@
 #include <Merlin/Application.h>
 
 namespace Merlin {
-	#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
-
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application() {
@@ -13,8 +11,6 @@ namespace Merlin {
 		// define built-in layers here
 		m_GuiLayer = new GuiLayer();
 		PushOverlay(m_GuiLayer);
-
-		m_EventBus.Subscribe<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 	}
 
 	Application::~Application() {}
@@ -41,7 +37,11 @@ namespace Merlin {
 	}
 
 	void Application::OnEvent(Event& event) {
-		m_EventBus.Publish(event);
+		EventDispatcher dispatcher(event);
+
+		// system events, these are if we want to hardcode functionality to certain events
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
 			(*--it)->OnEvent(event);
@@ -54,5 +54,9 @@ namespace Merlin {
 	bool Application::OnWindowClose(WindowCloseEvent& e) {
 		m_Running = false;
 		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e) {
+		return false;
 	}
 }

@@ -10,4 +10,6 @@
 #define MERLIN_API
 #endif
 
+#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
+
 // todo: proper debug mode assertions

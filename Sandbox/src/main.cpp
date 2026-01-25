@@ -23,10 +23,10 @@ public:
 			}
 
 			if (e.GetKeyCode() == GLFW_KEY_ESCAPE) {
-				// this is how we can dispatch events into the internal engine eventbus
+				// this is how we can dispatch events into the internal engine
 				// note that this is layer-specific
 				WindowCloseEvent closeEvent;
-				Application::Get().Dispatch(closeEvent);
+				Application::Get().OnEvent(closeEvent);
 			}
 		}
 

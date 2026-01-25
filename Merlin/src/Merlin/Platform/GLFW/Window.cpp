@@ -35,6 +35,7 @@ namespace Merlin {
 		MERLIN_CORE_INFO("OpenGL Version: {0}", glGetString(GL_VERSION));
 		MERLIN_CORE_INFO("GLSL Version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+		// bindings for input to events
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
 			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 			win.m_Width = width;
@@ -42,14 +43,12 @@ namespace Merlin {
 
 			WindowResizeEvent event(width, height);
 			win.m_EventCallback(event);
-			});
-
+		});
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
 			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
 			win.m_EventCallback(event);
-			});
-
+		});
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 
@@ -72,7 +71,7 @@ namespace Merlin {
 				//	break;
 				//}
 			}
-			});
+		});
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
 			Window& win = *(Window*)glfwGetWindowUserPointer(window);
@@ -89,21 +88,21 @@ namespace Merlin {
 					break;
 				}
 			}
-			});
+		});
 
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
 			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 
 			MouseScrolledEvent event((float)xOffset, (float)yOffset);
 			win.m_EventCallback(event);
-			});
+		});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos) {
 			Window& win = *(Window*)glfwGetWindowUserPointer(window);
 
 			MouseMovedEvent event((float)xPos, (float)yPos);
 			win.m_EventCallback(event);
-			});
+		});
 	}
 
 	void Window::OnUpdate() {
