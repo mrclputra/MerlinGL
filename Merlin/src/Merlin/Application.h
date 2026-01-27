@@ -6,10 +6,7 @@
 #include <Merlin/Core.h>
 #include <Merlin/Logger.h>
 #include <Merlin/LayerStack.h>
-
-#include <Merlin/Gui/GuiLayer.h>
 #include <Merlin/Platform/GLFW/Window.h>
-
 #include <Merlin/Events/Event.h>
 #include <Merlin/Events/AppEvents.h>
 
@@ -38,7 +35,6 @@ namespace Merlin {
 
     private:
         static Application* s_Instance;
-        GuiLayer* m_GuiLayer;
     };
 
     // this must be defined by the client

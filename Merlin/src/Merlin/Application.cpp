@@ -9,11 +9,10 @@ namespace Merlin {
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		// define built-in layers here
-		m_GuiLayer = new GuiLayer();
-		PushOverlay(m_GuiLayer);
-		Logger::getClientLogger().SetCallback([](const std::string& msg) {
-			Console::AddLog(msg);
-		});
+
+		//Logger::getClientLogger().SetCallback([](const std::string& msg) {
+		//	Console::AddLog(msg);
+		//});
 	}
 
 	Application::~Application() {}

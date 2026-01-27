@@ -7,9 +7,6 @@ namespace Merlin {
 	Input* Input::s_Instance = new GLFWInput();
 
 	bool GLFWInput::IsKeyPressedImpl(int keycode) {
-		auto& io = ImGui::GetIO();
-		if (io.WantCaptureKeyboard) return false;
-
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetKey(window, keycode);
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
