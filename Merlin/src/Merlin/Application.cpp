@@ -1,18 +1,19 @@
 #include "Application.h"
+#include "Gui/Widgets/Console.h"
 
 namespace Merlin {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application() {
+		auto logFunc = [](const std::string& msg) { Console::AddLog(msg); };
+		Logger::getCoreLogger().SetCallback(logFunc);
+		Logger::getClientLogger().SetCallback(logFunc);
+
 		s_Instance = this;
 		m_Window = std::make_unique<Window>(WindowProps());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		m_GuiModule = std::make_unique<GuiModule>();
-
-		//Logger::getClientLogger().SetCallback([](const std::string& msg) {
-		//	Console::AddLog(msg);
-		//});
 	}
 
 	Application::~Application() {}

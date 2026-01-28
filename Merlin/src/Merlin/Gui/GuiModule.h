@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Merlin/Events/Event.h>
+#include "Merlin/Core.h"
+#include "Merlin/Events/Event.h"
 
 #include <imgui.h>
 

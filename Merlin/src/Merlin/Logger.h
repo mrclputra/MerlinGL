@@ -67,8 +67,7 @@ namespace Merlin {
 			std::lock_guard<std::mutex> lock(mtx);
 			std::cout << output;
 
-			// todo: fix this, provide an external api to get logger content as strings in realtime
-			//if (m_Callback) m_Callback(output);
+			if (m_Callback) m_Callback(output);
 		}
 
 	public:
