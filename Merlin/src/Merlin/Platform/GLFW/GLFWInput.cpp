@@ -1,7 +1,6 @@
-#include "GLFWInput.h"
-
 #include "mepch.h"
-#include <Merlin/Application.h>
+#include "GLFWInput.h"
+#include "Merlin/Application.h"
 
 namespace Merlin {
 	Input* Input::s_Instance = new GLFWInput();

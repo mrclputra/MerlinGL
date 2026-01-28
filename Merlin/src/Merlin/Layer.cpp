@@ -1,4 +1,3 @@
-#include "mepch.h"
 #include "Layer.h"
 
 namespace Merlin {

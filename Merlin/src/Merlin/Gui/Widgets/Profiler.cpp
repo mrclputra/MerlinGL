@@ -1,5 +1,4 @@
 #include "Profiler.h"
-
 #include <imgui.h>
 
 namespace Merlin {

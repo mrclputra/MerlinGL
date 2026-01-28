@@ -1,8 +1,8 @@
 #pragma once
 
 #include "mepch.h"
-#include <Merlin/Core.h>
-#include <Merlin/Events/Event.h>
+#include "Merlin/Core.h"
+#include "Merlin/Events/Event.h"
 
 // might turn this class into a template further down the line in development
 // this is so that we can implement different window APIs instead of just GLFW such as SDL

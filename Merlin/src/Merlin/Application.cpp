@@ -1,4 +1,4 @@
-#include <Merlin/Application.h>
+#include "Application.h"
 
 namespace Merlin {
 	Application* Application::s_Instance = nullptr;

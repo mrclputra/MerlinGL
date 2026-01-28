@@ -2,14 +2,14 @@
 
 #include "mepch.h"
 
-// TODO: expose libraries into a singular functional API
-#include <Merlin/Core.h>
-#include <Merlin/Logger.h>
-#include <Merlin/LayerStack.h>
-#include <Merlin/Platform/GLFW/Window.h>
-#include <Merlin/Gui/GuiModule.h>
-#include <Merlin/Events/Event.h>
-#include <Merlin/Events/AppEvents.h>
+#include "Core.h"
+#include "Logger.h"
+#include "LayerStack.h"
+#include "Platform/GLFW/Window.h"
+#include "Gui/GuiModule.h"
+
+#include "Events/Event.h"
+#include "Events/AppEvents.h"
 
 namespace Merlin {
     class MERLIN_API Application {

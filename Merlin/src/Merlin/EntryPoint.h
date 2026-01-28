@@ -1,5 +1,5 @@
 #pragma once
-#include <Merlin/Application.h>
+#include "Application.h"
 
 #define MERLIN_APPLICATION(AppClass) \
     Merlin::Application* Merlin::CreateApplication() { \

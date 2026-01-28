@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Merlin/Core.h>
-#include <Merlin/Gui/Widget.h>
+#include "Merlin/Core.h"
+#include "Merlin/Gui/Widget.h"
 
 namespace Merlin {
 	class MERLIN_API Profiler : public Widget {

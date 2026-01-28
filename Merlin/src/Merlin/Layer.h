@@ -1,7 +1,7 @@
 #pragma once 
 
-#include <Merlin/Core.h>
-#include <Merlin/Events/Event.h>
+#include "Core.h"
+#include "Events/Event.h"
 
 namespace Merlin {
 	class MERLIN_API Layer {

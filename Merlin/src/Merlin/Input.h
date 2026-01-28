@@ -1,7 +1,7 @@
 #pragma once
 
 #include "mepch.h"
-#include <Merlin/Core.h>
+#include "Core.h"
 
 namespace Merlin {
 	class MERLIN_API Input {

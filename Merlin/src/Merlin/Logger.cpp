@@ -1,4 +1,4 @@
-#include <Merlin/Logger.h>
+#include "Logger.h"
 
 namespace Merlin {
     static const auto startTime = std::chrono::steady_clock::now();

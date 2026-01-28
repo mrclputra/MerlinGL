@@ -1,12 +1,10 @@
 #pragma once
 
 #include "mepch.h"
-#include <iomanip>
+#include "Core.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
-
-#include "Merlin/Core.h"
 
 namespace Merlin {
 
@@ -69,7 +67,8 @@ namespace Merlin {
 			std::lock_guard<std::mutex> lock(mtx);
 			std::cout << output;
 
-			if (m_Callback) m_Callback(output);
+			// todo: fix this, provide an external api to get logger content as strings in realtime
+			//if (m_Callback) m_Callback(output);
 		}
 
 	public:

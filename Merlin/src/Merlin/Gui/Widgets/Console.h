@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Merlin/Core.h>
-#include <Merlin/Gui/Widget.h>
+#include "Merlin/Core.h"
+#include "Merlin/Gui/Widget.h"
 #include "mepch.h"
 
 namespace Merlin {
