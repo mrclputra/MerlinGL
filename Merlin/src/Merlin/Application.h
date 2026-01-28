@@ -7,6 +7,7 @@
 #include <Merlin/Logger.h>
 #include <Merlin/LayerStack.h>
 #include <Merlin/Platform/GLFW/Window.h>
+#include <Merlin/Gui/GuiModule.h>
 #include <Merlin/Events/Event.h>
 #include <Merlin/Events/AppEvents.h>
 
@@ -30,7 +31,10 @@ namespace Merlin {
         bool OnWindowResize(WindowResizeEvent& e);
 
         LayerStack m_LayerStack;
+        // lets integrate gui straight into this engine
+
         std::unique_ptr<Window> m_Window;
+        std::unique_ptr<GuiModule> m_GuiModule;
         bool m_Running = true;
 
     private:

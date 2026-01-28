@@ -45,12 +45,26 @@ public:
 	}
 };
 
+class Editor : public Layer {
+public:
+	Editor() : Layer("Editor") {}
+
+	void OnGuiRender() override {
+		ImGui::Begin(m_DebugName.c_str());
+		ImGui::Text("Hello World!!");
+		ImGui::End();
+
+		static bool show = true;
+		ImGui::ShowDemoWindow(&show);
+	}
+};
+
 class Sandbox : public Application {
 public:
 	Sandbox() {
 		PushLayer(new ExampleLayer("Layer 1"));
 		PushLayer(new ExampleLayer("Layer 2"));
-		//PushOverlay(new Merlin::GuiLayer());
+		PushOverlay(new Editor());
 	}
 	~Sandbox() {}
 };
