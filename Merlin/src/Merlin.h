@@ -11,3 +11,6 @@
 #include <Merlin/Events/AppEvents.h>
 
 #include <Merlin/EntryPoint.h>
+
+#include <imgui.h>
+#include <imgui_internal.h>

@@ -5,7 +5,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <Merlin/Application.h>
+#include "Merlin/Application.h"
+#include "Style.h"
 
 namespace Merlin {
 	void GuiModule::Init() {
@@ -17,7 +18,8 @@ namespace Merlin {
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.IniFilename = nullptr;
 
-		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsDark();
+		Style::ApplyTheme();
 
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());

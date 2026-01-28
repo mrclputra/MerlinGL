@@ -19,29 +19,6 @@ public:
 
 		MERLIN_INFO("{0} from {1}", event.ToString(), this->GetName());
 		event.handled = true;
-
-		//if (event.GetEventType() == EventType::KeyPressed) {
-		//	KeyPressedEvent& e = (KeyPressedEvent&)event;
-		//	if (e.GetKeyCode() == GLFW_KEY_TAB) {
-		//		// input event
-		//	}
-
-		//	if (e.GetKeyCode() == GLFW_KEY_ESCAPE) {
-		//		// this is how we can dispatch events into the internal engine
-		//		// note that this is layer-specific
-
-		//		//WindowCloseEvent closeEvent;
-		//		//Application::Get().OnEvent(closeEvent);
-		//	}
-		//}
-
-		//if (event.GetEventType() == EventType::WindowResize) {
-		//	// example of a shared event
-		//}
-		//else {
-		//	// example of a non-shared event
-		//	event.handled = true;
-		//}
 	}
 };
 
@@ -50,12 +27,26 @@ public:
 	Editor() : Layer("Editor") {}
 
 	void OnGuiRender() override {
-		ImGui::Begin(m_DebugName.c_str());
-		ImGui::Text("Hello World!!");
-		ImGui::End();
+		// menu bar
+		if (ImGui::BeginMainMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				// todo: call event to exit app
+				ImGui::MenuItem("Exit", nullptr, nullptr, false); 
+				ImGui::EndMenu();
+			}
 
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
+			ImGui::EndMainMenuBar();
+		}
+
+		// build dockspace
+		ImGuiID dockspace_id = ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(),
+			ImGuiDockNodeFlags_PassthruCentralNode |
+			ImGuiDockNodeFlags_NoTabBar
+		);
+
+		ImGui::Begin("Debug");
+		ImGui::Text("Hello Sandbox!!!");
+		ImGui::End();
 	}
 };
 
