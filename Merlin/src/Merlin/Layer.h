@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "Core.h"
 #include "Events/Event.h"
@@ -6,8 +6,8 @@
 namespace Merlin {
 	class MERLIN_API Layer {
 	public:
-		Layer(const std::string& name = "Layer");
-		virtual ~Layer();
+		Layer(const std::string& name = "Layer") : m_DebugName(name) {}
+		virtual ~Layer() = default;
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
@@ -15,8 +15,10 @@ namespace Merlin {
 		virtual void OnGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 
-		inline const std::string& GetName() const { return m_DebugName; }
+		const std::string& GetName() const { return m_DebugName; }
+
 	protected:
 		std::string m_DebugName;
 	};
+
 }

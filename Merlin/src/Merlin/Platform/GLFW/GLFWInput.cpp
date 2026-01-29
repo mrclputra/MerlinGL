@@ -1,24 +1,27 @@
 #include "mepch.h"
 #include "GLFWInput.h"
-#include "Merlin/Application.h"
 
 namespace Merlin {
 	Input* Input::s_Instance = new GLFWInput();
 
+	void Input::Init(void* nativeWindow) {
+		s_Instance->m_NativeWindow = nativeWindow;
+	}
+
 	bool GLFWInput::IsKeyPressedImpl(int keycode) {
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		auto window = static_cast<GLFWwindow*>(m_NativeWindow);
 		auto state = glfwGetKey(window, keycode);
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
 	bool GLFWInput::IsMouseButtonPressedImpl(int button) {
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		auto window = static_cast<GLFWwindow*>(m_NativeWindow);
 		auto state = glfwGetMouseButton(window, button);
 		return state == GLFW_PRESS;
 	}
 
 	std::pair<float, float> GLFWInput::GetMousePositionImpl() {
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		auto window = static_cast<GLFWwindow*>(m_NativeWindow);
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		return { (float)xpos, (float)ypos };

@@ -15,9 +15,11 @@ namespace Merlin {
     class MERLIN_API Application {
     public:
         Application();
+        Application(const WindowProps& windowProps);
         virtual ~Application();
 
         void Run();
+        void Quit() { m_Running = false; }
         void OnEvent(Event& event);
 
         void PushLayer(Layer* layer);
@@ -27,11 +29,11 @@ namespace Merlin {
         inline Window& GetWindow() { return *m_Window; }
 
     private:
+        void Init(const WindowProps& windowProps);
         bool OnWindowClose(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
 
         LayerStack m_LayerStack;
-        // lets integrate gui straight into this engine
 
         std::unique_ptr<Window> m_Window;
         std::unique_ptr<GuiModule> m_GuiModule;

@@ -10,9 +10,9 @@ namespace Merlin {
 		std::string GetMessage() const { return m_Message; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
-		EVENT_CLASS_TYPE(None)
+		EVENT_CLASS_TYPE(Log)
 	
 	private:
 		std::string m_Message;
-	}
+	};
 }

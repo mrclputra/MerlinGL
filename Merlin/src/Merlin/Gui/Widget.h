@@ -1,11 +1,7 @@
 #pragma once
 
-#include "Merlin/Core.h"
-
-// we may not end up needing a template class
-// as imgui may already implement this kind of functionality for us? will need to read into this
 namespace Merlin {
-	class MERLIN_API Widget {
+	class Widget {
 	public:
 		virtual ~Widget() = default;
 		virtual void Render() = 0;

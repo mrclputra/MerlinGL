@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Merlin/Core.h"
 #include "Merlin/Gui/Widget.h"
 #include "mepch.h"
 
 namespace Merlin {
-	class MERLIN_API Console : public Widget {
+	class Console : public Widget {
 	public:
 		static void AddLog(const std::string& message) {
 			s_Logs.push_back(message);

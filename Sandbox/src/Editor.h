@@ -1,11 +1,12 @@
 #pragma once
 #include <Merlin.h>
-#include <Merlin/Gui/Widgets/Console.h>
-#include <Merlin/Gui/Widgets/Profiler.h>
+
+#include "Widgets/Console.h"
+#include "Widgets/Profiler.h"
 
 class Editor : public Merlin::Layer {
 public:
-	Editor() : Merlin::Layer("Editor") {}
+	Editor();
 	void OnGuiRender() override;
 
 private:

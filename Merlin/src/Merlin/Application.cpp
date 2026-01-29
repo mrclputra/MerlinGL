@@ -1,19 +1,25 @@
 #include "Application.h"
-#include "Gui/Widgets/Console.h"
+#include "Events/EventBus.h"
+#include "Input.h"
 
 namespace Merlin {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application() {
-		auto logFunc = [](const std::string& msg) { Console::AddLog(msg); };
-		Logger::getCoreLogger().SetCallback(logFunc);
-		Logger::getClientLogger().SetCallback(logFunc);
+		Init(WindowProps());
+	}
 
+	Application::Application(const WindowProps& windowProps) {
+		Init(windowProps);
+	}
+
+	void Application::Init(const WindowProps& windowProps) {
 		s_Instance = this;
-		m_Window = std::make_unique<Window>(WindowProps());
-		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		m_Window = std::make_unique<Window>(windowProps);
+		m_Window->SetEventCallback(MERLIN_BIND_FN(OnEvent));
 
-		m_GuiModule = std::make_unique<GuiModule>();
+		Input::Init(m_Window->GetNativeWindow());
+		m_GuiModule = std::make_unique<GuiModule>(m_Window->GetNativeWindow());
 	}
 
 	Application::~Application() {}
@@ -36,7 +42,7 @@ namespace Merlin {
 			m_GuiModule->BeginFrame();
 			for (Layer* layer : m_LayerStack)
 				layer->OnGuiRender();
-			m_GuiModule->EndFrame();
+			m_GuiModule->EndFrame(m_Window->GetWidth(), m_Window->GetHeight());
 
 			/*AppRenderEvent renderEvent;
 			OnEvent(renderEvent);*/
@@ -46,11 +52,12 @@ namespace Merlin {
 	}
 
 	void Application::OnEvent(Event& event) {
+		EventBus::Get().Emit(event);
 		EventDispatcher dispatcher(event);
 
 		// system events, these are if we want to hardcode functionality to certain events
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
-		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
+		dispatcher.Dispatch<WindowCloseEvent>(MERLIN_BIND_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(MERLIN_BIND_FN(OnWindowResize));
 
 		// let gui capture events first
 		m_GuiModule->OnEvent(event);

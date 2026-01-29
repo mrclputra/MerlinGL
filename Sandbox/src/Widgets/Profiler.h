@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Merlin/Core.h"
 #include "Merlin/Gui/Widget.h"
 
 #include <imgui.h>

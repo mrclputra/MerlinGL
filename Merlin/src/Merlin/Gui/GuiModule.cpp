@@ -5,11 +5,10 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include "Merlin/Application.h"
 #include "Style.h"
 
 namespace Merlin {
-	void GuiModule::Init() {
+	GuiModule::GuiModule(void* nativeWindow) : m_NativeWindow(nativeWindow) {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
@@ -18,12 +17,9 @@ namespace Merlin {
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.IniFilename = nullptr;
 
-		//ImGui::StyleColorsDark();
 		Style::ApplyTheme();
 
-		Application& app = Application::Get();
-		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
-
+		GLFWwindow* window = static_cast<GLFWwindow*>(m_NativeWindow);
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 460");
 	}
@@ -44,10 +40,9 @@ namespace Merlin {
 		ImGui::NewFrame();
 	}
 
-	void GuiModule::EndFrame() {
+	void GuiModule::EndFrame(uint32_t width, uint32_t height) {
 		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::Get();
-		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
+		io.DisplaySize = ImVec2((float)width, (float)height);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

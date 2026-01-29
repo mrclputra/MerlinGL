@@ -8,17 +8,19 @@
 namespace Merlin {
 	class MERLIN_API GuiModule {
 	public:
-		GuiModule() { Init(); }
+		GuiModule(void* nativeWindow);
 		~GuiModule() { Shutdown(); }
-		
+
 		struct ImGuiContext* GetContext();
 
-		void Init();
 		void Shutdown();
 
 		void BeginFrame();
-		void EndFrame();
+		void EndFrame(uint32_t width, uint32_t height);
 
 		void OnEvent(Event& event);
+
+	private:
+		void* m_NativeWindow = nullptr;
 	};
 }

@@ -12,7 +12,8 @@ namespace Merlin {
 		WindowClose, WindowResize,
 		AppTick, AppUpdate, AppRender,
 		KeyPressed, KeyReleased,
-		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
+		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
+		Log
 	};
 
 	enum EventCategory {
@@ -39,7 +40,13 @@ namespace Merlin {
 		virtual int GetCategoryFlags() const = 0;
 		virtual std::string ToString() const { return GetName(); }
 
-		inline bool IsInCategory(EventCategory category) { return GetCategoryFlags() & category; }
+		// Category helpers
+		// I think these make the API slightly easier to use
+		bool IsInCategory(EventCategory category) const { return GetCategoryFlags() & category; }
+		bool IsInput() const { return GetCategoryFlags() & EventCategoryInput; }
+		bool IsKeyboard() const { return GetCategoryFlags() & EventCategoryKeyboard; }
+		bool IsMouse() const { return GetCategoryFlags() & EventCategoryMouse; }
+		bool IsApplication() const { return GetCategoryFlags() & EventCategoryApplication; }
 
 		bool handled = false;
 	};
@@ -61,55 +68,4 @@ namespace Merlin {
 		Event& m_Event;
 	};
 
-	// This implementation of an EventBus is a modified version from KestrelGL
-	// TODO: I should make this asynchronous or threaded
-	//	as the current implementation is blocking
-
-	// in the current implementation, we do not need an EventBus as the layers should exclusively handle event logic
-	// but if we want events in the future to handle engine-wide events, we can use this
-
-	class EventBus {
-	public:
-		template<typename T>
-		using EventCallback = std::function<void(T&)>;
-
-		template<typename T>
-		int Subscribe(EventCallback<T> callback) {
-			int id = m_NextId++;
-			auto wrapper = std::make_shared<CallbackWrapper<T>>(id, callback);
-			m_Callbacks[typeid(T)].push_back(wrapper);
-			return id;
-		}
-
-		void Publish(Event& e) {
-			auto it = m_Callbacks.find(typeid(e));
-			if (it == m_Callbacks.end()) return;
-
-			for (auto& base : it->second) {
-				if (e.handled) break;
-				base->Execute(e); // Calls the specific wrapper
-			}
-		}
-
-	private:
-		struct CallbackBase {
-			int ID;
-			CallbackBase(int id) : ID(id) {}
-			virtual ~CallbackBase() = default;
-			virtual void Execute(Event& e) = 0;
-		};
-
-		template<typename T>
-		struct CallbackWrapper : public CallbackBase {
-			EventCallback<T> Callback;
-			CallbackWrapper(int id, EventCallback<T> cb) : CallbackBase(id), Callback(cb) {}
-
-			void Execute(Event& e) override {
-				Callback(static_cast<T&>(e));
-			}
-		};
-
-		std::unordered_map<std::type_index, std::vector<std::shared_ptr<CallbackBase>>> m_Callbacks;
-		int m_NextId = 0;
-	};
 }

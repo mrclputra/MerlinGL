@@ -1,11 +1,19 @@
 #include "Editor.h"
 
+Editor::Editor() : Merlin::Layer("Editor") {
+	// wire logger to my console widget
+	auto logCallback = [](const std::string& msg) { Merlin::Console::AddLog(msg); };
+	Merlin::Logger::getCoreLogger().SetCallback(logCallback);
+	Merlin::Logger::getClientLogger().SetCallback(logCallback);
+}
+
 void Editor::OnGuiRender() {
 	// menu bar
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
-			// todo: call event to exit app
-			ImGui::MenuItem("Exit", nullptr, nullptr, false);
+			if (ImGui::MenuItem("Exit", "Alt+F4")) {
+				Merlin::Application::Get().Quit();
+			}
 			ImGui::EndMenu();
 		}
 
