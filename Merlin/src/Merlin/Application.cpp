@@ -39,7 +39,11 @@ namespace Merlin {
 
 			// standard frames
 			for (Layer* layer : m_LayerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(0.016f);
+
+			// render pass
+			for (Layer* layer : m_LayerStack)
+				layer->OnRender();
 
 			// GUI Frames
 			m_GuiModule->BeginFrame();

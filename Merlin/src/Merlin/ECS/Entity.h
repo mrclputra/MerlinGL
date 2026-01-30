@@ -28,3 +28,13 @@ namespace Merlin {
 	};
 
 }
+
+// allow for entity to be used outside of vectors
+namespace std {
+	template<>
+	struct hash<Merlin::Entity> {
+		size_t operator()(const Merlin::Entity& entity) const noexcept {
+			return hash<Merlin::EntityID>()(entity.GetID());
+		}
+	};
+}

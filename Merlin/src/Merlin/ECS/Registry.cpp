@@ -5,25 +5,22 @@ namespace Merlin {
 
 	Entity Registry::CreateEntity() {
 		EntityID id = m_NextEntityID++;
-		m_Entities.push_back(id);
+		m_Entities.insert(id);
 		return Entity(id);
 	}
 
 	void Registry::DestroyEntity(EntityID entity) {
-		// Remove all components for this entity
+		// remove all components for this entity
 		for (auto& [typeIdx, componentMap] : m_Components) {
 			componentMap.erase(entity);
 		}
 
-		// Remove from entity list
-		auto it = std::find(m_Entities.begin(), m_Entities.end(), entity);
-		if (it != m_Entities.end()) {
-			m_Entities.erase(it);
-		}
+		// remove from entity set
+		m_Entities.erase(entity);
 	}
 
 	bool Registry::IsAlive(EntityID entity) const {
-		return std::find(m_Entities.begin(), m_Entities.end(), entity) != m_Entities.end();
+		return m_Entities.find(entity) != m_Entities.end();
 	}
 
 	void Registry::Update(float deltaTime) {

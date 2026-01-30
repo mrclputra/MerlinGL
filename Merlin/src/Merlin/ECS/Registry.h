@@ -5,10 +5,10 @@
 #include "Component.h"
 #include "System.h"
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <memory>
 #include <typeindex>
-#include <algorithm>
 
 namespace Merlin {
 
@@ -22,7 +22,8 @@ namespace Merlin {
 		Registry(const Registry&) = delete;
 		Registry& operator=(const Registry&) = delete;
 
-		// todo: getter for entities with specific component
+		template<typename T>
+		std::vector<EntityID> GetEntitiesWithComponent() const;
 
 		// entities management
 		Entity CreateEntity();
@@ -57,7 +58,7 @@ namespace Merlin {
 
 	private:
 		EntityID m_NextEntityID = 1;
-		std::vector<EntityID> m_Entities;
+		std::unordered_set<EntityID> m_Entities;
 
 		// ComponentType -> (EntityID -> Component)
 		std::unordered_map<std::type_index,
@@ -65,6 +66,18 @@ namespace Merlin {
 
 		std::vector<std::unique_ptr<System>> m_Systems;
 	};
+
+	template<typename T>
+	std::vector<EntityID> Registry::GetEntitiesWithComponent() const {
+		std::vector<Entity> result;
+		auto typeIt = m_Components.find(typeid(T));
+		if (typeIt != m_Components.end()) {
+			for (const auto& [entityID, component] : typeIt->second) {
+				result.push_back(entityID);
+			}
+		}
+		return result;
+	}
 
 	template<typename T, typename... Args>
 	T& Registry::AddComponent(EntityID entity, Args&&... args) {

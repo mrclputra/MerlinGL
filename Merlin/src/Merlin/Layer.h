@@ -11,7 +11,8 @@ namespace Merlin {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(float deltaTime) {}
+		virtual void OnRender() {}
 		virtual void OnGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 

@@ -47,9 +47,16 @@ public:
 			registry.GetComponent<SimpleComponent>(entity).Name);
 	}
 
-	void OnUpdate() override {
+	void OnEvent(Merlin::Event& event) override {
+		if (event.IsInCategory(Merlin::EventCategoryKeyboard)) {
+			MERLIN_INFO(event.ToString());
+		}
+	}
+
+	void OnUpdate(float deltaTime) override {
 		if (Merlin::Input::IsKeyPressed(GLFW_KEY_TAB)) {
-			MERLIN_INFO("TAB pressed");
+			// do something
+			// this is an example of input polling
 		}
 	}
 };
