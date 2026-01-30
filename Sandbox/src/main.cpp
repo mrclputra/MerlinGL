@@ -1,31 +1,61 @@
 #include <Merlin.h>
 #include <Merlin/EntryPoint.h>
+#include <Merlin/ECS/Registry.h>
 
 #include "Editor.h"
 
-class ExampleLayer : public Merlin::Layer {
-public:
-	ExampleLayer(const std::string& name) : Layer(name) {}
+// simple component
+struct SimpleComponent : public Merlin::Component {
+	COMPONENT_TYPE(SimpleComponent)
+	std::string Name;
+	SimpleComponent(const std::string& name) : Name(name) {}
+};
 
-	void OnUpdate() override {
-		if (Merlin::Input::IsKeyPressed(GLFW_KEY_TAB)) {
-			MERLIN_INFO("{0} polled by {1}", GLFW_KEY_TAB, this->GetName());
-		}
+// simple system (registry is auto-injected)
+class SampleSystem : public Merlin::System {
+public:
+	SampleSystem() : System("SampleSystem") {}
+
+	void OnAttach() override {
+		MERLIN_INFO("SampleSystem attached");
 	}
 
-	void OnEvent(Merlin::Event& event) override {
-		if (event.IsApplication()) return;
-		if (event.GetEventType() == Merlin::EventType::MouseMoved) return;
-
-		MERLIN_INFO("{0} from {1}", event.ToString(), this->GetName());
-		event.handled = true;
+	void OnUpdate(float deltaTime) override {
+		// m_Registry is automatically available
+		if (m_Registry->HasComponent<SimpleComponent>(1)) {
+			auto& comp = m_Registry->GetComponent<SimpleComponent>(1);
+		}
 	}
 };
 
-// this is an example of how to initialize the Engine API
+class SampleLayer : public Merlin::Layer {
+public:
+	SampleLayer() : Layer("SampleLayer") {}
+
+	void OnAttach() override {
+		auto& registry = Merlin::Application::Get().GetRegistry();
+
+		// create entity, with component
+		auto entity = registry.CreateEntity();
+		registry.AddComponent<SimpleComponent>(entity, "Player");
+
+		// add system
+		registry.AddSystem<SampleSystem>();
+
+		MERLIN_INFO("Created entity {0} with name: {1}",
+			entity.GetID(),
+			registry.GetComponent<SimpleComponent>(entity).Name);
+	}
+
+	void OnUpdate() override {
+		if (Merlin::Input::IsKeyPressed(GLFW_KEY_TAB)) {
+			MERLIN_INFO("TAB pressed");
+		}
+	}
+};
+
 MERLIN_APP(
 	.WithWindow("Sandbox")
-	.AddLayer<ExampleLayer>("Layer 1")
-	.AddLayer<ExampleLayer>("Layer 2")
+	.AddLayer<SampleLayer>()
 	.AddOverlay<Editor>()
 )

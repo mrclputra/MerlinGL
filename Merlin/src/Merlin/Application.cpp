@@ -34,6 +34,9 @@ namespace Merlin {
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			// update ECS systems
+			m_Registry.Update(0.016f); // TODO: calculate actual delta time
+
 			// standard frames
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();

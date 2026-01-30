@@ -4,7 +4,8 @@
 #include <cstdint>
 
 namespace Merlin {
-	using EntityID = uint32_t;
+
+	using EntityID = uint64_t;
 	constexpr EntityID NullEntity = 0;
 
 	class MERLIN_API Entity {
@@ -25,14 +26,5 @@ namespace Merlin {
 	private:
 		EntityID m_ID;
 	};
-}
 
-// support for unordered containers
-namespace std {
-	template<>
-	struct hash<Merlin::Entity> {
-		size_t operator()(const Merlin::Entity& entity) const noexcept {
-			return hash<Merlin::EntityID>()(entity.GetID());
-		}
-	};
 }

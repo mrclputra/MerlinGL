@@ -10,6 +10,7 @@
 
 #include "Events/Event.h"
 #include "Events/AppEvents.h"
+#include "ECS/Registry.h"
 
 namespace Merlin {
     class MERLIN_API Application {
@@ -27,6 +28,7 @@ namespace Merlin {
 
         inline static Application& Get() { return *s_Instance; }
         inline Window& GetWindow() { return *m_Window; }
+        inline Registry& GetRegistry() { return m_Registry; }
 
     private:
         void Init(const WindowProps& windowProps);
@@ -37,6 +39,7 @@ namespace Merlin {
 
         std::unique_ptr<Window> m_Window;
         std::unique_ptr<GuiModule> m_GuiModule;
+        Registry m_Registry;
         bool m_Running = true;
 
     private:

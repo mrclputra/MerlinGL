@@ -5,6 +5,7 @@
 #include <typeindex>
 
 namespace Merlin {
+
 	class MERLIN_API Component {
 	public:
 		Component() = default;
@@ -15,8 +16,8 @@ namespace Merlin {
 		EntityID Owner = NullEntity;
 	};
 
-	// macro for derived components
 #define COMPONENT_TYPE(type) \
-        std::type_index GetTypeIndex() const override { return typeid(type); } \
-        static std::type_index GetStaticTypeIndex() { return typeid(type); }
+	std::type_index GetTypeIndex() const override { return typeid(type); } \
+	static std::type_index GetStaticTypeIndex() { return typeid(type); }
+
 }

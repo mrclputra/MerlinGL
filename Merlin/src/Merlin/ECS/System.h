@@ -5,6 +5,10 @@
 #include <string>
 
 namespace Merlin {
+
+	// forward declaration
+	class Registry;
+
 	class MERLIN_API System {
 	public:
 		System(const std::string& name = "System") : m_DebugName(name) {}
@@ -17,7 +21,12 @@ namespace Merlin {
 
 		const std::string& GetName() const { return m_DebugName; }
 
+		// called by Registry::AddSystem
+		void SetRegistry(Registry* registry) { m_Registry = registry; }
+
 	protected:
+		Registry* m_Registry = nullptr;
 		std::string m_DebugName;
 	};
+
 }
