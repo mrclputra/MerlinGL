@@ -44,6 +44,11 @@ namespace Merlin {
 				renderer.shader->SetMat4("u_View", view);
 				renderer.shader->SetMat4("u_Projection", projection);
 
+				if (renderer.material.hasAlbedoMap()) {
+					renderer.material.albedoMap->Bind(0);
+					renderer.shader->SetInt("u_Albedo", 0);
+				}
+
 				renderer.mesh->Draw();
 				renderer.shader->Unbind();
 			}
@@ -57,8 +62,8 @@ namespace Merlin {
 	private:
 		// these are all placeholders
 		//	these values are to be replaced with an actual camera class implementation later on
-		glm::vec3 m_CameraPosition = glm::vec3(0.0f, 0.0f, 5.0f);
-		glm::vec3 m_CameraTarget = glm::vec3(0.0f);
+		glm::vec3 m_CameraPosition = glm::vec3(2.0f, 1.0f, 0.0f);
+		glm::vec3 m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		float m_FOV = 45.0f;
 		float m_NearPlane = 0.1f;

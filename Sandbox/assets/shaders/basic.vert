@@ -10,13 +10,9 @@ uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
 
-out vec3 v_Normal;
-out vec3 v_FragPos;
+out vec2 v_UV;
 
 void main() {
-    vec4 worldPos = u_Model * vec4(aPosition, 1.0);
-    v_FragPos = worldPos.xyz;
-    v_Normal = mat3(transpose(inverse(u_Model))) * aNormal;
-
-    gl_Position = u_Projection * u_View * worldPos;
+    v_UV = aUV;
+    gl_Position = u_Projection * u_View * u_Model * vec4(aPosition, 1.0);
 }

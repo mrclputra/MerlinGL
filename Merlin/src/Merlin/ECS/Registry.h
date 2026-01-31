@@ -140,7 +140,7 @@ namespace Merlin {
 				return *casted;
 			}
 		}
-		// todo: implement actual exception handling throughout the engine
+		// todo: implement actual exception handling
 		throw std::runtime_error("System not found");
 	}
 

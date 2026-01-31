@@ -18,6 +18,8 @@
 #include <Merlin/Assets/AssetManager.h>
 #include <Merlin/Assets/MeshAsset.h>
 #include <Merlin/Assets/ShaderAsset.h>
+#include <Merlin/Assets/Material.h>
+#include <Merlin/Assets/ModelLoader.h>
 
 // Rendering
 #include <Merlin/Rendering/Framebuffer.h>

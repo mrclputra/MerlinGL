@@ -3,6 +3,7 @@
 #include "Merlin/ECS/Component.h"
 #include "Merlin/Assets/MeshAsset.h"
 #include "Merlin/Assets/ShaderAsset.h"
+#include "Merlin/Assets/Material.h"
 
 #include <memory>
 
@@ -17,5 +18,6 @@ namespace Merlin {
 
 		std::shared_ptr<MeshAsset> mesh;
 		std::shared_ptr<ShaderAsset> shader;
+		Material material;
 	};
 }
