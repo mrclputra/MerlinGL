@@ -24,6 +24,7 @@ add_library(MerlinEngine SHARED
     ${IMGUI_SOURCES} 
     ${IMGUI_BACKENDS}
     ${GLAD_SOURCE}
+    "${EXT_DIR}/stb_image.cpp"
 )
 
 # generate export header,
@@ -42,6 +43,7 @@ target_include_directories(MerlinEngine
         "${EXT_DIR}/glm"
         "${EXT_DIR}/glad/include"
         "${EXT_DIR}/imgui"
+        "${EXT_DIR}"   
     PRIVATE
         "${EXT_DIR}/imgui/backends"
 )
