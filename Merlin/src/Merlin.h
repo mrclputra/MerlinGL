@@ -19,6 +19,9 @@
 #include <Merlin/Assets/MeshAsset.h>
 #include <Merlin/Assets/ShaderAsset.h>
 
+// rendering
+#include <Merlin/Rendering/Framebuffer.h>
+
 // ECS
 #include <Merlin/ECS/Entity.h>
 #include <Merlin/ECS/Component.h>

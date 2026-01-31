@@ -36,7 +36,7 @@ namespace Merlin {
 			/*AppUpdateEvent updateEvent;
 			OnEvent(updateEvent);*/
 
-			// Clear main framebuffer for ImGui
+			// Clear main framebuffer
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
 			glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
