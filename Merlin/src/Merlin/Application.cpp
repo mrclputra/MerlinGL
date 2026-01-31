@@ -20,6 +20,9 @@ namespace Merlin {
 
 		Input::Init(m_Window->GetNativeWindow());
 		m_GuiModule = std::make_unique<GuiModule>(m_Window->GetNativeWindow());
+
+		m_Registry = std::make_unique<Registry>();
+		m_Assets = std::make_unique<AssetManager>();
 	}
 
 	Application::~Application() {}
@@ -35,7 +38,7 @@ namespace Merlin {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// update ECS systems
-			m_Registry.Update(0.016f); // TODO: calculate actual delta time
+			m_Registry->Update(0.016f); // TODO: calculate actual delta time
 
 			// standard frames
 			for (Layer* layer : m_LayerStack)

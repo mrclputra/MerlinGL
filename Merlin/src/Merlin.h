@@ -13,6 +13,10 @@
 #include <Merlin/Logger.h>
 #include <Merlin/Events/Events.h>
 
+// assets
+#include <Merlin/Assets/Asset.h>
+#include <Merlin/Assets/AssetManager.h>
+
 // ImGui
 #include <imgui.h>
 #include <imgui_internal.h>

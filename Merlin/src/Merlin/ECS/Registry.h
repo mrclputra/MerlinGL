@@ -67,6 +67,9 @@ namespace Merlin {
 		std::vector<std::unique_ptr<System>> m_Systems;
 	};
 
+	// template implementations
+	// placed them outside the class so that the API is actually readable at a glance
+
 	template<typename T>
 	std::vector<EntityID> Registry::GetEntitiesWithComponent() const {
 		std::vector<Entity> result;
