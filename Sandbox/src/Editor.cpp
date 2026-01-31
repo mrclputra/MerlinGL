@@ -10,52 +10,13 @@ Editor::Editor() : Merlin::Layer("Editor") {
 }
 
 void Editor::OnAttach() {
-	// maybe framebuffer management should be an internal thing instead?
 	m_Framebuffer = std::make_unique<Merlin::Framebuffer>(800, 600);
+	Merlin::Application::Get().GetRegistry().AddSystem<Merlin::RenderSystem>();
 }
 
 void Editor::OnRender() {
-	m_Framebuffer->Bind();
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	auto& registry = Merlin::Application::Get().GetRegistry();
-	float aspectRatio = (float)m_Framebuffer->GetWidth() / (float)m_Framebuffer->GetHeight();
-
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
-
-	auto entities = registry.GetEntitiesWithComponent<Merlin::MeshRenderer>();
-	for (auto entity : entities) {
-		if (!registry.HasComponent<Merlin::Transform>(entity))
-			continue;
-
-		// TODO: considering setting up the vertex shader to be internal in the engine
-		//	then, we would not have to worry about bindings, a lot of the stuff below can be automated
-
-		auto& transform = registry.GetComponent<Merlin::Transform>(entity);
-		auto& renderer = registry.GetComponent<Merlin::MeshRenderer>(entity);
-
-		if (!renderer.mesh || !renderer.shader)
-			continue;
-
-		glm::mat4 model = transform.getModelMatrix();
-
-		renderer.shader->Bind();
-		renderer.shader->SetMat4("u_Model", model);
-		renderer.shader->SetMat4("u_View", view);
-		renderer.shader->SetMat4("u_Projection", projection);
-
-		renderer.mesh->Draw();
-
-		renderer.shader->Unbind();
-	}
-
-	m_Framebuffer->Unbind();
+	auto& renderSystem = Merlin::Application::Get().GetRegistry().GetSystem<Merlin::RenderSystem>();
+	renderSystem.Render(*m_Framebuffer);
 }
 
 void Editor::OnGuiRender() {

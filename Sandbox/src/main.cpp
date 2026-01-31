@@ -59,6 +59,9 @@ public:
 		auto& registry = Merlin::Application::Get().GetRegistry();
 		auto& assets = Merlin::Application::Get().GetAssets();
 
+		// TODO: considering setting up the vertex shader to be internal in the engine
+		//	then, we would not have to worry about bindings, a lot of the stuff below can be automated
+
 		// as of now, assets need to be created manually
 		//	and then linked into the component
 		auto shader = assets.Load<Merlin::ShaderAsset>(

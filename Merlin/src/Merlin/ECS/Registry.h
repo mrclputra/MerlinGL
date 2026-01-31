@@ -140,8 +140,8 @@ namespace Merlin {
 				return *casted;
 			}
 		}
-
-		return nullptr;
+		// todo: implement actual exception handling throughout the engine
+		throw std::runtime_error("System not found");
 	}
 
 	template<typename T>
