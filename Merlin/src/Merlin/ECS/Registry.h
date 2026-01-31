@@ -72,7 +72,7 @@ namespace Merlin {
 
 	template<typename T>
 	std::vector<EntityID> Registry::GetEntitiesWithComponent() const {
-		std::vector<Entity> result;
+		std::vector<EntityID> result;
 		auto typeIt = m_Components.find(typeid(T));
 		if (typeIt != m_Components.end()) {
 			for (const auto& [entityID, component] : typeIt->second) {

@@ -18,16 +18,16 @@ namespace Merlin {
 		glm::vec2 uv;
 	};
 
-	class MERLIN_API Mesh : public Asset {
+	class MeshAsset : public Asset {
 	public:
-		ASSET_TYPE(Mesh)
+		ASSET_TYPE(MeshAsset)
 
-		Mesh(const std::string& name, std::vector<Vertex> vertices, std::vector<unsigned int> indices)
+		MeshAsset(const std::string& name, std::vector<Vertex> vertices, std::vector<unsigned int> indices)
 			: Asset(name), m_Vertices(std::move(vertices)), m_Indices(std::move(indices)) {
 			upload();
 		}
 
-		~Mesh() {
+		~MeshAsset() {
 			if (m_EBO) glDeleteBuffers(1, &m_EBO);
 			if (m_VBO) glDeleteBuffers(1, &m_VBO);
 			if (m_VAO) glDeleteVertexArrays(1, &m_VAO);

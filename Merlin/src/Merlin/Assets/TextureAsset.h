@@ -17,16 +17,16 @@ namespace Merlin {
 		EMISSION
 	};
 
-	class MERLIN_API Texture : public Asset {
+	class TextureAsset : public Asset {
 	public:
-		ASSET_TYPE(Texture)
+		ASSET_TYPE(TextureAsset)
 
-		Texture(const std::string& path, TextureType type = TextureType::ALBEDO)
+		TextureAsset(const std::string& path, TextureType type = TextureType::ALBEDO)
 			: Asset(path), m_Type(type) {
 			loadFromFile(path);
 		}
 
-		~Texture() {
+		~TextureAsset() {
 			if (m_ID != 0) {
 				glDeleteTextures(1, &m_ID);
 			}

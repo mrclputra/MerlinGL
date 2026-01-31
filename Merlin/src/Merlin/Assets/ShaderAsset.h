@@ -12,18 +12,20 @@
 #include <sys/stat.h>
 
 namespace Merlin {
-	class MERLIN_API Shader : public Asset {
+	// this class pactically uses the same code as my previous engine
+	// but modified to fit the new ECS requirements
+	class ShaderAsset : public Asset {
 	public:
-		ASSET_TYPE(Shader)
+		ASSET_TYPE(ShaderAsset)
 
-		Shader(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath) 
+		ShaderAsset(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath) 
 			: Asset(name), m_VertexPath(vertexPath), m_FragmentPath(fragmentPath) {
 			if (!compile()) {
 				MERLIN_CORE_ERROR("Shader compilation failed: {0}", name);
 			}
 		}
 
-		~Shader() {
+		~ShaderAsset() {
 			if (m_ID != 0 && glIsProgram(m_ID)) {
 				glDeleteProgram(m_ID);
 			}

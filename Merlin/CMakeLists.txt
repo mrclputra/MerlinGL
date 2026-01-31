@@ -59,6 +59,9 @@ if(WIN32)
     # On Windows, export ImGui symbols
     target_compile_definitions(MerlinEngine PRIVATE "IMGUI_API=__declspec(dllexport)")
     target_compile_definitions(MerlinEngine INTERFACE "IMGUI_API=__declspec(dllimport)")
+    # Export GLAD symbols for header-only classes that use OpenGL
+    target_compile_definitions(MerlinEngine PUBLIC GLAD_GLAPI_EXPORT)
+    target_compile_definitions(MerlinEngine PRIVATE GLAD_GLAPI_EXPORT_BUILD)
 else()
     # use visibility attributes instead
     target_compile_definitions(MerlinEngine PUBLIC "IMGUI_API=__attribute__((visibility(\"default\")))")

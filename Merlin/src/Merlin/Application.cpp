@@ -23,6 +23,8 @@ namespace Merlin {
 
 		m_Registry = std::make_unique<Registry>();
 		m_Assets = std::make_unique<AssetManager>();
+
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	Application::~Application() {}
@@ -34,7 +36,10 @@ namespace Merlin {
 			/*AppUpdateEvent updateEvent;
 			OnEvent(updateEvent);*/
 
-			glClearColor(1, 0, 1, 1);
+			// Clear main framebuffer for ImGui
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+			glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// update ECS systems

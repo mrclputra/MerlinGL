@@ -1,32 +1,55 @@
 #include <Merlin.h>
 #include <Merlin/EntryPoint.h>
-#include <Merlin/ECS/Registry.h>
 
 #include "Editor.h"
 
-// simple component
-struct SimpleComponent : public Merlin::Component {
-	COMPONENT_TYPE(SimpleComponent)
-	std::string Name;
-	SimpleComponent(const std::string& name) : Name(name) {}
-};
+// this is placeholder,
+// atleast until I get Assimp up and running
+std::shared_ptr<Merlin::MeshAsset> CreateCubeMesh(Merlin::AssetManager& assets) {
+	std::vector<Merlin::Vertex> vertices = {
+		// +Z
+		{{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1,0,0}, {0,1,0}, {0.0f, 0.0f}},
+		{{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1,0,0}, {0,1,0}, {1.0f, 0.0f}},
+		{{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1,0,0}, {0,1,0}, {1.0f, 1.0f}},
+		{{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1,0,0}, {0,1,0}, {0.0f, 1.0f}},
+		// -Z
+		{{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {-1,0,0}, {0,1,0}, {0.0f, 0.0f}},
+		{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {-1,0,0}, {0,1,0}, {1.0f, 0.0f}},
+		{{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {-1,0,0}, {0,1,0}, {1.0f, 1.0f}},
+		{{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {-1,0,0}, {0,1,0}, {0.0f, 1.0f}},
+		// +Y
+		{{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1,0,0}, {0,0,1}, {0.0f, 0.0f}},
+		{{ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1,0,0}, {0,0,1}, {1.0f, 0.0f}},
+		{{ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1,0,0}, {0,0,1}, {1.0f, 1.0f}},
+		{{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1,0,0}, {0,0,1}, {0.0f, 1.0f}},
+		// -Y
+		{{-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1,0,0}, {0,0,-1}, {0.0f, 0.0f}},
+		{{ 0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1,0,0}, {0,0,-1}, {1.0f, 0.0f}},
+		{{ 0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {1,0,0}, {0,0,-1}, {1.0f, 1.0f}},
+		{{-0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {1,0,0}, {0,0,-1}, {0.0f, 1.0f}},
+		// +X
+		{{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0,0,1}, {0,1,0}, {0.0f, 0.0f}},
+		{{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0,0,1}, {0,1,0}, {1.0f, 0.0f}},
+		{{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0,0,1}, {0,1,0}, {1.0f, 1.0f}},
+		{{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0,0,1}, {0,1,0}, {0.0f, 1.0f}},
+		// -X
+		{{-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0,0,-1}, {0,1,0}, {0.0f, 0.0f}},
+		{{-0.5f, -0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {0,0,-1}, {0,1,0}, {1.0f, 0.0f}},
+		{{-0.5f,  0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {0,0,-1}, {0,1,0}, {1.0f, 1.0f}},
+		{{-0.5f,  0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0,0,-1}, {0,1,0}, {0.0f, 1.0f}},
+	};
 
-// simple system
-class SampleSystem : public Merlin::System {
-public:
-	SampleSystem() : System("SampleSystem") {}
+	std::vector<unsigned int> indices = {
+		0, 1, 2, 2, 3, 0,       // Front
+		4, 5, 6, 6, 7, 4,       // Back
+		8, 9, 10, 10, 11, 8,    // Top
+		12, 13, 14, 14, 15, 12, // Bottom
+		16, 17, 18, 18, 19, 16, // Right
+		20, 21, 22, 22, 23, 20  // Left
+	};
 
-	void OnAttach() override {
-		MERLIN_INFO("SampleSystem attached");
-	}
-
-	void OnUpdate(float deltaTime) override {
-		// m_Registry is automatically available
-		if (m_Registry->HasComponent<SimpleComponent>(1)) {
-			auto& comp = m_Registry->GetComponent<SimpleComponent>(1);
-		}
-	}
-};
+	return assets.Load<Merlin::MeshAsset>("cube", std::move(vertices), std::move(indices));
+}
 
 class SampleLayer : public Merlin::Layer {
 public:
@@ -34,22 +57,31 @@ public:
 
 	void OnAttach() override {
 		auto& registry = Merlin::Application::Get().GetRegistry();
+		auto& assets = Merlin::Application::Get().GetAssets();
 
-		// create entity, with component
-		auto entity = registry.CreateEntity();
-		registry.AddComponent<SimpleComponent>(entity, "Player");
+		// as of now, assets need to be created manually
+		//	and then linked into the component
+		auto shader = assets.Load<Merlin::ShaderAsset>(
+			"basic",
+			"assets/shaders/basic.vert",
+			"assets/shaders/basic.frag"
+		);
+		auto cubeMesh = CreateCubeMesh(assets);
 
-		// add system
-		registry.AddSystem<SampleSystem>();
+		// create cube entity
+		auto cubeEntity = registry.CreateEntity();
+		auto& transform = registry.AddComponent<Merlin::Transform>(cubeEntity);
+		transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
+		transform.rotation = glm::vec3(25.0f, 45.0f, 0.0f);
+		transform.scale = glm::vec3(2.0f);
 
-		MERLIN_INFO("Created entity {0} with name: {1}",
-			entity.GetID(),
-			registry.GetComponent<SimpleComponent>(entity).Name);
+		registry.AddComponent<Merlin::MeshRenderer>(cubeEntity, cubeMesh, shader);
+
+		MERLIN_INFO("Created cube entity with MeshRenderer");
 	}
 
-	void OnEvent(Merlin::Event& event) override {		
+	void OnEvent(Merlin::Event& event) override {
 		if (event.IsInCategory(Merlin::EventCategoryKeyboard)) {
-			MERLIN_INFO(event.ToString());
 
 			// TODO: need to improve the external API for events
 			Merlin::EventDispatcher dispatcher(event);
@@ -59,14 +91,18 @@ public:
 					Merlin::Application::Get().OnEvent(closeEvent);
 				}
 				return false;
-				});
+			});
 		}
 	}
 
 	void OnUpdate(float deltaTime) override {
-		if (Merlin::Input::IsKeyPressed(GLFW_KEY_TAB)) {
-			// do something
-			// this is an example of input polling
+		auto& registry = Merlin::Application::Get().GetRegistry();
+		auto entities = registry.GetEntitiesWithComponent<Merlin::Transform>();
+		for (auto entity : entities) {
+			if (registry.HasComponent<Merlin::MeshRenderer>(entity)) {
+				auto& transform = registry.GetComponent<Merlin::Transform>(entity);
+				transform.rotation.y += 30.0f * deltaTime;
+			}
 		}
 	}
 };

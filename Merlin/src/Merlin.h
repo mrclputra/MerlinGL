@@ -16,6 +16,21 @@
 // assets
 #include <Merlin/Assets/Asset.h>
 #include <Merlin/Assets/AssetManager.h>
+#include <Merlin/Assets/MeshAsset.h>
+#include <Merlin/Assets/ShaderAsset.h>
+
+// ECS
+#include <Merlin/ECS/Entity.h>
+#include <Merlin/ECS/Component.h>
+#include <Merlin/ECS/System.h>
+#include <Merlin/ECS/Registry.h>
+
+// Components
+#include <Merlin/ECS/Components/Transform.h>
+#include <Merlin/ECS/Components/MeshRenderer.h>
+
+// Systems
+#include <Merlin/ECS/Systems/RenderSystem.h>
 
 // ImGui
 #include <imgui.h>
