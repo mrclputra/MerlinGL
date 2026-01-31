@@ -1,25 +1,25 @@
-#pragma once 
+#pragma once
 
 // Merlin Engine Public API
 // for use by external Merlin applications
 
-// Core application
-#include <Merlin/Application.h>
-#include <Merlin/ApplicationBuilder.h>
-#include <Merlin/Layer.h>
-
-// other
+// Core
+#include <Merlin/Core/Application.h>
+#include <Merlin/Core/ApplicationBuilder.h>
+#include <Merlin/Core/Layer.h>
+#include <Merlin/Core/Logger.h>
 #include <Merlin/Platform/GLFW/GLFWInput.h>
-#include <Merlin/Logger.h>
+
+// Events
 #include <Merlin/Events/Events.h>
 
-// assets
+// Assets
 #include <Merlin/Assets/Asset.h>
 #include <Merlin/Assets/AssetManager.h>
 #include <Merlin/Assets/MeshAsset.h>
 #include <Merlin/Assets/ShaderAsset.h>
 
-// rendering
+// Rendering
 #include <Merlin/Rendering/Framebuffer.h>
 
 // ECS
@@ -28,13 +28,16 @@
 #include <Merlin/ECS/System.h>
 #include <Merlin/ECS/Registry.h>
 
-// Components
 #include <Merlin/ECS/Components/Transform.h>
 #include <Merlin/ECS/Components/MeshRenderer.h>
-
-// Systems
 #include <Merlin/ECS/Systems/RenderSystem.h>
 
-// ImGui
+// Gui
+#include <Merlin/Gui/Widget.h>
+#include <Merlin/Gui/Console.h>
+#include <Merlin/Gui/Profiler.h>
+
+// imgui symbols are exported with the library
+// so this should be usable no problem
 #include <imgui.h>
 #include <imgui_internal.h>

@@ -1,9 +1,6 @@
 #pragma once
 #include <Merlin.h>
 
-#include "Widgets/Console.h"
-#include "Widgets/Profiler.h"
-
 class Editor : public Merlin::Layer {
 public:
 	Editor();

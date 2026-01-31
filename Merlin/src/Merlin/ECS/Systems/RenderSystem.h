@@ -4,7 +4,7 @@
 #include "Merlin/ECS/Registry.h"
 #include "Merlin/ECS/Components/Transform.h"
 #include "Merlin/ECS/Components/MeshRenderer.h"
-#include "Merlin/Application.h"
+#include "Merlin/Core/Application.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

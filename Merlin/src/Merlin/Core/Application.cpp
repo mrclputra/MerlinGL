@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "Events/EventBus.h"
+#include "Merlin/Events/EventBus.h"
 #include "Input.h"
 
 namespace Merlin {

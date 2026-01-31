@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Merlin/Input.h"
+#include "Merlin/Core/Input.h"
 
 namespace Merlin {
 	// todo: might rename this class, GLFWInput might clash

@@ -5,13 +5,13 @@
 #include "Core.h"
 #include "Logger.h"
 #include "LayerStack.h"
-#include "Platform/GLFW/Window.h"
-#include "Gui/GuiModule.h"
+#include "Merlin/Platform/GLFW/Window.h"
+#include "Merlin/Gui/GuiModule.h"
 
-#include "Events/Event.h"
-#include "Events/AppEvents.h"
-#include "ECS/Registry.h"
-#include "Assets/AssetManager.h"
+#include "Merlin/Events/Event.h"
+#include "Merlin/Events/Events.h"
+#include "Merlin/ECS/Registry.h"
+#include "Merlin/Assets/AssetManager.h"
 
 namespace Merlin {
     class MERLIN_API Application {

@@ -34,6 +34,9 @@ void Editor::OnRender() {
 		if (!registry.HasComponent<Merlin::Transform>(entity))
 			continue;
 
+		// TODO: considering setting up the vertex shader to be internal in the engine
+		//	then, we would not have to worry about bindings, a lot of the stuff below can be automated
+
 		auto& transform = registry.GetComponent<Merlin::Transform>(entity);
 		auto& renderer = registry.GetComponent<Merlin::MeshRenderer>(entity);
 
@@ -67,7 +70,7 @@ void Editor::OnGuiRender() {
 	}
 
 	ImGuiID dockspace_id = ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(),
-		ImGuiDockNodeFlags_PassthruCentralNode |
+		//ImGuiDockNodeFlags_PassthruCentralNode |
 		ImGuiDockNodeFlags_NoTabBar
 	);
 

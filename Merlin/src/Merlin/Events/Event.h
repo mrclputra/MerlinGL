@@ -3,7 +3,7 @@
 #include "mepch.h"
 #include <typeindex>
 
-#include "Merlin/Core.h"
+#include "Merlin/Core/Core.h"
 
 namespace Merlin {
 

@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "Merlin/Core.h"
+#include "Merlin/Core/Core.h"
 
 #include <string>
 #include <typeindex>

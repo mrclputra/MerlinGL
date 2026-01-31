@@ -1,7 +1,7 @@
 #pragma once
 
 #include "mepch.h"
-#include "Merlin/Core.h"
+#include "Merlin/Core/Core.h"
 #include "Merlin/Events/Event.h"
 
 // might turn this class into a template further down the line in development

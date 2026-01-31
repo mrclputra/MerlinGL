@@ -1,5 +1,5 @@
 #include <Merlin.h>
-#include <Merlin/EntryPoint.h>
+#include <Merlin/Core/EntryPoint.h>
 
 #include "Editor.h"
 

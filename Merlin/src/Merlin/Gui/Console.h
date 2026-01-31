@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Merlin/Gui/Widget.h"
+#include "Widget.h"
 #include "mepch.h"
 
 namespace Merlin {

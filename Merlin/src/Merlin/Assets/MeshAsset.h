@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Asset.h"
-#include "Merlin/Logger.h"
+#include "Merlin/Core/Logger.h"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>

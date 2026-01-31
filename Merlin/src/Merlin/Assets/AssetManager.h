@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Merlin/Core.h"
+#include "Merlin/Core/Core.h"
 #include "Asset.h"
 
 #include <unordered_map>

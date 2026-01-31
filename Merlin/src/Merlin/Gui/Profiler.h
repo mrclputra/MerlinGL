@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Merlin/Gui/Widget.h"
-
+#include "Widget.h"
 #include <imgui.h>
 
 namespace Merlin {
@@ -33,7 +32,7 @@ namespace Merlin {
 				0.0f, m_MaxFrameTime + 2.0f, ImVec2(ImGui::GetContentRegionAvail().x, 80));
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "Max: %.1fms", m_MaxFrameTime);
 		}
-	
+
 	private:
 		inline static constexpr int FRAME_HIST_COUNT = 100;
 		float m_History[FRAME_HIST_COUNT] = { 0 };

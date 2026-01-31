@@ -7,7 +7,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "Merlin/Core.h"
+#include "Merlin/Core/Core.h"
 #include "Event.h"
 
 namespace Merlin {

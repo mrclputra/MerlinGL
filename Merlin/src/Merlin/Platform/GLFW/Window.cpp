@@ -1,9 +1,8 @@
 #include "mepch.h"
 
 #include "Window.h"
-#include "Merlin/Logger.h"
-#include "Merlin/Events/AppEvents.h"
-#include "Merlin/Events/InputEvents.h"
+#include "Merlin/Core/Logger.h"
+#include "Merlin/Events/Events.h"
 
 namespace Merlin {
 	Window::Window(const WindowProps& props) { Init(props); }
