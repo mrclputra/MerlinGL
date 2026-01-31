@@ -11,7 +11,7 @@ struct SimpleComponent : public Merlin::Component {
 	SimpleComponent(const std::string& name) : Name(name) {}
 };
 
-// simple system (registry is auto-injected)
+// simple system
 class SampleSystem : public Merlin::System {
 public:
 	SampleSystem() : System("SampleSystem") {}
@@ -47,9 +47,19 @@ public:
 			registry.GetComponent<SimpleComponent>(entity).Name);
 	}
 
-	void OnEvent(Merlin::Event& event) override {
+	void OnEvent(Merlin::Event& event) override {		
 		if (event.IsInCategory(Merlin::EventCategoryKeyboard)) {
 			MERLIN_INFO(event.ToString());
+
+			// TODO: need to improve the external API for events
+			Merlin::EventDispatcher dispatcher(event);
+			dispatcher.Dispatch<Merlin::KeyPressedEvent>([](auto& e) {
+				if (e.GetKeyCode() == GLFW_KEY_ESCAPE) {
+					Merlin::WindowCloseEvent closeEvent;
+					Merlin::Application::Get().OnEvent(closeEvent);
+				}
+				return false;
+				});
 		}
 	}
 
