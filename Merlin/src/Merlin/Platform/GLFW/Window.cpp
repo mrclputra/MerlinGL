@@ -115,12 +115,11 @@ namespace Merlin {
 	}
 
 	void Window::SetVSync(bool enabled) {
-		if (enabled) 
-			glfwSwapInterval(1);
-		else 
-			glfwSwapInterval(0);
-		
-		MERLIN_CORE_INFO("VSync: {0}", enabled);
+		glfwMakeContextCurrent(m_Window);
+		int interval = enabled ? 1 : 0;
+		glfwSwapInterval(interval);
+
+		MERLIN_CORE_INFO("VSync set to {0} (swap interval: {1})", enabled, interval);
 		m_VSync = enabled;
 	}
 
