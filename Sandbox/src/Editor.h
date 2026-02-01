@@ -7,6 +7,7 @@ public:
 	~Editor() = default;
 
 	void OnAttach() override;
+	void OnUpdate(float dt) override;
 	void OnRender() override;
 	void OnGuiRender() override;
 
@@ -16,6 +17,10 @@ private:
 	Merlin::Console m_Console;
 	Merlin::Profiler m_Profiler;
 	std::unique_ptr<Merlin::Framebuffer> m_Framebuffer;
+
+	Merlin::EntityID m_CameraEntity = 0;
+	bool m_ViewportFocused = false;
+	glm::vec2 m_LastMousePos = glm::vec2(0.0f);
 
 	static glm::vec2 s_ViewportSize;
 };

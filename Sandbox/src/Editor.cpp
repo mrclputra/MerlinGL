@@ -11,7 +11,44 @@ Editor::Editor() : Merlin::Layer("Editor") {
 
 void Editor::OnAttach() {
 	m_Framebuffer = std::make_unique<Merlin::Framebuffer>(800, 600);
-	Merlin::Application::Get().GetRegistry().AddSystem<Merlin::RenderSystem>();
+
+	auto& registry = Merlin::Application::Get().GetRegistry();
+	registry.AddSystem<Merlin::RenderSystem>();
+
+	m_CameraEntity = registry.CreateEntity();
+	auto& transform = registry.AddComponent<Merlin::Transform>(m_CameraEntity);
+	transform.position = glm::vec3(0.0f, 1.0f, 0.0f);
+	transform.rotation = glm::vec3(0.0f, -0.0f, 0.0f);
+	registry.AddComponent<Merlin::Camera>(m_CameraEntity);
+}
+
+void Editor::OnUpdate(float dt) {
+	if (!m_ViewportFocused) return;
+
+	auto& registry = Merlin::Application::Get().GetRegistry();
+	auto& transform = registry.GetComponent<Merlin::Transform>(m_CameraEntity);
+	auto& camera = registry.GetComponent<Merlin::Camera>(m_CameraEntity);
+
+	float speed = 1.0f * dt;
+	glm::vec3 front = camera.GetFront(transform);
+	glm::vec3 right = camera.GetRight(transform);
+
+	if (Merlin::Input::IsKeyPressed(GLFW_KEY_W)) transform.position += front * speed;
+	if (Merlin::Input::IsKeyPressed(GLFW_KEY_S)) transform.position -= front * speed;
+	if (Merlin::Input::IsKeyPressed(GLFW_KEY_A)) transform.position -= right * speed;
+	if (Merlin::Input::IsKeyPressed(GLFW_KEY_D)) transform.position += right * speed;
+	if (Merlin::Input::IsKeyPressed(GLFW_KEY_E)) transform.position.y += speed;
+	if (Merlin::Input::IsKeyPressed(GLFW_KEY_Q)) transform.position.y -= speed;
+
+	glm::vec2 mousePos(Merlin::Input::GetMouseX(), Merlin::Input::GetMouseY());
+
+	if (Merlin::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+		glm::vec2 delta = mousePos - m_LastMousePos;
+		transform.rotation.y += delta.x * 0.1f;
+		transform.rotation.x -= delta.y * 0.1f;
+		transform.rotation.x = glm::clamp(transform.rotation.x, -89.0f, 89.0f);
+	}
+	m_LastMousePos = mousePos;
 }
 
 void Editor::OnRender() {
@@ -52,6 +89,7 @@ void Editor::OnGuiRender() {
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::Begin("Viewport");
+	m_ViewportFocused = ImGui::IsWindowFocused() || ImGui::IsWindowHovered();
 
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 	s_ViewportSize = { viewportSize.x, viewportSize.y };

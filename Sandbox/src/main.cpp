@@ -28,12 +28,6 @@ public:
 			auto& meshRenderer = registry.AddComponent<Merlin::MeshRenderer>(entity, mesh, shader);
 			meshRenderer.material = material;
 		}
-
-		auto cameraEntity = registry.CreateEntity();
-		auto& camTransform = registry.AddComponent<Merlin::Transform>(cameraEntity);
-		camTransform.position = glm::vec3(2.0f, 1.0f, 0.0f);
-		camTransform.rotation = glm::vec3(0.0f, -0.0f, 0.0f);
-		registry.AddComponent<Merlin::Camera>(cameraEntity);
 	}
 
 	void OnEvent(Merlin::Event& event) override {
