@@ -2,6 +2,8 @@
 #include "Merlin/Events/EventBus.h"
 #include "Input.h"
 
+#include "Merlin/Assets/ShaderAsset.h"
+
 namespace Merlin {
 	Application* Application::s_Instance = nullptr;
 
@@ -44,6 +46,10 @@ namespace Merlin {
 
 			// update ECS systems
 			m_Registry->Update(0.016f); // TODO: calculate actual delta time
+
+			m_Assets->ForEach<ShaderAsset>([](auto& shader) {
+				shader->checkHotReload();
+				});
 
 			// standard frames
 			for (Layer* layer : m_LayerStack)

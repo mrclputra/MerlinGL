@@ -29,6 +29,8 @@ namespace Merlin {
 		static std::vector<MeshMaterialPair> Load(AssetManager& assets, const std::string& path) {
 			std::vector<MeshMaterialPair> result;
 
+			MERLIN_CORE_INFO("Loading model: {0}", path);
+
 			Assimp::Importer importer;
 			const aiScene* scene = importer.ReadFile(path,
 				aiProcess_Triangulate |
@@ -38,15 +40,20 @@ namespace Merlin {
 			);
 
 			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-				MERLIN_CORE_ERROR("Assimp error: {0}", importer.GetErrorString());
+				MERLIN_CORE_ERROR("Failed to load model: {0}", importer.GetErrorString());
 				return result;
 			}
+
+			MERLIN_CORE_INFO("Scene info: {0} meshes, {1} materials, {2} textures",
+				scene->mNumMeshes, scene->mNumMaterials, scene->mNumTextures);
 
 			std::string directory;
 			size_t lastSlash = path.find_last_of("/\\");
 			directory = (lastSlash != std::string::npos) ? path.substr(0, lastSlash + 1) : "";
 
 			ProcessNode(assets, scene->mRootNode, scene, glm::mat4(1.0f), path, directory, result);
+
+			MERLIN_CORE_INFO("Model loaded successfully: {0} meshes processed", result.size());
 			return result;
 		}
 
@@ -60,6 +67,9 @@ namespace Merlin {
 			const std::string& directory,
 			std::vector<MeshMaterialPair>& result
 		) {
+			MERLIN_CORE_INFO("Processing node: {0} ({1} meshes, {2} children)",
+				node->mName.C_Str(), node->mNumMeshes, node->mNumChildren);
+
 			glm::mat4 nodeTransform = ConvertMatrix(node->mTransformation);
 			glm::mat4 globalTransform = parentTransform * nodeTransform;
 
@@ -82,6 +92,9 @@ namespace Merlin {
 			const std::string& directory,
 			size_t meshIndex
 		) {
+			MERLIN_CORE_INFO("Mesh[{0}]: {1} ({2} vertices, {3} faces)",
+				meshIndex, mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
+
 			std::vector<Vertex> vertices;
 			std::vector<unsigned int> indices;
 			vertices.reserve(mesh->mNumVertices);
@@ -161,6 +174,7 @@ namespace Merlin {
 			mat->GetTexture(type, 0, &texPath);
 
 			std::string fullPath = directory + texPath.C_Str();
+			MERLIN_CORE_INFO("Loading texture: {0}", fullPath);
 			return assets.Load<TextureAsset>(fullPath, texType);
 		}
 

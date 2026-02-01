@@ -14,15 +14,16 @@
 namespace Merlin {
 	// this class pactically uses the same code as my previous engine
 	// but modified to fit the new ECS requirements
-	class ShaderAsset : public Asset {
+	class MERLIN_API ShaderAsset : public Asset {
 	public:
 		ASSET_TYPE(ShaderAsset)
 
-		ShaderAsset(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath) 
+		ShaderAsset(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath)
 			: Asset(name), m_VertexPath(vertexPath), m_FragmentPath(fragmentPath) {
 			if (!compile()) {
 				MERLIN_CORE_ERROR("Shader compilation failed: {0}", name);
 			}
+			updateModTime();
 		}
 
 		~ShaderAsset() {
@@ -33,6 +34,30 @@ namespace Merlin {
 
 		void Bind() const { glUseProgram(m_ID); }
 		void Unbind() const { glUseProgram(0); }
+
+		bool checkHotReload() {
+			time_t vMod = getModTime(m_VertexPath);
+			time_t fMod = getModTime(m_FragmentPath);
+
+			if (vMod == 0 || fMod == 0) {
+				MERLIN_CORE_WARN("Hot reload: cannot stat shader files ({0}, {1})", m_VertexPath, m_FragmentPath);
+				return false;
+			}
+
+			if (vMod != m_VertexModTime || fMod != m_FragmentModTime) {
+				MERLIN_CORE_INFO("Hot reload: recompiling shader {0}", GetPath());
+				m_VertexModTime = vMod;
+				m_FragmentModTime = fMod;
+
+				if (!compile()) {
+					return false;
+				}
+
+				return true;
+			}
+
+			return false;
+		}
 
 		unsigned int GetID() const { return m_ID; }
 
@@ -66,6 +91,19 @@ namespace Merlin {
 		unsigned int m_ID = 0;
 		std::string m_VertexPath;
 		std::string m_FragmentPath;
+
+		time_t m_VertexModTime = 0;
+		time_t m_FragmentModTime = 0;
+
+		static time_t getModTime(const std::string& path) {
+			struct stat st;
+			return (stat(path.c_str(), &st) == 0) ? st.st_mtime : 0;
+		}
+
+		void updateModTime() {
+			m_VertexModTime = getModTime(m_VertexPath);
+			m_FragmentModTime = getModTime(m_FragmentPath);
+		}
 
 		std::string readFile(const std::string& path) {
 			std::ifstream file(path);

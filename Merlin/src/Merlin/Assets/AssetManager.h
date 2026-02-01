@@ -22,6 +22,9 @@ namespace Merlin {
 		template<typename T>
 		std::shared_ptr<T> Get(const std::string& path) const;
 
+		template<typename T, typename Func>
+		void ForEach(Func&& func);
+
 		void Clear() { m_Assets.clear(); }
 
 	private:
@@ -53,5 +56,14 @@ namespace Merlin {
 		if (assetIt == typeIt->second.end()) return nullptr;
 
 		return std::static_pointer_cast<T>(assetIt->second);
+	}
+
+	template<typename T, typename Func>
+	void AssetManager::ForEach(Func&& func) {
+		auto it = m_Assets.find(T::GetStaticTypeIndex());
+		if (it == m_Assets.end()) return;
+		for (auto& [key, asset] : it->second) {
+			func(std::static_pointer_cast<T>(asset));
+		}
 	}
 }

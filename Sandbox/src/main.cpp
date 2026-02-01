@@ -13,8 +13,8 @@ public:
 
 		auto shader = assets.Load<Merlin::ShaderAsset>(
 			"basic",
-			"assets/shaders/basic.vert",
-			"assets/shaders/basic.frag"
+			ASSETS_DIR "shaders/basic.vert",
+			ASSETS_DIR "shaders/basic.frag"
 		);
 
 		auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/Sponza/sponza.obj");

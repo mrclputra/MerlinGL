@@ -8,4 +8,5 @@ uniform sampler2D u_Albedo;
 
 void main() {
     FragColor = texture(u_Albedo, v_UV);
+//    FragColor = vec4(1.0f);
 }
