@@ -11,19 +11,27 @@ public:
 		auto& registry = Merlin::Application::Get().GetRegistry();
 		auto& assets = Merlin::Application::Get().GetAssets();
 
+		registry.AddSystem<Merlin::RenderSystem>();
+
 		auto shader = assets.Load<Merlin::ShaderAsset>(
 			"basic",
 			ASSETS_DIR "shaders/basic.vert",
 			ASSETS_DIR "shaders/basic.frag"
 		);
 
-		auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/Sponza/sponza.obj");
+		//auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/Sponza/sponza.obj");
+		//auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/teeth.ply");
+		//auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/stanford_dragon_pbr/scene.gltf");
+		auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/sibenik/sibenik.obj");
+		//auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/lion_crushing_a_serpent/scene.gltf");
 
 		for (auto& [mesh, material] : meshes) {
 			auto entity = registry.CreateEntity();
 
 			auto& transform = registry.AddComponent<Merlin::Transform>(entity);
-			transform.scale = glm::vec3(0.01f);
+			//transform.scale = glm::vec3(1.0f);
+			transform.scale = glm::vec3(0.1f);
+			//transform.rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
 
 			auto& meshRenderer = registry.AddComponent<Merlin::MeshRenderer>(entity, mesh, shader);
 			meshRenderer.material = material;

@@ -12,7 +12,7 @@ namespace Merlin {
 
 		float fov = 45.0f;
 		float nearPlane = 0.1f;
-		float farPlane = 100.0f;
+		float farPlane = 600.0f;
 		bool isActive = true;
 
 		glm::mat4 GetViewMatrix(const Transform& transform) const {

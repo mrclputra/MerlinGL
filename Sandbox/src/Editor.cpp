@@ -13,11 +13,10 @@ void Editor::OnAttach() {
 	m_Framebuffer = std::make_unique<Merlin::Framebuffer>(800, 600);
 
 	auto& registry = Merlin::Application::Get().GetRegistry();
-	registry.AddSystem<Merlin::RenderSystem>();
 
 	m_CameraEntity = registry.CreateEntity();
 	auto& transform = registry.AddComponent<Merlin::Transform>(m_CameraEntity);
-	transform.position = glm::vec3(0.0f, 1.0f, 0.0f);
+	transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
 	transform.rotation = glm::vec3(0.0f, -0.0f, 0.0f);
 	registry.AddComponent<Merlin::Camera>(m_CameraEntity);
 }
@@ -78,10 +77,12 @@ void Editor::OnGuiRender() {
 
 		ImGuiID dock_main_id = dockspace_id;
 		ImGuiID dock_bottom_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
-		ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.2f, nullptr, &dock_main_id);
+		ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.25f, nullptr, &dock_main_id);
+		ImGuiID dock_left_bottom_id = ImGui::DockBuilderSplitNode(dock_left_id, ImGuiDir_Down, 0.6f, nullptr, &dock_left_id);
 
 		ImGui::DockBuilderDockWindow("Console", dock_bottom_id);
-		ImGui::DockBuilderDockWindow("Debug", dock_left_id);
+		ImGui::DockBuilderDockWindow("Stats", dock_left_id);
+		ImGui::DockBuilderDockWindow("Inspector", dock_left_bottom_id);
 		ImGui::DockBuilderDockWindow("Viewport", dock_main_id);
 
 		ImGui::DockBuilderFinish(dockspace_id);
@@ -102,20 +103,173 @@ void Editor::OnGuiRender() {
 	ImGui::End();
 	ImGui::PopStyleVar();
 
-	ImGui::Begin("Debug");
-	ImGui::Text("Hello Sandbox!!!");
-	ImGui::Separator();
+	RenderStatsPanel();
+	RenderInspectorPanel();
+
+	m_Console.Render();
+}
+
+void Editor::RenderStatsPanel() {
+	ImGui::Begin("Stats");
+
 	m_Profiler.Render();
 	ImGui::Separator();
 
+	auto& registry = Merlin::Application::Get().GetRegistry();
+
+	// entity and component counts
+	size_t entityCount = registry.GetEntityCount();
+	size_t transformCount = registry.GetEntitiesWithComponent<Merlin::Transform>().size();
+	size_t cameraCount = registry.GetEntitiesWithComponent<Merlin::Camera>().size();
+	size_t meshRendererCount = registry.GetEntitiesWithComponent<Merlin::MeshRenderer>().size();
+
+	ImGui::Text("Entities: %zu", entityCount);
+	ImGui::Text("  Transform: %zu", transformCount);
+	ImGui::Text("  Camera: %zu", cameraCount);
+	ImGui::Text("  MeshRenderer: %zu", meshRendererCount);
+
+	ImGui::Separator();
+
+	// camera info
+	if (registry.HasComponent<Merlin::Transform>(m_CameraEntity)) {
+		auto& camTransform = registry.GetComponent<Merlin::Transform>(m_CameraEntity);
+		ImGui::Text("Camera Position");
+		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "  %.2f, %.2f, %.2f",
+			camTransform.position.x, camTransform.position.y, camTransform.position.z);
+	}
+
+	ImGui::Separator();
+
+	// settings
 	bool vsync = Merlin::Application::Get().GetWindow().IsVSync();
-	if (ImGui::Checkbox("VSync Enabled", &vsync)) {
+	if (ImGui::Checkbox("VSync", &vsync)) {
 		Merlin::Application::Get().GetWindow().SetVSync(vsync);
 	}
 
 	ImGui::Text("Viewport: %.0f x %.0f", s_ViewportSize.x, s_ViewportSize.y);
 
 	ImGui::End();
+}
 
-	m_Console.Render();
+void Editor::RenderInspectorPanel() {
+	ImGui::Begin("Inspector");
+
+	auto& registry = Merlin::Application::Get().GetRegistry();
+
+	if (ImGui::TreeNodeEx("Scene", ImGuiTreeNodeFlags_DefaultOpen)) {
+		// entities
+		if (ImGui::TreeNodeEx("Entities", ImGuiTreeNodeFlags_DefaultOpen)) {
+			for (Merlin::EntityID entityID : registry.GetAllEntities()) {
+				ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+				if (entityID == m_SelectedEntity) {
+					nodeFlags |= ImGuiTreeNodeFlags_Selected;
+				}
+
+				// build label
+				std::string components;
+				if (registry.HasComponent<Merlin::Transform>(entityID)) components += "T";
+				if (registry.HasComponent<Merlin::Camera>(entityID)) components += "C";
+				if (registry.HasComponent<Merlin::MeshRenderer>(entityID)) components += "M";
+
+				char label[64];
+				snprintf(label, sizeof(label), "Entity %llu [%s]", entityID, components.c_str());
+
+				bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)entityID, nodeFlags, "%s", label);
+
+				if (ImGui::IsItemClicked()) {
+					m_SelectedEntity = entityID;
+				}
+
+				if (nodeOpen) {
+					ImGuiTreeNodeFlags subFlags = ImGuiTreeNodeFlags_DefaultOpen;
+
+					// Transform component
+					if (registry.HasComponent<Merlin::Transform>(entityID)) {
+						if (ImGui::TreeNodeEx("Transform", subFlags)) {
+							auto& transform = registry.GetComponent<Merlin::Transform>(entityID);
+
+							ImGui::Text("Position");
+							ImGui::SetNextItemWidth(200.0f);
+							ImGui::DragFloat3("##Pos", &transform.position[0], 0.1f);
+
+							ImGui::Text("Rotation");
+							ImGui::SetNextItemWidth(200.0f);
+							ImGui::DragFloat3("##Rot", &transform.rotation[0], 1.0f);
+
+							ImGui::Text("Scale");
+							ImGui::SetNextItemWidth(200.0f);
+							ImGui::DragFloat3("##Scale", &transform.scale[0], 0.1f);
+
+							ImGui::TreePop();
+						}
+					}
+
+					// Camera component
+					if (registry.HasComponent<Merlin::Camera>(entityID)) {
+						if (ImGui::TreeNodeEx("Camera", subFlags)) {
+							auto& camera = registry.GetComponent<Merlin::Camera>(entityID);
+
+							ImGui::Text("FOV");
+							ImGui::SetNextItemWidth(140.0f);
+							ImGui::SliderFloat("##FOV", &camera.fov, 1.0f, 120.0f);
+
+							ImGui::Text("Near Plane");
+							ImGui::SetNextItemWidth(140.0f);
+							ImGui::DragFloat("##Near", &camera.nearPlane, 0.01f, 0.001f, 10.0f);
+
+							ImGui::Text("Far Plane");
+							ImGui::SetNextItemWidth(140.0f);
+							ImGui::DragFloat("##Far", &camera.farPlane, 1.0f, 1.0f, 1000.0f);
+
+							ImGui::Checkbox("Active", &camera.isActive);
+
+							ImGui::TreePop();
+						}
+					}
+
+					// MeshRenderer component
+					if (registry.HasComponent<Merlin::MeshRenderer>(entityID)) {
+						if (ImGui::TreeNodeEx("MeshRenderer", subFlags)) {
+							auto& meshRenderer = registry.GetComponent<Merlin::MeshRenderer>(entityID);
+
+							// Material properties
+							if (ImGui::TreeNodeEx("Material", subFlags)) {
+								ImGui::Text("Albedo");
+								ImGui::ColorEdit4("##Albedo", &meshRenderer.material.albedo[0]);
+
+								ImGui::Text("Metallic");
+								ImGui::SetNextItemWidth(140.0f);
+								ImGui::SliderFloat("##Metallic", &meshRenderer.material.metallic, 0.0f, 1.0f);
+
+								ImGui::Text("Roughness");
+								ImGui::SetNextItemWidth(140.0f);
+								ImGui::SliderFloat("##Roughness", &meshRenderer.material.roughness, 0.0f, 1.0f);
+
+								// texture info
+								if (meshRenderer.material.hasAlbedoMap()) {
+									ImGui::TextColored(ImVec4(0.5f, 0.8f, 0.5f, 1.0f), "Albedo Map: Yes");
+								}
+								if (meshRenderer.material.hasNormalMap()) {
+									ImGui::TextColored(ImVec4(0.5f, 0.8f, 0.5f, 1.0f), "Normal Map: Yes");
+								}
+								if (meshRenderer.material.hasMetallicRoughnessMap()) {
+									ImGui::TextColored(ImVec4(0.5f, 0.8f, 0.5f, 1.0f), "MetRough Map: Yes");
+								}
+
+								ImGui::TreePop();
+							}
+
+							ImGui::TreePop();
+						}
+					}
+
+					ImGui::TreePop();
+				}
+			}
+			ImGui::TreePop();
+		}
+		ImGui::TreePop();
+	}
+
+	ImGui::End();
 }

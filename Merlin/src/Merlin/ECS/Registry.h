@@ -29,6 +29,8 @@ namespace Merlin {
 		Entity CreateEntity();
 		void DestroyEntity(EntityID entity);
 		bool IsAlive(EntityID entity) const;
+		const std::unordered_set<EntityID>& GetAllEntities() const { return m_Entities; }
+		size_t GetEntityCount() const { return m_Entities.size(); }
 
 		// components management
 		template<typename T, typename... Args>
