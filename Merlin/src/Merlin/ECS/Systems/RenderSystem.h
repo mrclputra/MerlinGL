@@ -4,6 +4,7 @@
 #include "Merlin/ECS/Registry.h"
 #include "Merlin/ECS/Components/Transform.h"
 #include "Merlin/ECS/Components/MeshRenderer.h"
+#include "Merlin/ECS/Components/Camera.h"
 #include "Merlin/Rendering/Framebuffer.h"
 #include "Merlin/Core/Application.h"
 
@@ -23,8 +24,19 @@ namespace Merlin {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			float aspectRatio = (float)fb.GetWidth() / (float)fb.GetHeight();
-			glm::mat4 view = glm::lookAt(m_CameraPosition, m_CameraTarget, m_CameraUp);
-			glm::mat4 projection = glm::perspective(glm::radians(m_FOV), aspectRatio, m_NearPlane, m_FarPlane);
+			glm::mat4 view(1.0f);
+			glm::mat4 projection(1.0f);
+
+			auto cameraEntities = m_Registry->GetEntitiesWithComponent<Camera>();
+			for (EntityID camEntity : cameraEntities) {
+				auto& camera = m_Registry->GetComponent<Camera>(camEntity);
+				if (camera.isActive && m_Registry->HasComponent<Transform>(camEntity)) {
+					auto& camTransform = m_Registry->GetComponent<Transform>(camEntity);
+					view = camera.GetViewMatrix(camTransform);
+					projection = camera.GetProjectionMatrix(aspectRatio);
+					break;
+				}
+			}
 
 			BuildRenderQueue();
 			SortRenderQueue();
@@ -32,9 +44,6 @@ namespace Merlin {
 
 			fb.Unbind();
 		}
-
-		void SetCameraPosition(const glm::vec3& pos) { m_CameraPosition = pos; }
-		void SetCameraTarget(const glm::vec3& target) { m_CameraTarget = target; }
 
 	private:
 		struct RenderCommand {
@@ -104,12 +113,5 @@ namespace Merlin {
 
 			glUseProgram(0);
 		}
-
-		glm::vec3 m_CameraPosition = glm::vec3(2.0f, 1.0f, 0.0f);
-		glm::vec3 m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f);
-		glm::vec3 m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		float m_FOV = 45.0f;
-		float m_NearPlane = 0.1f;
-		float m_FarPlane = 100.0f;
 	};
 }

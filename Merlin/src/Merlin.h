@@ -32,6 +32,7 @@
 
 #include <Merlin/ECS/Components/Transform.h>
 #include <Merlin/ECS/Components/MeshRenderer.h>
+#include <Merlin/ECS/Components/Camera.h>
 #include <Merlin/ECS/Systems/RenderSystem.h>
 
 // Gui
