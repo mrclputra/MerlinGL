@@ -19,11 +19,9 @@ public:
 			ASSETS_DIR "shaders/basic.frag"
 		);
 
-		//auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/Sponza/sponza.obj");
-		//auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/teeth.ply");
-		//auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/stanford_dragon_pbr/scene.gltf");
-		auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/sibenik/sibenik.obj");
-		//auto meshes = Merlin::ModelLoader::Load(assets, "assets/models/lion_crushing_a_serpent/scene.gltf");
+		//auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/teeth.ply");
+		//auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/sibenik/sibenik.obj");
+		auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/main_sponza/NewSponza_Main_glTF_003.gltf");
 
 		for (auto& [mesh, material] : meshes) {
 			auto entity = registry.CreateEntity();

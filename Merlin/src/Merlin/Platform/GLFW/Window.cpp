@@ -35,6 +35,9 @@ namespace Merlin {
 		MERLIN_CORE_INFO("OpenGL Version: {0}", glGetString(GL_VERSION));
 		MERLIN_CORE_INFO("GLSL Version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+		MERLIN_CORE_INFO("Vendor: {0}", glGetString(GL_VENDOR));
+		MERLIN_CORE_INFO("Renderer: {0}", glGetString(GL_RENDERER));
+
 		// bindings for input to events
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
 			Window& win = *(Window*)glfwGetWindowUserPointer(window);

@@ -4,6 +4,8 @@
 #include "MeshAsset.h"
 #include "TextureAsset.h"
 #include "Material.h"
+
+#include "Merlin/Core/Core.h"
 #include "Merlin/Core/Logger.h"
 
 #include <assimp/Importer.hpp>
@@ -22,10 +24,46 @@
 //	-> then we can try and figure out which parts below we can separate into threads
 
 namespace Merlin {
-	class ModelLoader {
+	class MERLIN_API ModelLoader {
 	public:
 		using MeshMaterialPair = std::pair<std::shared_ptr<MeshAsset>, Material>;
 
+		static std::vector<MeshMaterialPair> Load(AssetManager& assets, const std::string& path);
+
+	private:
+		static void ProcessNode(
+			AssetManager& assets,
+			aiNode* node,
+			const aiScene* scene,
+			const glm::mat4& parentTransform,
+			const std::string& modelPath,
+			const std::string& directory,
+			std::vector<MeshMaterialPair>& result
+		);
+
+		static MeshMaterialPair ProcessMesh(
+			AssetManager& assets,
+			aiMesh* mesh,
+			const aiScene* scene,
+			const glm::mat4& transform,
+			const std::string& modelPath,
+			const std::string& directory,
+			size_t meshIndex
+		);
+
+		static std::shared_ptr<TextureAsset> LoadTexture(
+			AssetManager& assets,
+			aiMaterial* mat,
+			aiTextureType type,
+			const std::string& directory,
+			TextureType texType
+		);
+
+		static glm::mat4 ConvertMatrix(const aiMatrix4x4& m);
+
+		/*
+	public:
+		/// deprecated below!!!!!
 		static std::vector<MeshMaterialPair> Load(AssetManager& assets, const std::string& path) {
 			std::vector<MeshMaterialPair> result;
 
@@ -185,6 +223,6 @@ namespace Merlin {
 				m.a3, m.b3, m.c3, m.d3,
 				m.a4, m.b4, m.c4, m.d4
 			);
-		}
+		}*/
 	};
 }
