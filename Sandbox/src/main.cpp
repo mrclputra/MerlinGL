@@ -50,6 +50,14 @@ public:
 	}
 };
 
+// todo:
+//	I recently watched a video by Handmade Hero on C++ classes
+//	I have decided not to use classes anymore and attempt at DOP
+//	first step would be simplifying my codebase by turning all classes into structs
+
+//	might make my life easier later down the line
+
+
 MERLIN_APP(
 	.WithWindow("Sandbox")
 	.AddLayer<SampleLayer>()
