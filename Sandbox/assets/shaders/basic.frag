@@ -11,7 +11,7 @@ uniform sampler2D u_Albedo;
 // this is a directional light, hardcoded
 // to be replaced with actual uniforms later on
 const vec3 lightDir = normalize(vec3(1.0, -1.0, 0.5));
-const vec3 lightColor = vec3(1.0, 1.0, 1.0);
+const vec3 lightColor = vec3(0.7);
 const float ambient = 0.15;
 
 void main() {
@@ -21,6 +21,7 @@ void main() {
     // diffuse
     float diff = max(dot(normal, -lightDir), 0.0);
 
-    vec3 result = albedo * (ambient + diff * lightColor);
+//    vec3 result = albedo * (ambient + diff * lightColor);
+    vec3 result = 1.0 * (ambient + diff * lightColor);
     FragColor = vec4(result, 1.0);
 }

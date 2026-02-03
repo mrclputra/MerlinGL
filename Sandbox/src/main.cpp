@@ -19,9 +19,9 @@ public:
 			ASSETS_DIR "shaders/basic.frag"
 		);
 
-		//auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/teeth.ply");
+		auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/teeth.ply");
 		//auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/sibenik/sibenik.obj");
-		auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/main_sponza/NewSponza_Main_glTF_003.gltf");
+		//auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/main_sponza/NewSponza_Main_glTF_003.gltf");
 
 		for (auto& [mesh, material] : meshes) {
 			auto entity = registry.CreateEntity();
@@ -49,6 +49,14 @@ public:
 		}
 	}
 };
+
+// todo:
+//	I recently watched a video by Handmade Hero on C++ classes
+//	I have decided not to use classes anymore and attempt at DOP
+//	first step would be simplifying my codebase by turning all classes into structs
+
+//	might make my life easier later down the line
+
 
 MERLIN_APP(
 	.WithWindow("Sandbox")
