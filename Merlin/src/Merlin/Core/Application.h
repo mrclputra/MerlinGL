@@ -39,6 +39,9 @@ namespace Merlin {
 
         LayerStack m_LayerStack;
 
+        // TODO: this is bad DOD, we should stop using classes
+        // we should start using structs instead
+
         std::unique_ptr<Window> m_Window;
         std::unique_ptr<GuiModule> m_GuiModule;
         std::unique_ptr<Registry> m_Registry;

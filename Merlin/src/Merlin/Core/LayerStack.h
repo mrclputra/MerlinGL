@@ -16,6 +16,7 @@ namespace Merlin {
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* layer);
 
+		// this looks like bad practice
 		std::vector<Layer*>::iterator begin() { return m_Layers.begin(); }
 		std::vector<Layer*>::iterator end() { return m_Layers.end(); }
 	protected:
