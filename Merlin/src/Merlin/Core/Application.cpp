@@ -44,25 +44,12 @@ namespace Merlin {
 			glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			// update ECS systems
-			m_Registry->Update(0.016f); // TODO: calculate actual delta time
-
 			m_Assets->ForEach<ShaderAsset>([](auto& shader) {
 				shader->checkHotReload();
-				});
+			});
 
-			// standard frames
-			for (Layer* layer : m_LayerStack)
-				layer->OnUpdate(0.016f);
-
-			// render pass
-			for (Layer* layer : m_LayerStack)
-				layer->OnRender();
-
-			// GUI Frames
 			m_GuiModule->BeginFrame();
-			for (Layer* layer : m_LayerStack)
-				layer->OnGuiRender();
+			m_Registry->Update(0.016f); // TODO: calculate actual delta time
 			m_GuiModule->EndFrame(m_Window->GetWidth(), m_Window->GetHeight());
 
 			/*AppRenderEvent renderEvent;
@@ -76,26 +63,14 @@ namespace Merlin {
 		EventBus::Get().Emit(event);
 		EventDispatcher dispatcher(event);
 
-		// system events, these are if we want to hardcode functionality to certain events
+		// system events, 
+		// these are if we want to hardcode functionality to certain events
 		dispatcher.Dispatch<WindowCloseEvent>(MERLIN_BIND_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(MERLIN_BIND_FN(OnWindowResize));
 
-		// let gui capture events first
 		m_GuiModule->OnEvent(event);
 		if (event.handled) return;
-
-		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
-			(*--it)->OnEvent(event);
-			if (event.handled)
-				break;
-		}
-	}
-
-	void Application::PushLayer(Layer* layer) {
-		m_LayerStack.PushLayer(layer);
-	}
-	void Application::PushOverlay(Layer* layer) {
-		m_LayerStack.PushOverlay(layer);
+		m_Registry->OnEvent(event);
 	}
 
 	// callback functions

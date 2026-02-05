@@ -15,26 +15,12 @@ namespace Merlin {
 		return *this;
 	}
 
-	ApplicationBuilder& ApplicationBuilder::AddLayer(Layer* layer) {
-		m_Layers.push_back(layer);
-		return *this;
-	}
-
-	ApplicationBuilder& ApplicationBuilder::AddOverlay(Layer* layer) {
-		m_Overlays.push_back(layer);
-		return *this;
-	}
-
 	Application* ApplicationBuilder::Build() {
 		WindowProps props(m_WindowConfig.title, m_WindowConfig.width, m_WindowConfig.height);
 		Application* app = new Application(props);
 
-		for (Layer* layer : m_Layers) {
-			app->PushLayer(layer);
-		}
-
-		for (Layer* overlay : m_Overlays) {
-			app->PushOverlay(overlay);
+		for (auto& factory : m_SystemFactories) {
+			factory(app->GetRegistry());
 		}
 
 		app->GetWindow().SetVSync(m_WindowConfig.vsync);

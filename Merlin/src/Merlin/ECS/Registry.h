@@ -18,6 +18,7 @@ namespace Merlin {
 		~Registry() = default;
 
 		void Update(float deltaTime);
+		void OnEvent(Event& event);
 
 		Registry(const Registry&) = delete;
 		Registry& operator=(const Registry&) = delete;

@@ -29,4 +29,11 @@ namespace Merlin {
 		}
 	}
 
+	void Registry::OnEvent(Event& event) {
+		for (auto it = m_Systems.rbegin(); it != m_Systems.rend(); ++it) {
+			(*it)->OnEvent(event);
+			if (event.handled) break;
+		}
+	}
+
 }

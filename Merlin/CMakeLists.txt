@@ -15,7 +15,6 @@ set(GLAD_SOURCE "${EXT_DIR}/glad/src/glad.c")
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory("${EXT_DIR}/glfw" EXCLUDE_FROM_ALL)
 add_subdirectory("${EXT_DIR}/assimp" EXCLUDE_FROM_ALL)
-add_subdirectory("${EXT_DIR}/imguifiledialog" EXCLUDE_FROM_ALL)
 
 # library
 add_library(MerlinEngine SHARED 
@@ -48,10 +47,8 @@ target_include_directories(MerlinEngine
         "${EXT_DIR}/imgui/backends"
 )
 
-target_include_directories(ImGuiFileDialog PUBLIC "${EXT_DIR}/imgui")
-
 # linking
-target_link_libraries(MerlinEngine PUBLIC glfw assimp::assimp ImGuiFileDialog)
+target_link_libraries(MerlinEngine PUBLIC glfw assimp::assimp)
 
 # ImGui is compiled into MerlinEngine, 
 # we need to ensure its symbols are visible

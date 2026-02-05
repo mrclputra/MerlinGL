@@ -3,7 +3,8 @@
 #include "mepch.h"
 #include "Core.h"
 #include "Application.h"
-#include "Layer.h"
+#include "Merlin/ECS/System.h"
+#include <functional>
 
 namespace Merlin {
 
@@ -18,33 +19,25 @@ namespace Merlin {
 	public:
 		ApplicationBuilder() = default;
 
-		// window configuration
 		ApplicationBuilder& WithWindow(const WindowConfig& config);
 		ApplicationBuilder& WithWindow(const std::string& title, uint32_t width = 1280, uint32_t height = 720);
 
-		// layer registration
-		ApplicationBuilder& AddLayer(Layer* layer);
-		ApplicationBuilder& AddOverlay(Layer* layer);
-
 		template<typename T, typename... Args>
-		ApplicationBuilder& AddLayer(Args&&... args) {
-			static_assert(std::is_base_of<Layer, T>::value, "T must derive from Layer");
-			return AddLayer(new T(std::forward<Args>(args)...));
+		ApplicationBuilder& AddSystem(Args&&... args) {
+			static_assert(std::is_base_of<System, T>::value, "T must derive from System");
+			m_SystemFactories.push_back([args = std::make_tuple(std::forward<Args>(args)...)](Registry& registry) mutable {
+				std::apply([&registry](auto&&... a) {
+					registry.AddSystem<T>(std::forward<decltype(a)>(a)...);
+				}, std::move(args));
+			});
+			return *this;
 		}
 
-		template<typename T, typename... Args>
-		ApplicationBuilder& AddOverlay(Args&&... args) {
-			static_assert(std::is_base_of<Layer, T>::value, "T must derive from Layer");
-			return AddOverlay(new T(std::forward<Args>(args)...));
-		}
-
-		// Build the application
 		Application* Build();
 
 	private:
 		WindowConfig m_WindowConfig;
-		std::vector<Layer*> m_Layers;
-		std::vector<Layer*> m_Overlays;
+		std::vector<std::function<void(Registry&)>> m_SystemFactories;
 	};
 
 }

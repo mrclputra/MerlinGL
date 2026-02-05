@@ -10,6 +10,3 @@
 [submodule "Merlin/external/imgui"]
 	path = Merlin/external/imgui
 	url = https://github.com/ocornut/imgui.git
-[submodule "Merlin/external/imguifiledialog"]
-	path = Merlin/external/imguifiledialog
-	url = https://github.com/aiekick/ImGuiFileDialog.git

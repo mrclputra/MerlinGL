@@ -1,15 +1,13 @@
 #pragma once
 #include <Merlin.h>
 
-class Editor : public Merlin::Layer {
+class EditorSystem : public Merlin::System {
 public:
-	Editor();
-	~Editor() = default;
+	EditorSystem();
+	~EditorSystem() = default;
 
 	void OnAttach() override;
 	void OnUpdate(float dt) override;
-	void OnRender() override;
-	void OnGuiRender() override;
 
 	static glm::vec2 GetViewportSize() { return s_ViewportSize; }
 
