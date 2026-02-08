@@ -1,4 +1,4 @@
-﻿project(MerlinEngine)
+project(MerlinEngine)
 
 set(EXT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external")
 
@@ -26,23 +26,15 @@ add_library(MerlinEngine SHARED
     "${EXT_DIR}/stb_image.cpp"
 )
 
-# generate export header,
-# for cross-platform symbol visibility
-include(GenerateExportHeader)
-generate_export_header(MerlinEngine
-    BASE_NAME MERLIN
-    EXPORT_MACRO_NAME MERLIN_API
-    EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/src/merlin_export.h"
-)
+target_compile_definitions(MerlinEngine PRIVATE MERLIN_BUILD_DLL)
 
-target_include_directories(MerlinEngine 
-    PUBLIC 
+target_include_directories(MerlinEngine
+    PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
-        "${CMAKE_CURRENT_BINARY_DIR}"
         "${EXT_DIR}/glm"
         "${EXT_DIR}/glad/include"
         "${EXT_DIR}/imgui"
-        "${EXT_DIR}"   
+        "${EXT_DIR}"
     PRIVATE
         "${EXT_DIR}/imgui/backends"
 )
@@ -62,7 +54,7 @@ if(WIN32)
 else()
     # use visibility attributes instead
     target_compile_definitions(MerlinEngine PUBLIC "IMGUI_API=__attribute__((visibility(\"default\")))")
-    
+
     # Set default visibility to hidden, but ImGui symbols will be visible due to IMGUI_API
     set_target_properties(MerlinEngine PROPERTIES
         CXX_VISIBILITY_PRESET hidden
@@ -74,7 +66,6 @@ target_compile_definitions(MerlinEngine PRIVATE
     IMGUI_IMPL_OPENGL_LOADER_CUSTOM  # disable imgui's loader
 )
 
-target_precompile_headers(MerlinEngine PRIVATE 
-    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_BINARY_DIR}/src/merlin_export.h>"
+target_precompile_headers(MerlinEngine PRIVATE
     "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/src/mepch.h>"
 )
