@@ -1,6 +1,17 @@
 #pragma once
 
-#include "src/merlin_export.h"
+#ifdef _WIN32
+	#ifdef MERLIN_BUILD_DLL
+		#define MERLIN_API __declspec(dllexport)
+	#elif defined(__INTELLISENSE__)
+		// special case cuz intellisense is stupid
+		#define MERLIN_API
+	#else
+		#define MERLIN_API __declspec(dllimport)
+	#endif
+#else
+	#define MERLIN_API
+#endif
 
 #define BIT(x) (1 << x)
 

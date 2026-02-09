@@ -1,61 +1,54 @@
 #include "Editor.h"
 #include <glad/glad.h>
 
-glm::vec2 Editor::s_ViewportSize = { 800, 600 };
+glm::vec2 EditorSystem::s_ViewportSize = { 800, 600 };
 
-Editor::Editor() : Merlin::Layer("Editor") {
+EditorSystem::EditorSystem() : Merlin::System("EditorSystem") {
 	auto logCallback = [](const std::string& msg) { Merlin::Console::AddLog(msg); };
 	Merlin::Logger::getCoreLogger().SetCallback(logCallback);
 	Merlin::Logger::getClientLogger().SetCallback(logCallback);
 }
 
-void Editor::OnAttach() {
+void EditorSystem::OnAttach() {
 	m_Framebuffer = std::make_unique<Merlin::Framebuffer>(800, 600);
 
-	auto& registry = Merlin::Application::Get().GetRegistry();
-
-	m_CameraEntity = registry.CreateEntity();
-	auto& transform = registry.AddComponent<Merlin::Transform>(m_CameraEntity);
+	m_CameraEntity = m_Registry->CreateEntity();
+	auto& transform = m_Registry->AddComponent<Merlin::Transform>(m_CameraEntity);
 	transform.position = glm::vec3(0.0f, 0.0f, 0.0f);
 	transform.rotation = glm::vec3(0.0f, -0.0f, 0.0f);
-	registry.AddComponent<Merlin::Camera>(m_CameraEntity);
+	m_Registry->AddComponent<Merlin::Camera>(m_CameraEntity);
 }
 
-void Editor::OnUpdate(float dt) {
-	if (!m_ViewportFocused) return;
+void EditorSystem::OnUpdate(float dt) {
+	if (m_ViewportFocused) {
+		auto& transform = m_Registry->GetComponent<Merlin::Transform>(m_CameraEntity);
+		auto& camera = m_Registry->GetComponent<Merlin::Camera>(m_CameraEntity);
 
-	auto& registry = Merlin::Application::Get().GetRegistry();
-	auto& transform = registry.GetComponent<Merlin::Transform>(m_CameraEntity);
-	auto& camera = registry.GetComponent<Merlin::Camera>(m_CameraEntity);
+		float speed = 1.0f * dt;
+		glm::vec3 front = camera.GetFront(transform);
+		glm::vec3 right = camera.GetRight(transform);
 
-	float speed = 1.0f * dt;
-	glm::vec3 front = camera.GetFront(transform);
-	glm::vec3 right = camera.GetRight(transform);
+		if (Merlin::Input::IsKeyPressed(GLFW_KEY_W)) transform.position += front * speed;
+		if (Merlin::Input::IsKeyPressed(GLFW_KEY_S)) transform.position -= front * speed;
+		if (Merlin::Input::IsKeyPressed(GLFW_KEY_A)) transform.position -= right * speed;
+		if (Merlin::Input::IsKeyPressed(GLFW_KEY_D)) transform.position += right * speed;
+		if (Merlin::Input::IsKeyPressed(GLFW_KEY_E)) transform.position.y += speed;
+		if (Merlin::Input::IsKeyPressed(GLFW_KEY_Q)) transform.position.y -= speed;
 
-	if (Merlin::Input::IsKeyPressed(GLFW_KEY_W)) transform.position += front * speed;
-	if (Merlin::Input::IsKeyPressed(GLFW_KEY_S)) transform.position -= front * speed;
-	if (Merlin::Input::IsKeyPressed(GLFW_KEY_A)) transform.position -= right * speed;
-	if (Merlin::Input::IsKeyPressed(GLFW_KEY_D)) transform.position += right * speed;
-	if (Merlin::Input::IsKeyPressed(GLFW_KEY_E)) transform.position.y += speed;
-	if (Merlin::Input::IsKeyPressed(GLFW_KEY_Q)) transform.position.y -= speed;
+		glm::vec2 mousePos(Merlin::Input::GetMouseX(), Merlin::Input::GetMouseY());
 
-	glm::vec2 mousePos(Merlin::Input::GetMouseX(), Merlin::Input::GetMouseY());
-
-	if (Merlin::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-		glm::vec2 delta = mousePos - m_LastMousePos;
-		transform.rotation.y += delta.x * 0.1f;
-		transform.rotation.x -= delta.y * 0.1f;
-		transform.rotation.x = glm::clamp(transform.rotation.x, -89.0f, 89.0f);
+		if (Merlin::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+			glm::vec2 delta = mousePos - m_LastMousePos;
+			transform.rotation.y += delta.x * 0.1f;
+			transform.rotation.x -= delta.y * 0.1f;
+			transform.rotation.x = glm::clamp(transform.rotation.x, -89.0f, 89.0f);
+		}
+		m_LastMousePos = mousePos;
 	}
-	m_LastMousePos = mousePos;
-}
 
-void Editor::OnRender() {
-	auto& renderSystem = Merlin::Application::Get().GetRegistry().GetSystem<Merlin::RenderSystem>();
+	auto& renderSystem = m_Registry->GetSystem<Merlin::RenderSystem>();
 	renderSystem.Render(*m_Framebuffer);
-}
 
-void Editor::OnGuiRender() {
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Exit", "Alt+F4")) {
@@ -67,7 +60,6 @@ void Editor::OnGuiRender() {
 	}
 
 	ImGuiID dockspace_id = ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(),
-		//ImGuiDockNodeFlags_PassthruCentralNode |
 		ImGuiDockNodeFlags_NoTabBar
 	);
 
@@ -109,19 +101,16 @@ void Editor::OnGuiRender() {
 	m_Console.Render();
 }
 
-void Editor::RenderStatsPanel() {
+void EditorSystem::RenderStatsPanel() {
 	ImGui::Begin("Stats");
 
 	m_Profiler.Render();
 	ImGui::Separator();
 
-	auto& registry = Merlin::Application::Get().GetRegistry();
-
-	// entity and component counts
-	size_t entityCount = registry.GetEntityCount();
-	size_t transformCount = registry.GetEntitiesWithComponent<Merlin::Transform>().size();
-	size_t cameraCount = registry.GetEntitiesWithComponent<Merlin::Camera>().size();
-	size_t meshRendererCount = registry.GetEntitiesWithComponent<Merlin::MeshRenderer>().size();
+	size_t entityCount = m_Registry->GetEntityCount();
+	size_t transformCount = m_Registry->GetEntitiesWithComponent<Merlin::Transform>().size();
+	size_t cameraCount = m_Registry->GetEntitiesWithComponent<Merlin::Camera>().size();
+	size_t meshRendererCount = m_Registry->GetEntitiesWithComponent<Merlin::MeshRenderer>().size();
 
 	ImGui::Text("Entities: %zu", entityCount);
 	ImGui::Text("  Transform: %zu", transformCount);
@@ -130,9 +119,8 @@ void Editor::RenderStatsPanel() {
 
 	ImGui::Separator();
 
-	// camera info
-	if (registry.HasComponent<Merlin::Transform>(m_CameraEntity)) {
-		auto& camTransform = registry.GetComponent<Merlin::Transform>(m_CameraEntity);
+	if (m_Registry->HasComponent<Merlin::Transform>(m_CameraEntity)) {
+		auto& camTransform = m_Registry->GetComponent<Merlin::Transform>(m_CameraEntity);
 		ImGui::Text("Camera Position");
 		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "  %.2f, %.2f, %.2f",
 			camTransform.position.x, camTransform.position.y, camTransform.position.z);
@@ -140,7 +128,6 @@ void Editor::RenderStatsPanel() {
 
 	ImGui::Separator();
 
-	// settings
 	bool vsync = Merlin::Application::Get().GetWindow().IsVSync();
 	if (ImGui::Checkbox("VSync", &vsync)) {
 		Merlin::Application::Get().GetWindow().SetVSync(vsync);
@@ -151,25 +138,21 @@ void Editor::RenderStatsPanel() {
 	ImGui::End();
 }
 
-void Editor::RenderInspectorPanel() {
+void EditorSystem::RenderInspectorPanel() {
 	ImGui::Begin("Inspector");
 
-	auto& registry = Merlin::Application::Get().GetRegistry();
-
 	if (ImGui::TreeNodeEx("Scene", ImGuiTreeNodeFlags_DefaultOpen)) {
-		// entities
 		if (ImGui::TreeNodeEx("Entities", ImGuiTreeNodeFlags_DefaultOpen)) {
-			for (Merlin::EntityID entityID : registry.GetAllEntities()) {
+			for (Merlin::EntityID entityID : m_Registry->GetAllEntities()) {
 				ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 				if (entityID == m_SelectedEntity) {
 					nodeFlags |= ImGuiTreeNodeFlags_Selected;
 				}
 
-				// build label
 				std::string components;
-				if (registry.HasComponent<Merlin::Transform>(entityID)) components += "T";
-				if (registry.HasComponent<Merlin::Camera>(entityID)) components += "C";
-				if (registry.HasComponent<Merlin::MeshRenderer>(entityID)) components += "M";
+				if (m_Registry->HasComponent<Merlin::Transform>(entityID)) components += "T";
+				if (m_Registry->HasComponent<Merlin::Camera>(entityID)) components += "C";
+				if (m_Registry->HasComponent<Merlin::MeshRenderer>(entityID)) components += "M";
 
 				char label[64];
 				snprintf(label, sizeof(label), "Entity %llu [%s]", entityID, components.c_str());
@@ -183,10 +166,9 @@ void Editor::RenderInspectorPanel() {
 				if (nodeOpen) {
 					ImGuiTreeNodeFlags subFlags = ImGuiTreeNodeFlags_DefaultOpen;
 
-					// Transform component
-					if (registry.HasComponent<Merlin::Transform>(entityID)) {
+					if (m_Registry->HasComponent<Merlin::Transform>(entityID)) {
 						if (ImGui::TreeNodeEx("Transform", subFlags)) {
-							auto& transform = registry.GetComponent<Merlin::Transform>(entityID);
+							auto& transform = m_Registry->GetComponent<Merlin::Transform>(entityID);
 
 							ImGui::Text("Position");
 							ImGui::SetNextItemWidth(200.0f);
@@ -204,10 +186,9 @@ void Editor::RenderInspectorPanel() {
 						}
 					}
 
-					// Camera component
-					if (registry.HasComponent<Merlin::Camera>(entityID)) {
+					if (m_Registry->HasComponent<Merlin::Camera>(entityID)) {
 						if (ImGui::TreeNodeEx("Camera", subFlags)) {
-							auto& camera = registry.GetComponent<Merlin::Camera>(entityID);
+							auto& camera = m_Registry->GetComponent<Merlin::Camera>(entityID);
 
 							ImGui::Text("FOV");
 							ImGui::SetNextItemWidth(140.0f);
@@ -227,12 +208,10 @@ void Editor::RenderInspectorPanel() {
 						}
 					}
 
-					// MeshRenderer component
-					if (registry.HasComponent<Merlin::MeshRenderer>(entityID)) {
+					if (m_Registry->HasComponent<Merlin::MeshRenderer>(entityID)) {
 						if (ImGui::TreeNodeEx("MeshRenderer", subFlags)) {
-							auto& meshRenderer = registry.GetComponent<Merlin::MeshRenderer>(entityID);
+							auto& meshRenderer = m_Registry->GetComponent<Merlin::MeshRenderer>(entityID);
 
-							// Material properties
 							if (ImGui::TreeNodeEx("Material", subFlags)) {
 								ImGui::Text("Albedo");
 								ImGui::ColorEdit4("##Albedo", &meshRenderer.material.albedo[0]);
@@ -245,7 +224,6 @@ void Editor::RenderInspectorPanel() {
 								ImGui::SetNextItemWidth(140.0f);
 								ImGui::SliderFloat("##Roughness", &meshRenderer.material.roughness, 0.0f, 1.0f);
 
-								// texture info
 								if (meshRenderer.material.hasAlbedoMap()) {
 									ImGui::TextColored(ImVec4(0.5f, 0.8f, 0.5f, 1.0f), "Albedo Map: Yes");
 								}

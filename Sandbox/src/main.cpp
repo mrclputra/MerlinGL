@@ -3,15 +3,14 @@
 
 #include "Editor.h"
 
-class SampleLayer : public Merlin::Layer {
+class SampleSystem : public Merlin::System {
 public:
-	SampleLayer() : Layer("SampleLayer") {}
+	SampleSystem() : System("SampleSystem") {}
 
 	void OnAttach() override {
-		auto& registry = Merlin::Application::Get().GetRegistry();
 		auto& assets = Merlin::Application::Get().GetAssets();
 
-		registry.AddSystem<Merlin::RenderSystem>();
+		m_Registry->AddSystem<Merlin::RenderSystem>();
 
 		auto shader = assets.Load<Merlin::ShaderAsset>(
 			"basic",
@@ -20,18 +19,14 @@ public:
 		);
 
 		auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/teeth.ply");
-		//auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/sibenik/sibenik.obj");
-		//auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/main_sponza/NewSponza_Main_glTF_003.gltf");
 
 		for (auto& [mesh, material] : meshes) {
-			auto entity = registry.CreateEntity();
+			auto entity = m_Registry->CreateEntity();
 
-			auto& transform = registry.AddComponent<Merlin::Transform>(entity);
-			//transform.scale = glm::vec3(1.0f);
+			auto& transform = m_Registry->AddComponent<Merlin::Transform>(entity);
 			transform.scale = glm::vec3(0.1f);
-			//transform.rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
 
-			auto& meshRenderer = registry.AddComponent<Merlin::MeshRenderer>(entity, mesh, shader);
+			auto& meshRenderer = m_Registry->AddComponent<Merlin::MeshRenderer>(entity, mesh, shader);
 			meshRenderer.material = material;
 		}
 	}
@@ -45,21 +40,13 @@ public:
 					Merlin::Application::Get().OnEvent(closeEvent);
 				}
 				return false;
-				});
+			});
 		}
 	}
 };
 
-// todo:
-//	I recently watched a video by Handmade Hero on C++ classes
-//	I have decided not to use classes anymore and attempt at DOP
-//	first step would be simplifying my codebase by turning all classes into structs
-
-//	might make my life easier later down the line
-
-
 MERLIN_APP(
 	.WithWindow("Sandbox")
-	.AddLayer<SampleLayer>()
-	.AddOverlay<Editor>()
+	.AddSystem<SampleSystem>()
+	.AddSystem<EditorSystem>()
 )

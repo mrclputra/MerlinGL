@@ -6,7 +6,6 @@
 // Core
 #include <Merlin/Core/Application.h>
 #include <Merlin/Core/ApplicationBuilder.h>
-#include <Merlin/Core/Layer.h>
 #include <Merlin/Core/Logger.h>
 #include <Merlin/Platform/GLFW/GLFWInput.h>
 
