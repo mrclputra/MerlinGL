@@ -20,6 +20,7 @@ public:
 
 		auto meshes = Merlin::ModelLoader::Load(assets, ASSETS_DIR "models/teeth.ply");
 
+		// todo: implement bundles
 		for (auto& [mesh, material] : meshes) {
 			auto entity = m_Registry->CreateEntity();
 

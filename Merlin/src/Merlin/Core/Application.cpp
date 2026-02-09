@@ -8,6 +8,8 @@ namespace Merlin {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application() {
+		// todo: if we plan on implementing different windowing APIs,
+		//	we should implement proper windowing abstractions
 		Init(WindowProps());
 	}
 
@@ -18,7 +20,7 @@ namespace Merlin {
 	void Application::Init(const WindowProps& windowProps) {
 		s_Instance = this;
 		m_Window = std::make_unique<Window>(windowProps);
-		m_Window->SetEventCallback(MERLIN_BIND_FN(OnEvent));
+		m_Window->SetEventCallback([this](Event& e) { OnEvent(e); });
 
 		Input::Init(m_Window->GetNativeWindow());
 		m_GuiModule = std::make_unique<GuiModule>(m_Window->GetNativeWindow());
@@ -65,8 +67,8 @@ namespace Merlin {
 
 		// system events, 
 		// these are if we want to hardcode functionality to certain events
-		dispatcher.Dispatch<WindowCloseEvent>(MERLIN_BIND_FN(OnWindowClose));
-		dispatcher.Dispatch<WindowResizeEvent>(MERLIN_BIND_FN(OnWindowResize));
+		dispatcher.Dispatch<WindowCloseEvent>([this](auto& e) { return OnWindowClose(e); });
+		dispatcher.Dispatch<WindowResizeEvent>([this](auto& e) { return OnWindowResize(e); });
 
 		m_GuiModule->OnEvent(event);
 		if (event.handled) return;

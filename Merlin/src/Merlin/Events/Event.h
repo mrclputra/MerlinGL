@@ -13,7 +13,7 @@ namespace Merlin {
 		AppTick, AppUpdate, AppRender,
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
-		Log
+		Log // this is unused
 	};
 
 	enum EventCategory {
@@ -23,8 +23,6 @@ namespace Merlin {
 		EventCategoryKeyboard       = BIT(2),
 		EventCategoryMouse          = BIT(3),
 	};
-
-	// todo: implement categorical events
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\

@@ -15,6 +15,8 @@
 
 #define BIT(x) (1 << x)
 
+/// deprecated, derived from Hazel
+/// use lambdas instead
 // bind a member function to this instance for event callbacks
 #define MERLIN_BIND_FN(fn) [this](auto&&... args) -> decltype(auto) { \
 	return this->fn(std::forward<decltype(args)>(args)...); \

@@ -1,8 +1,10 @@
 #include "ModelLoader.h"
 
-// todo make this threaded or something
+// todo: make this threaded or something
 
 namespace Merlin {
+	// todo: implement Bevy-like bundles
+	//	current form might cause issues later down the line
 	using MeshMaterialPair = std::pair<std::shared_ptr<MeshAsset>, Material>;
 
 	std::vector<MeshMaterialPair> ModelLoader::Load(AssetManager& assets, const std::string& path) {
