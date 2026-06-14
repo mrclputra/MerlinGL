@@ -1,8 +1,11 @@
 #include <spdlog/spdlog.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <iostream>
 
 #include "utils.h"
+#include "Core/Application.h"
 
 int main() {
     // configure logger
@@ -15,7 +18,10 @@ int main() {
 
     // some notes
     // - this is a rewrite of the engine, use ../.src/ for old system reference
-    // - for now all api calls should be done on main, I can turn it into a library later down the line once everything is in place
+    // - I can turn it into a library later down the line once everything is in place
+
+    auto app = Merlin::Application();
+    app.run();
 
     return 0;
 }

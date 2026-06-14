@@ -10,6 +10,8 @@ find_package(imgui CONFIG REQUIRED)
 add_executable(MerlinEngine
         src/main.cpp
         src/utils.h
+        src/Core/Application.cpp
+        src/Core/Application.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE
