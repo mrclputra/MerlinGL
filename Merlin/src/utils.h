@@ -3,20 +3,20 @@
 
 namespace utils {
 
-    constexpr const char* getPlatformName() {
+constexpr const char *getPlatformName() {
 #if defined(_WIN32)
-        return "Windows";
+   return "Windows";
 #elif defined(__APPLE__) && defined(__MACH__)
-        return "macOS";
+   return "macOS";
 #elif defined(__linux__)
-        return "Linux";
+   return "Linux";
 #elif defined(__FreeBSD__)
-        return "FreeBSD";
+   return "FreeBSD";
 #else
-        return "Unknown Platform";
+   return "Unknown Platform";
 #endif
-    }
+}
 
-};
+}; // namespace utils
 
-#endif //MERLINGL_UTILS_H
+#endif // MERLINGL_UTILS_H
