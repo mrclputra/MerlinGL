@@ -9,7 +9,9 @@ public:
 
    static ImGuiContext *GetContext();
 
-   static void Draw(unsigned int windowWidth, unsigned int windowHeight);
+   void Draw(unsigned int windowWidth, unsigned int windowHeight);
+private:
+   std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> m_RingSink;
 };
 } // namespace Merlin
 

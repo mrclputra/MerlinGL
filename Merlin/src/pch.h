@@ -6,6 +6,9 @@
 #include <glm/glm.hpp>
 
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/ringbuffer_sink.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <imgui.h>
 
 #include <memory>

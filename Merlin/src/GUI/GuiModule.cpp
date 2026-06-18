@@ -20,6 +20,14 @@ GuiModule::GuiModule(void *native_window) {
    ImGui_ImplGlfw_InitForOpenGL(window, true);
    ImGui_ImplOpenGL3_Init("#version 460");
 
+   // get logger
+   for (auto& sink : spdlog::default_logger()->sinks()) {
+      if (auto rb = std::dynamic_pointer_cast<spdlog::sinks::ringbuffer_sink_mt>(sink)) {
+         m_RingSink = rb;
+         break;
+      }
+   }
+
    SPDLOG_INFO("IMGUI initialized");
 }
 
@@ -45,7 +53,21 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    io.DisplaySize.y = static_cast<float>(windowHeight);
 
    // todo: add imgui drawcalls here
-   ImGui::ShowDemoWindow();
+   // ImGui::ShowDemoWindow();
+
+   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+   ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);
+   ImGui::SetNextWindowBgAlpha(0.0f);
+   ImGui::Begin("##log", nullptr,
+      ImGuiWindowFlags_NoDecoration |
+      ImGuiWindowFlags_NoInputs |
+      ImGuiWindowFlags_AlwaysAutoResize |
+      ImGuiWindowFlags_NoNav
+   );
+   for (auto& msg : m_RingSink->last_formatted())
+      ImGui::TextUnformatted(msg.c_str());
+   ImGui::End();
+   ImGui::PopStyleVar();
    // end draw calls
 
    ImGui::Render();
