@@ -1,4 +1,5 @@
 # put stuff to gitignore here
+.idea/
 .vs/
 build/
 Sandbox/assets/models/

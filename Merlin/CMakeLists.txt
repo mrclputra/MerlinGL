@@ -12,6 +12,8 @@ add_executable(MerlinEngine
         src/utils.h
         src/Core/Application.cpp
         src/Core/Application.h
+        src/GUI/GuiModule.cpp
+        src/GUI/GuiModule.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE

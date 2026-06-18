@@ -16,6 +16,8 @@ Application::Application() {
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
+    guiModule = std::make_unique<GuiModule>(window);
+
     SPDLOG_INFO("application initialized");
 }
 
@@ -31,7 +33,14 @@ void Application::run() {
 
         glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
+
+        GuiModule::BeginFrame();
+
+        int width, height;
+        glfwGetWindowSize(window, &width, &height); // this is bad, we need that window class
+        guiModule->EndFrame(width, height);
+
+        glfwSwapBuffers(window); // todo: move window management to it's own class/module
     }
 }
 
