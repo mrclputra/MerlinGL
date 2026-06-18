@@ -1,8 +1,6 @@
 #ifndef MERLINGL_GUIMODULE_H
 #define MERLINGL_GUIMODULE_H
 
-#include <imgui.h>
-
 namespace Merlin {
 class GuiModule {
 public:
@@ -11,8 +9,7 @@ public:
 
    static ImGuiContext *GetContext();
 
-   static void BeginFrame();
-   static void EndFrame(unsigned int width, unsigned int height);
+   static void Draw(unsigned int windowWidth, unsigned int windowHeight);
 };
 } // namespace Merlin
 

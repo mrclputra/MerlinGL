@@ -14,6 +14,9 @@ add_executable(MerlinEngine
         src/Core/Application.h
         src/GUI/GuiModule.cpp
         src/GUI/GuiModule.h
+        src/Core/Window.cpp
+        src/Core/Window.h
+        src/pch.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE
@@ -28,3 +31,5 @@ target_link_libraries(MerlinEngine PRIVATE
 target_include_directories(MerlinEngine PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
+
+target_precompile_headers(MerlinEngine PRIVATE src/pch.h)

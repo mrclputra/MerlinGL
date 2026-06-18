@@ -1,13 +1,7 @@
-#include <spdlog/spdlog.h>
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-
-#include <iostream>
-
 #include "Core/Application.h"
 #include "utils.h"
+
+#include "pch.h"
 
 int main() {
    // configure logger
@@ -24,7 +18,7 @@ int main() {
    // - I can turn it into a library later down the line once everything is in
    // place
 
-   auto app = Merlin::Application();
+   auto app = Merlin::Application("MerlinGL", 1280, 720);
    app.run();
 
    return 0;

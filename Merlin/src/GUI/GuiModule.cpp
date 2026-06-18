@@ -35,18 +35,18 @@ ImGuiContext *GuiModule::GetContext() {
    return ImGui::GetCurrentContext();
 }
 
-void GuiModule::BeginFrame() {
+void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHeight) {
    ImGui_ImplOpenGL3_NewFrame();
    ImGui_ImplGlfw_NewFrame();
    ImGui::NewFrame();
-}
 
-void GuiModule::EndFrame(const unsigned int width, const unsigned int height) {
    ImGuiIO &io = ImGui::GetIO();
-   io.DisplaySize =
-      ImVec2(static_cast<float>(width), static_cast<float>(height));
+   io.DisplaySize.x = static_cast<float>(windowWidth);
+   io.DisplaySize.y = static_cast<float>(windowHeight);
 
+   // todo: add imgui drawcalls here
    ImGui::ShowDemoWindow();
+   // end draw calls
 
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
