@@ -1,10 +1,9 @@
 #include "GuiModule.h"
 
-#include <spdlog/spdlog.h>
-
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <spdlog/spdlog.h>
 
 namespace Merlin {
 GuiModule::GuiModule(void *native_window) {
@@ -21,7 +20,7 @@ GuiModule::GuiModule(void *native_window) {
    ImGui_ImplOpenGL3_Init("#version 460");
 
    // get logger
-   for (auto& sink : spdlog::default_logger()->sinks()) {
+   for (auto &sink : spdlog::default_logger()->sinks()) {
       if (auto rb = std::dynamic_pointer_cast<spdlog::sinks::ringbuffer_sink_mt>(sink)) {
          m_RingSink = rb;
          break;
@@ -58,13 +57,8 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
    ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);
    ImGui::SetNextWindowBgAlpha(0.0f);
-   ImGui::Begin("##log", nullptr,
-      ImGuiWindowFlags_NoDecoration |
-      ImGuiWindowFlags_NoInputs |
-      ImGuiWindowFlags_AlwaysAutoResize |
-      ImGuiWindowFlags_NoNav
-   );
-   for (auto& msg : m_RingSink->last_formatted())
+   ImGui::Begin("##log", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav);
+   for (auto &msg : m_RingSink->last_formatted())
       ImGui::TextUnformatted(msg.c_str());
    ImGui::End();
    ImGui::PopStyleVar();
@@ -73,4 +67,4 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
-} // namespace Merlin
+}  // namespace Merlin

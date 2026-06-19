@@ -16,7 +16,14 @@ add_executable(MerlinEngine
         src/GUI/GuiModule.h
         src/Core/Window.cpp
         src/Core/Window.h
-        src/pch.h
+        src/Engine/Framebuffer.cpp
+        src/Engine/Framebuffer.h
+        src/Engine/Renderer.cpp
+        src/Engine/Renderer.h
+        src/Engine/Camera.cpp
+        src/Engine/Camera.h
+        src/Engine/Shader.cpp
+        src/Engine/Shader.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE

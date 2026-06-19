@@ -2,7 +2,6 @@
 #define MERLINGL_UTILS_H
 
 namespace utils {
-
 constexpr const char *getPlatformName() {
 #if defined(_WIN32)
    return "Windows";
@@ -16,7 +15,6 @@ constexpr const char *getPlatformName() {
    return "Unknown Platform";
 #endif
 }
+};  // namespace utils
 
-}; // namespace utils
-
-#endif // MERLINGL_UTILS_H
+#endif  // MERLINGL_UTILS_H

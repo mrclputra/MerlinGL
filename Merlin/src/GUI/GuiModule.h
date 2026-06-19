@@ -3,16 +3,17 @@
 
 namespace Merlin {
 class GuiModule {
-public:
-   GuiModule(void *native_window); // requires the glfw window to attach to
+ public:
+   GuiModule(void *native_window);  // requires the glfw window to attach to
    ~GuiModule();
 
    static ImGuiContext *GetContext();
 
    void Draw(unsigned int windowWidth, unsigned int windowHeight);
-private:
+
+ private:
    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> m_RingSink;
 };
-} // namespace Merlin
+}  // namespace Merlin
 
-#endif // MERLINGL_GUIMODULE_H
+#endif  // MERLINGL_GUIMODULE_H

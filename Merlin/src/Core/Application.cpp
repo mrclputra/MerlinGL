@@ -4,7 +4,7 @@
 
 using namespace Merlin;
 
-Application::Application(const std::string& title, int width, int height) {
+Application::Application(const std::string &title, int width, int height) {
    SPDLOG_INFO("initializing application");
 
    m_Window = std::make_unique<Window>(title, width, height);
