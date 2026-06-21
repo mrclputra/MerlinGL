@@ -25,11 +25,13 @@ void Renderer::initialize() {
 
    // setup camera
 
-   // debug triangle, note these are in NDC coords cuz no transforms are applied in shader
+   // debug triangle,
+   // note that these are in NDC coords bcs no transformations are applied in shader
    float vertices[] = {
-       -0.5f, -0.5f, 0.0f,
-       0.5f, -0.5f, 0.0f,
-       0.0f, 0.5f, 0.0f};
+       -0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
+       0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,
+       0.0f, 0.5f, 0.0f,       0.0f, 0.0f, 1.0f
+   };
 
    glGenVertexArrays(1, &m_VAO);
    glGenBuffers(1, &m_VBO);
@@ -39,9 +41,12 @@ void Renderer::initialize() {
    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-   // attribute 0, position
-   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+   // position attribute
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
    glEnableVertexAttribArray(0);
+   // color attribute
+   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+   glEnableVertexAttribArray(1);
 
    glBindVertexArray(0);
 }

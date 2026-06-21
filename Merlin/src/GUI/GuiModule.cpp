@@ -51,6 +51,8 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    io.DisplaySize.x = static_cast<float>(windowWidth);
    io.DisplaySize.y = static_cast<float>(windowHeight);
 
+   // opengl viewport
+   // todo: in the future implement gui class modules like QT
    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
    ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -67,10 +69,11 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    ImGui::End();
    ImGui::PopStyleVar(2);
 
+    // logger
    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
    ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);
    ImGui::SetNextWindowBgAlpha(0.0f);
-   ImGui::Begin("##log", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav);
+   ImGui::Begin("Log", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav);
    for (auto &msg : m_RingSink->last_formatted())
       ImGui::TextUnformatted(msg.c_str());
    ImGui::End();
