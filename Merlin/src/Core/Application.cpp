@@ -9,6 +9,7 @@ Application::Application(const std::string &title, int width, int height) {
 
    m_Window = std::make_unique<Window>(title, width, height);
    m_GuiModule = std::make_unique<GuiModule>(m_Window->getNative());
+   m_Renderer = std::make_unique<Renderer>(width, height);
 
    SPDLOG_INFO("application initialized");
 }
@@ -23,10 +24,14 @@ void Application::run() {
    while (!m_Window->shouldClose()) {
       m_Window->pollEvents();
 
-      glClearColor(0.1, 0.1, 0.1, 1.0);
+      m_Renderer->render();
+
+      // glViewport(0, 0, m_Window->getWidth(), m_Window->getHeight());
+      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      m_GuiModule->Draw(m_Window->getWidth(), m_Window->getHeight());
+      m_GuiModule->Draw(m_Window->getWidth(), m_Window->getHeight(), m_Renderer->framebuffer->colorAttachments[0]);
+      m_Renderer->resize(static_cast<int>(m_GuiModule->viewportWidth), static_cast<int>(m_GuiModule->viewportHeight));
 
       m_Window->swapBuffers();
    }

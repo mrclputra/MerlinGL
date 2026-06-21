@@ -91,8 +91,10 @@ GLuint Shader::compile(GLenum type, const std::string &source) const {
 // TODO: move to a global utils file
 std::string Shader::readFile(const std::string &path) {
    std::ifstream file(path);
-   if (!file)
+   if (!file) {
+      SPDLOG_ERROR("Could not open file: {}", path);
       throw std::runtime_error("Could not open file: " + path);
+   }
    std::stringstream ss;
    ss << file.rdbuf();
    return ss.str();

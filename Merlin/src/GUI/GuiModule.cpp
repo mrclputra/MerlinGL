@@ -42,7 +42,7 @@ ImGuiContext *GuiModule::GetContext() {
    return ImGui::GetCurrentContext();
 }
 
-void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHeight) {
+void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHeight, uint32_t sceneTexture) {
    ImGui_ImplOpenGL3_NewFrame();
    ImGui_ImplGlfw_NewFrame();
    ImGui::NewFrame();
@@ -51,8 +51,21 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    io.DisplaySize.x = static_cast<float>(windowWidth);
    io.DisplaySize.y = static_cast<float>(windowHeight);
 
-   // todo: add imgui drawcalls here
-   // ImGui::ShowDemoWindow();
+   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+   ImGui::SetNextWindowPos(ImVec2(0, 0));
+   ImGui::SetNextWindowSize(io.DisplaySize);
+   ImGui::Begin("Viewport", nullptr,
+      ImGuiWindowFlags_NoDecoration |
+      ImGuiWindowFlags_NoMove |
+      ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoBringToFrontOnFocus);
+   ImVec2 size = ImGui::GetContentRegionAvail();
+   viewportWidth = size.x;
+   viewportHeight = size.y;
+   ImGui::Image(sceneTexture, size, ImVec2(0, 1), ImVec2(1, 0));
+   ImGui::End();
+   ImGui::PopStyleVar(2);
 
    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
    ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);

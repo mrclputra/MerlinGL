@@ -22,15 +22,15 @@ class Framebuffer {
    Framebuffer(const FramebufferSpec &spec);
    ~Framebuffer();
    void Bind() const;
-   static void Unbind();
+   void Unbind();
    void Resize(uint32_t width, uint32_t height);
 
- private:
-   FramebufferSpec m_Spec;
-   std::vector<uint32_t> m_ColorAttachments;
-   uint32_t m_FBO = 0;
-   uint32_t m_DepthRBO = 0;
+   FramebufferSpec spec;
+   std::vector<uint32_t> colorAttachments;
+   uint32_t fbo = 0;
+   uint32_t depthRBO = 0;
 
+ private:
    void Create();
    void Delete();
 };

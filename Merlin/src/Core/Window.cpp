@@ -8,9 +8,11 @@ Window::Window(const std::string &title, const int width, const int height) {
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   m_Window = glfwCreateWindow(1280, 720, title.c_str(), nullptr, nullptr);
+   m_Window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
    glfwMakeContextCurrent(m_Window);
    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+   glfwGetFramebufferSize(m_Window, &m_Width, &m_Height);
 
    // setup size callback
    glfwSetWindowUserPointer(m_Window, this);

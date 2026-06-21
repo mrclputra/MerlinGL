@@ -9,7 +9,10 @@ class GuiModule {
 
    static ImGuiContext *GetContext();
 
-   void Draw(unsigned int windowWidth, unsigned int windowHeight);
+   void Draw(unsigned int windowWidth, unsigned int windowHeight, uint32_t sceneTexture);
+
+   float viewportWidth;
+   float viewportHeight;
 
  private:
    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> m_RingSink;
