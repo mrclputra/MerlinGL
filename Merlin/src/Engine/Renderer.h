@@ -21,6 +21,7 @@ class Renderer {
    int m_Height;
    uint32_t m_VAO = 0;
    uint32_t m_VBO = 0;
+   uint32_t m_EBO = 0;
 };
 }  // namespace Merlin
 
