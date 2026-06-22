@@ -6,8 +6,8 @@ namespace Merlin {
 
 Camera::Camera(glm::vec3 position) {
    m_Position = position;
-   // todo: width and height currently hardcoded, we need to pass them in from window management
-   //    use the setViewport function
+   m_Yaw = -135.0f;
+   m_Pitch = -35.3f;
    SPDLOG_INFO("camera created; {}x{}", m_ViewportWidth, m_ViewportHeight);
    updateVectors();  // init
 }

@@ -24,12 +24,13 @@ void Renderer::initialize() {
    framebuffer = std::make_shared<Framebuffer>(fbSpec);
 
    // setup camera
+   camera = std::make_shared<Camera>(glm::vec3(3.0f, 3.0f, 3.0f));
 
    // debug pyramid,
    // note that these are in NDC coords bcs no transformations are applied in shader
    float vertices[] = {
       // position           // color
-      -0.5f, -0.7f, -0.5f,   1.0f, 0.0f, 0.0f, // Base BL
+      -0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f, // Base BL
        0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f, // Base BR
        0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f, // Base TR
       -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f, // Base TL
@@ -77,13 +78,16 @@ void Renderer::render() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // update camera
-   // bind shader
-   // upload shader uniforms
-   // render meshes
-   // unbind shader
+   // camera->update(); // todo: configure delta from keyboard input somehow
 
    // debug
    shader->bind();
+
+   // upload shader uniforms
+   shader->setMat4("view", camera->getViewMatrix());
+   shader->setMat4("projection", camera->getProjectionMatrix());
+
+   // render meshes
    glBindVertexArray(m_VAO);
    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
    glBindVertexArray(0);
@@ -101,6 +105,7 @@ void Renderer::resize(int width, int height) {
    framebuffer->Resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 
    // update camera
+   camera->setViewport(width, height);
 }
 
 }  // namespace Merlin

@@ -1,6 +1,7 @@
 #ifndef MERLINGL_RENDERER_H
 #define MERLINGL_RENDERER_H
 
+#include "Camera.h"
 #include "Framebuffer.h"
 #include "Shader.h"
 
@@ -15,6 +16,7 @@ class Renderer {
 
    std::shared_ptr<Shader> shader;  // this is going to be the base shader for meshes
    std::shared_ptr<Framebuffer> framebuffer;
+   std::shared_ptr<Camera> camera;
 
  private:
    int m_Width;
