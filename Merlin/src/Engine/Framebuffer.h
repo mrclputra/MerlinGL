@@ -2,7 +2,6 @@
 #define MERLINGL_FRAMEBUFFER_H
 
 namespace Merlin {
-
 enum class TextureFormat {
    // allowed framebuffer color attachment formats
    RGBA8,
@@ -18,9 +17,10 @@ struct FramebufferSpec {
 };
 
 class Framebuffer {
-public:
+ public:
    Framebuffer(const FramebufferSpec &spec);
    ~Framebuffer();
+
    void bind() const;
    void unbind();
    void resize(uint32_t width, uint32_t height);
@@ -30,10 +30,9 @@ public:
    uint32_t fbo = 0;
    uint32_t depthRBO = 0;
 
-private:
+ private:
    void Create();
    void Delete();
 };
-} // namespace Merlin
-
+}  // namespace Merlin
 #endif  // MERLINGL_FRAMEBUFFER_H

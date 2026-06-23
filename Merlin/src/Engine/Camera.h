@@ -4,13 +4,11 @@
 
 namespace Merlin {
 class Camera {
-public:
+ public:
    Transform transform{};
    glm::vec3 front{}, up{}, right{};
-
    float yaw = -90.0f;
    float pitch = 0.0f;
-
    float sensitivity = 0.07f;
    float speed = 3.0f;
    float fov = 80.0f;
@@ -36,11 +34,10 @@ public:
    void onKeyPress(int key);
    void onKeyRelease(int key);
    void onMouseMove(int dx, int dy);
-   void onScroll(int delta); // controls speed
-
+   void onScroll(int delta);  // controls speed
    void setViewport(int width, int height);
 
-private:
+ private:
    void updateVectors();
 
    std::set<int> heldKeys;
@@ -48,6 +45,5 @@ private:
    int viewportWidth = 1280;
    int viewportHeight = 720;
 };
-} // namespace Merlin
-
+}  // namespace Merlin
 #endif  // MERLINGL_CAMERA_H

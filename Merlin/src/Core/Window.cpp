@@ -22,46 +22,35 @@ Window::Window(const std::string &title, const int width, const int height) {
       self->height = lheight;
    });
 
-   glfwSetKeyCallback(handle, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
+   glfwSetKeyCallback(handle, [](GLFWwindow *w, int key, int, int action, int) {
       if (action == GLFW_REPEAT)
          return;
-      auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
-      if (self->onKeyCallback)
-         self->onKeyCallback(key, action == GLFW_PRESS);
+      if (action == GLFW_PRESS)
+         EventBus::get().emit(KeyPressedEvent{.key = key});
+      else
+         EventBus::get().emit(KeyReleasedEvent{.key = key});
    });
-   glfwSetCursorPosCallback(handle, [](GLFWwindow *window, double x, double y) {
-      auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
-      const auto fx = static_cast<float>(x);
-      const auto fy = static_cast<float>(y);
+
+   glfwSetCursorPosCallback(handle, [](GLFWwindow *w, double x, double y) {
+      auto *self = static_cast<Window *>(glfwGetWindowUserPointer(w));
+      float fx = (float)x, fy = (float)y;
       if (self->firstMouse) {
          self->lastMouseX = fx;
          self->lastMouseY = fy;
          self->firstMouse = false;
          return;
       }
-      float dx = fx - self->lastMouseX;
-      float dy = fy - self->lastMouseY;
+      float dx = fx - self->lastMouseX, dy = fy - self->lastMouseY;
       self->lastMouseX = fx;
       self->lastMouseY = fy;
-      if (self->onMouseMoveCallback && (dx != 0.0f || dy != 0.0f))
-         self->onMouseMoveCallback(dx, dy);
+      if (dx != 0 || dy != 0)
+         EventBus::get().emit(MouseMovedEvent{.dx = dx, .dy = dy});
    });
-   // not sure why glfw has xoffset for scroll, but that is just how the API goes
-   glfwSetScrollCallback(handle, [](GLFWwindow *window, double xoffset, double yoffset) {
-      auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
-      if (self->onScrollCallback)
-         self->onScrollCallback(static_cast<float>(yoffset));
-   });
-}
 
-void Window::onKey(std::function<void(int key, bool pressed)> callback) {
-   onKeyCallback = std::move(callback);
-}
-void Window::onMouseMove(std::function<void(float dx, float dy)> callback) {
-   onMouseMoveCallback = std::move(callback);
-}
-void Window::onScroll(std::function<void(float delta)> callback) {
-   onScrollCallback = std::move(callback);
+   // not sure why glfw has xoffset for scroll, but that is just how the API goes
+   glfwSetScrollCallback(handle, [](GLFWwindow *, double, double yoffset) {
+      EventBus::get().emit(MouseScrolledEvent{.delta = (float)yoffset});
+   });
 }
 
 void Window::Shutdown() const {
@@ -91,4 +80,4 @@ int Window::getHeight() const {
 GLFWwindow *Window::getNative() const {
    return handle;
 }
-} // namespace Merlin
+}  // namespace Merlin

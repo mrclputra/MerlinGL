@@ -2,9 +2,8 @@
 #define MERLINGL_TRANSFORM_H
 
 namespace Merlin {
-
 class Transform {
-public:
+ public:
    glm::vec3 position;
    glm::vec3 rotation;
    glm::vec3 scale;
@@ -31,6 +30,5 @@ public:
       return m;
    }
 };
-} // namespace Merlin
-
+}  // namespace Merlin
 #endif  // MERLINGL_TRANSFORM_H

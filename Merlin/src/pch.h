@@ -8,6 +8,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <functional>
+#include <unordered_map>
+#include <vector>
 #include <memory>
 #include <set>
 #include <spdlog/sinks/ringbuffer_sink.h>

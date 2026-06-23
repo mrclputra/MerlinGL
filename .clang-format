@@ -2,6 +2,7 @@
 # Copy this to your project root and customize as needed
 
 BasedOnStyle: LLVM
+SeparateDefinitionBlocks: Leave
 IndentWidth: 3
 TabWidth: 3
 UseTab: Never

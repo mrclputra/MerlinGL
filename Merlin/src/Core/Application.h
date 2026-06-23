@@ -2,23 +2,24 @@
 #define MERLINGL_APPLICATION_H
 
 #include "Core/Window.h"
+#include "Core/EventBus.h"
+#include "Core/Events.h"
 #include "Engine/Renderer.h"
 #include "GUI/GuiModule.h"
 
 namespace Merlin {
 class Application {
-public:
+ public:
    Application(const std::string &title, int width, int height);
    ~Application();
 
    void run();
    void quit();
 
-private:
+ private:
    std::unique_ptr<Window> window;
    std::unique_ptr<GuiModule> guiModule;
    std::unique_ptr<Renderer> renderer;
 };
-} // namespace Merlin
-
+}  // namespace Merlin
 #endif  // MERLINGL_APPLICATION_H

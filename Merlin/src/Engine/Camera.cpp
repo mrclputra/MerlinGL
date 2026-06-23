@@ -3,7 +3,6 @@
 #include <algorithm>
 
 namespace Merlin {
-
 Camera::Camera(glm::vec3 position) {
    transform.position = position;
    SPDLOG_INFO("camera created; {}x{}", viewportWidth, viewportHeight);
@@ -63,16 +62,15 @@ glm::mat4 Camera::getViewMatrix() const {
 
 glm::mat4 Camera::getProjectionMatrix() const {
    return glm::perspective(
-      glm::radians(fov),
-      static_cast<float>(viewportWidth) / static_cast<float>(viewportHeight),
-      near,
-      far
-      );
+       glm::radians(fov),
+       static_cast<float>(viewportWidth) / static_cast<float>(viewportHeight),
+       near,
+       far);
 }
 
 void Camera::rotate(float xOffset, float yOffset) {
    yaw += xOffset * sensitivity;
-   pitch -= yOffset * sensitivity; // minus = standard mouse-look (up = positive pitch)
+   pitch -= yOffset * sensitivity;  // minus = standard mouse-look (up = positive pitch)
 
    pitch = glm::clamp(pitch, -89.0f, 89.0f);
    updateVectors();
@@ -106,4 +104,4 @@ void Camera::setViewport(int width, int height) {
    viewportWidth = width;
    viewportHeight = height;
 }
-} // namespace Merlin
+}  // namespace Merlin

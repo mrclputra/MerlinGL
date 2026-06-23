@@ -60,9 +60,9 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    ImGui::SetNextWindowSize(io.DisplaySize);
    ImGui::Begin("Viewport", nullptr,
                 ImGuiWindowFlags_NoDecoration |
-                ImGuiWindowFlags_NoMove |
-                ImGuiWindowFlags_NoResize |
-                ImGuiWindowFlags_NoBringToFrontOnFocus);
+                    ImGuiWindowFlags_NoMove |
+                    ImGuiWindowFlags_NoResize |
+                    ImGuiWindowFlags_NoBringToFrontOnFocus);
    ImVec2 size = ImGui::GetContentRegionAvail();
    viewportWidth = size.x;
    viewportHeight = size.y;
@@ -88,4 +88,4 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
-} // namespace Merlin
+}  // namespace Merlin

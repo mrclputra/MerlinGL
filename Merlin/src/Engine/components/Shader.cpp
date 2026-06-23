@@ -1,7 +1,6 @@
 #include "Shader.h"
 
 namespace Merlin {
-
 Shader::Shader(const std::string &vertex_path, const std::string &fragment_path) {
    GLuint vert = compile(GL_VERTEX_SHADER, readFile(vertex_path));
    GLuint frag = compile(GL_FRAGMENT_SHADER, readFile(fragment_path));
@@ -20,7 +19,7 @@ Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
       glDeleteProgram(program);
       glDeleteShader(vert);
       glDeleteShader(frag);
-      throw std::runtime_error("PROGRAM_LINKING_ERROR"); // todo: find a better error handling method
+      throw std::runtime_error("PROGRAM_LINKING_ERROR");  // todo: find a better error handling method
    }
 
    glDeleteShader(vert);
@@ -85,7 +84,7 @@ GLuint Shader::compile(GLenum type, const std::string &source) const {
       glDeleteShader(shader);
       return 0;
    }
-   return shader; // success
+   return shader;  // success
 }
 
 // TODO: move to a global utils file
@@ -99,5 +98,4 @@ std::string Shader::readFile(const std::string &path) {
    ss << file.rdbuf();
    return ss.str();
 }
-
-} // namespace Merlin
+}  // namespace Merlin

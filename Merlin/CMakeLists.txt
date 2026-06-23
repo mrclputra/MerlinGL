@@ -26,6 +26,8 @@ add_executable(MerlinEngine
         src/Engine/components/Shader.h
         src/Engine/Scene.h
         src/Engine/components/Transform.h
+        src/Core/Events.h
+        src/Core/EventBus.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE

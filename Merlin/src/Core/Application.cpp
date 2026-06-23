@@ -1,7 +1,6 @@
 #include "Application.h"
 
 #include <spdlog/spdlog.h>
-
 using namespace Merlin;
 
 Application::Application(const std::string &title, int width, int height) {
@@ -12,26 +11,24 @@ Application::Application(const std::string &title, int width, int height) {
    renderer = std::make_unique<Renderer>(width, height);
 
    // callbacks
-   window->onKey([this](int key, bool pressed) {
-      auto &vp = renderer->scene.viewports[0];
-      if (pressed && !vp.focused)
-         return;
-      if (pressed)
-         vp.camera->onKeyPress(key);
-      else
-         vp.camera->onKeyRelease(key);
+   EventBus::get().on<KeyPressedEvent>([this](const KeyPressedEvent& e) {
+       auto& vp = renderer->scene.viewports[0];
+       if (!vp.focused) return;
+       vp.camera->onKeyPress(e.key);
    });
-   window->onMouseMove([this](float dx, float dy) {
-      auto &vp = renderer->scene.viewports[0];
-      if (!vp.focused)
-         return;
-      vp.camera->onMouseMove(dx, dy);
+   EventBus::get().on<KeyReleasedEvent>([this](const KeyReleasedEvent& e) {
+       auto& vp = renderer->scene.viewports[0];
+       vp.camera->onKeyRelease(e.key);
    });
-   window->onScroll([this](float delta) {
-      auto &vp = renderer->scene.viewports[0];
-      if (!vp.focused)
-         return;
-      vp.camera->onScroll(delta);
+   EventBus::get().on<MouseMovedEvent>([this](const MouseMovedEvent& e) {
+       auto& vp = renderer->scene.viewports[0];
+       if (!vp.focused) return;
+       vp.camera->onMouseMove(e.dx, e.dy);
+   });
+   EventBus::get().on<MouseScrolledEvent>([this](const MouseScrolledEvent& e) {
+       auto& vp = renderer->scene.viewports[0];
+       if (!vp.focused) return;
+       vp.camera->onScroll(e.delta);
    });
 
    SPDLOG_INFO("application initialized");
@@ -50,7 +47,7 @@ void Application::run() {
       float delta = now - lastTime;
       lastTime = now;
 
-      auto& vp = renderer->scene.viewports.front();
+      auto &vp = renderer->scene.viewports.front();
       // bool wasFocused = vp.focused;
       vp.focused = guiModule->viewportFocused;
       vp.camera->update(delta);

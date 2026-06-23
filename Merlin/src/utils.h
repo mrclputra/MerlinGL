@@ -15,6 +15,5 @@ constexpr const char *getPlatformName() {
    return "Unknown Platform";
 #endif
 }
-}; // namespace utils
-
+};  // namespace utils
 #endif  // MERLINGL_UTILS_H

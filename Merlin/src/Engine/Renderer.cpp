@@ -1,8 +1,8 @@
 #include "Renderer.h"
+
 #include "Camera.h"
 
 namespace Merlin {
-
 Renderer::Renderer(int width, int height) {
    this->width = width;
    this->height = height;
@@ -34,22 +34,21 @@ void Renderer::initialize() {
    // debug pyramid,
    // note that these are in NDC coords bcs no transformations are applied in shader
    float vertices[] = {
-      // position             // color
-      -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    // Base BL
-      0.5f, -0.5f, -0.5f,     0.0f, 1.0f, 0.0f,    // Base BR
-      0.5f, -0.5f, 0.5f,      0.0f, 0.0f, 1.0f,    // Base TR
-      -0.5f, -0.5f, 0.5f,     1.0f, 1.0f, 0.0f,    // Base TL
-      0.0f, 0.5f, 0.0f,       1.0f, 0.0f, 1.0f     // Apex
+       // position             // color
+       -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  // Base BL
+       0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f,   // Base BR
+       0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,    // Base TR
+       -0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f,   // Base TL
+       0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f      // Apex
    };
 
    unsigned int indices[] = {
-      0, 1, 2, // base
-      2, 3, 0,
-      0, 1, 4, // sides
-      1, 2, 4,
-      2, 3, 4,
-      3, 0, 4
-   };
+       0, 1, 2,  // base
+       2, 3, 0,
+       0, 1, 4,  // sides
+       1, 2, 4,
+       2, 3, 4,
+       3, 0, 4};
 
    glGenVertexArrays(1, &vao);
    glGenBuffers(1, &vbo);
@@ -77,7 +76,7 @@ void Renderer::initialize() {
 
 void Renderer::render() {
    // bind framebuffer
-   auto& vp = scene.viewports.front();
+   auto &vp = scene.viewports.front();
    vp.framebuffer->bind();
 
    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -108,11 +107,10 @@ void Renderer::resize(int width, int height) {
    this->height = height;
 
    // update framebuffer
-   auto& vp = scene.viewports.front();
+   auto &vp = scene.viewports.front();
    vp.framebuffer->resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 
    // update camera
    vp.camera->setViewport(width, height);
 }
-
-} // namespace Merlin
+}  // namespace Merlin
