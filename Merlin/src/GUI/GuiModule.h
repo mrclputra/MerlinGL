@@ -11,8 +11,10 @@ public:
 
    void Draw(unsigned int windowWidth, unsigned int windowHeight, uint32_t sceneTexture);
 
+   // todo: refactor for multiviewports
    float viewportWidth;
    float viewportHeight;
+   bool viewportFocused = false;
 
 private:
    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> ringSink;

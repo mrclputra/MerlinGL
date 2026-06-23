@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Camera.h"
 
 namespace Merlin {
 
@@ -16,15 +17,19 @@ void Renderer::initialize() {
    // load shader from files
    shader = std::make_shared<Shader>("shaders/model.vert", "shaders/model.frag");
 
-   // setup framebuffer
+   // configure a viewport
+   Viewport vp;
+   vp.camera = std::make_unique<Camera>();
+   vp.camera->transform.position = glm::vec3(0.0f, 0.0f, 2.0f);
+
    FramebufferSpec fbSpec;
    fbSpec.width = static_cast<uint32_t>(width);
    fbSpec.height = static_cast<uint32_t>(height);
    fbSpec.attachments = {TextureFormat::RGBA8, TextureFormat::Depth24Stencil8};
-   framebuffer = std::make_shared<Framebuffer>(fbSpec);
+   vp.framebuffer = std::make_unique<Framebuffer>(fbSpec);
 
    // setup scene
-   scene.camera.transform.position = glm::vec3(0.0f, 0.0f, 2.0f);
+   scene.viewports.push_back(std::move(vp));
 
    // debug pyramid,
    // note that these are in NDC coords bcs no transformations are applied in shader
@@ -72,7 +77,8 @@ void Renderer::initialize() {
 
 void Renderer::render() {
    // bind framebuffer
-   framebuffer->Bind();
+   auto& vp = scene.viewports.front();
+   vp.framebuffer->bind();
 
    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -84,8 +90,8 @@ void Renderer::render() {
    shader->bind();
 
    // upload shader uniforms
-   shader->setMat4("view", scene.camera.getViewMatrix());
-   shader->setMat4("projection", scene.camera.getProjectionMatrix());
+   shader->setMat4("view", vp.camera->getViewMatrix());
+   shader->setMat4("projection", vp.camera->getProjectionMatrix());
 
    // render meshes
    glBindVertexArray(vao);
@@ -94,7 +100,7 @@ void Renderer::render() {
    shader->unbind();
 
    // unbind framebuffer
-   framebuffer->Unbind();
+   vp.framebuffer->unbind();
 }
 
 void Renderer::resize(int width, int height) {
@@ -102,10 +108,11 @@ void Renderer::resize(int width, int height) {
    this->height = height;
 
    // update framebuffer
-   framebuffer->Resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+   auto& vp = scene.viewports.front();
+   vp.framebuffer->resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 
    // update camera
-   scene.camera.setViewport(width, height);
+   vp.camera->setViewport(width, height);
 }
 
 } // namespace Merlin

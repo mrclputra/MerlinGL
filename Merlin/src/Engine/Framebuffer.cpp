@@ -11,17 +11,17 @@ Framebuffer::~Framebuffer() {
    Delete();
 }
 
-void Framebuffer::Bind() const {
+void Framebuffer::bind() const {
    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
    glViewport(0, 0, static_cast<GLsizei>(spec.width), static_cast<GLsizei>(spec.height));
    // todo: consider storing direct type instead of casting every call
 }
 
-void Framebuffer::Unbind() {
+void Framebuffer::unbind() {
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::Resize(const uint32_t width, const uint32_t height) {
+void Framebuffer::resize(const uint32_t width, const uint32_t height) {
    if (width == 0 || height == 0)
       return; // cannot be zero
    if (width == spec.width && height == spec.height)

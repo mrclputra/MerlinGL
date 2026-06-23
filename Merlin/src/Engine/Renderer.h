@@ -16,7 +16,6 @@ public:
    void resize(int width, int height);
 
    std::shared_ptr<Shader> shader; // this is going to be the base shader for meshes
-   std::shared_ptr<Framebuffer> framebuffer;
    Scene scene;
 
 private:

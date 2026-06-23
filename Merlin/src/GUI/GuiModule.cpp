@@ -13,6 +13,7 @@ GuiModule::GuiModule(void *native_window) {
    ImGuiIO &io = ImGui::GetIO();
    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+   io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
    io.IniFilename = nullptr;
 
    auto *window = static_cast<GLFWwindow *>(native_window);
@@ -66,6 +67,10 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    viewportWidth = size.x;
    viewportHeight = size.y;
    ImGui::Image(sceneTexture, size, ImVec2(0, 1), ImVec2(1, 0));
+   if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+      viewportFocused = true;
+   if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+      viewportFocused = false;
    ImGui::End();
    ImGui::PopStyleVar(2);
 

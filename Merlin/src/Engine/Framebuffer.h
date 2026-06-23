@@ -21,9 +21,9 @@ class Framebuffer {
 public:
    Framebuffer(const FramebufferSpec &spec);
    ~Framebuffer();
-   void Bind() const;
-   void Unbind();
-   void Resize(uint32_t width, uint32_t height);
+   void bind() const;
+   void unbind();
+   void resize(uint32_t width, uint32_t height);
 
    FramebufferSpec spec;
    std::vector<uint32_t> colorAttachments;

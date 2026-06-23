@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+#include <functional>
 #include <memory>
 #include <set>
 #include <spdlog/sinks/ringbuffer_sink.h>

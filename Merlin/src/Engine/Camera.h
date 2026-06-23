@@ -11,8 +11,8 @@ public:
    float yaw = -90.0f;
    float pitch = 0.0f;
 
-   float sensitivity = 0.10f;
-   float speed = 10.0f;
+   float sensitivity = 0.07f;
+   float speed = 3.0f;
    float fov = 80.0f;
    float near = 0.1f;
    float far = 10000.0f;
