@@ -22,7 +22,7 @@ GuiModule::GuiModule(void *native_window) {
    // get logger
    for (auto &sink : spdlog::default_logger()->sinks()) {
       if (auto rb = std::dynamic_pointer_cast<spdlog::sinks::ringbuffer_sink_mt>(sink)) {
-         m_RingSink = rb;
+         ringSink = rb;
          break;
       }
    }
@@ -58,10 +58,10 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    ImGui::SetNextWindowPos(ImVec2(0, 0));
    ImGui::SetNextWindowSize(io.DisplaySize);
    ImGui::Begin("Viewport", nullptr,
-      ImGuiWindowFlags_NoDecoration |
-      ImGuiWindowFlags_NoMove |
-      ImGuiWindowFlags_NoResize |
-      ImGuiWindowFlags_NoBringToFrontOnFocus);
+                ImGuiWindowFlags_NoDecoration |
+                ImGuiWindowFlags_NoMove |
+                ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoBringToFrontOnFocus);
    ImVec2 size = ImGui::GetContentRegionAvail();
    viewportWidth = size.x;
    viewportHeight = size.y;
@@ -69,12 +69,12 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    ImGui::End();
    ImGui::PopStyleVar(2);
 
-    // logger
+   // logger
    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
    ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);
    ImGui::SetNextWindowBgAlpha(0.0f);
    ImGui::Begin("Log", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav);
-   for (auto &msg : m_RingSink->last_formatted())
+   for (auto &msg : ringSink->last_formatted())
       ImGui::TextUnformatted(msg.c_str());
    ImGui::End();
    ImGui::PopStyleVar();
@@ -83,4 +83,4 @@ void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHe
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
-}  // namespace Merlin
+} // namespace Merlin

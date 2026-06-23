@@ -3,7 +3,7 @@
 
 namespace Merlin {
 class Shader {
- public:
+public:
    Shader(const std::string &vertex_path, const std::string &fragment_path);
    ~Shader();
 
@@ -20,12 +20,12 @@ class Shader {
    void setInt(const std::string &name, int value) const;
    void setFloat(const std::string &name, float value) const;
 
- private:
-   GLuint m_Program = 0;  // program id
+private:
+   GLuint program = 0;
 
    GLuint compile(GLenum type, const std::string &source) const;
    static std::string readFile(const std::string &path);
 };
-}  // namespace Merlin
+} // namespace Merlin
 
 #endif  // MERLINGL_SHADER_H

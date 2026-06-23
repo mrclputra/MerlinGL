@@ -18,7 +18,7 @@ struct FramebufferSpec {
 };
 
 class Framebuffer {
- public:
+public:
    Framebuffer(const FramebufferSpec &spec);
    ~Framebuffer();
    void Bind() const;
@@ -30,10 +30,10 @@ class Framebuffer {
    uint32_t fbo = 0;
    uint32_t depthRBO = 0;
 
- private:
+private:
    void Create();
    void Delete();
 };
-}  // namespace Merlin
+} // namespace Merlin
 
 #endif  // MERLINGL_FRAMEBUFFER_H

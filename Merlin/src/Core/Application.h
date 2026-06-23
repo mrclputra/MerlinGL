@@ -7,18 +7,18 @@
 
 namespace Merlin {
 class Application {
- public:
+public:
    Application(const std::string &title, int width, int height);
    ~Application();
 
    void run();
    void quit();
 
- private:
-   std::unique_ptr<Window> m_Window;  // maybe we should rename to avoid confusion?
-   std::unique_ptr<GuiModule> m_GuiModule;
-   std::unique_ptr<Renderer> m_Renderer;
+private:
+   std::unique_ptr<Window> window;
+   std::unique_ptr<GuiModule> guiModule;
+   std::unique_ptr<Renderer> renderer;
 };
-}  // namespace Merlin
+} // namespace Merlin
 
 #endif  // MERLINGL_APPLICATION_H

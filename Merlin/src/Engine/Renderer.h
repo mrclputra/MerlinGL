@@ -3,28 +3,29 @@
 
 #include "Camera.h"
 #include "Framebuffer.h"
-#include "Shader.h"
+#include "Scene.h"
+#include "components/Shader.h"
 
 namespace Merlin {
 class Renderer {
- public:
+public:
    Renderer(int width, int height);
 
    void initialize();
    void render();
    void resize(int width, int height);
 
-   std::shared_ptr<Shader> shader;  // this is going to be the base shader for meshes
+   std::shared_ptr<Shader> shader; // this is going to be the base shader for meshes
    std::shared_ptr<Framebuffer> framebuffer;
-   std::shared_ptr<Camera> camera;
+   Scene scene;
 
- private:
-   int m_Width;
-   int m_Height;
-   uint32_t m_VAO = 0;
-   uint32_t m_VBO = 0;
-   uint32_t m_EBO = 0;
+private:
+   int width;
+   int height;
+   uint32_t vao = 0;
+   uint32_t vbo = 0;
+   uint32_t ebo = 0;
 };
-}  // namespace Merlin
+} // namespace Merlin
 
 #endif  // MERLINGL_RENDERER_H

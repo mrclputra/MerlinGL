@@ -3,8 +3,8 @@
 
 namespace Merlin {
 class GuiModule {
- public:
-   GuiModule(void *native_window);  // requires the glfw window to attach to
+public:
+   GuiModule(void *native_window); // requires the glfw window to attach to
    ~GuiModule();
 
    static ImGuiContext *GetContext();
@@ -14,9 +14,9 @@ class GuiModule {
    float viewportWidth;
    float viewportHeight;
 
- private:
-   std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> m_RingSink;
+private:
+   std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> ringSink;
 };
-}  // namespace Merlin
+} // namespace Merlin
 
 #endif  // MERLINGL_GUIMODULE_H

@@ -8,28 +8,27 @@ Window::Window(const std::string &title, const int width, const int height) {
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   m_Window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-   glfwMakeContextCurrent(m_Window);
+   handle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+   glfwMakeContextCurrent(handle);
    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-   glfwGetFramebufferSize(m_Window, &m_Width, &m_Height);
+   glfwGetFramebufferSize(handle, &this->width, &this->height);
 
    // setup size callback
-   glfwSetWindowUserPointer(m_Window, this);
-   glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow *window, const int lwidth, const int lheight) {
-      // lambda to set internal width and height
+   glfwSetWindowUserPointer(handle, this);
+   glfwSetFramebufferSizeCallback(handle, [](GLFWwindow *window, const int lwidth, const int lheight) {
       auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
-      self->m_Width = lwidth;
-      self->m_Height = lheight;
+      self->width = lwidth;
+      self->height = lheight;
    });
 }
 
 void Window::Shutdown() const {
-   glfwDestroyWindow(m_Window);
+   glfwDestroyWindow(handle);
 }
 
 bool Window::shouldClose() const {
-   return glfwWindowShouldClose(m_Window);
+   return glfwWindowShouldClose(handle);
 }
 
 void Window::pollEvents() const {
@@ -37,18 +36,18 @@ void Window::pollEvents() const {
 }
 
 void Window::swapBuffers() const {
-   glfwSwapBuffers(m_Window);
+   glfwSwapBuffers(handle);
 }
 
 int Window::getWidth() const {
-   return m_Width;
+   return width;
 }
 
 int Window::getHeight() const {
-   return m_Height;
+   return height;
 }
 
 GLFWwindow *Window::getNative() const {
-   return m_Window;
+   return handle;
 }
-}  // namespace Merlin
+} // namespace Merlin

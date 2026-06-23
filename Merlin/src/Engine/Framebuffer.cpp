@@ -23,22 +23,22 @@ void Framebuffer::Unbind() {
 
 void Framebuffer::Resize(const uint32_t width, const uint32_t height) {
    if (width == 0 || height == 0)
-      return;  // cannot be zero
+      return; // cannot be zero
    if (width == spec.width && height == spec.height)
       return;
 
    spec.width = width;
    spec.height = height;
    Delete();
-   Create();  // reinitialize
+   Create(); // reinitialize
 }
 
 void Framebuffer::Create() {
    if (spec.width == 0 || spec.height == 0)
       return;
 
-   glGenFramebuffers(1, &fbo);              // allocate framebuffer
-   glBindFramebuffer(GL_FRAMEBUFFER, fbo);  // bind
+   glGenFramebuffers(1, &fbo);             // allocate framebuffer
+   glBindFramebuffer(GL_FRAMEBUFFER, fbo); // bind
 
    int colorIndex = 0;
 
@@ -119,4 +119,4 @@ void Framebuffer::Delete() {
    }
 }
 
-}  // namespace Merlin
+} // namespace Merlin

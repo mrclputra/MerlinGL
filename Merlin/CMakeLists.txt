@@ -22,8 +22,10 @@ add_executable(MerlinEngine
         src/Engine/Renderer.h
         src/Engine/Camera.cpp
         src/Engine/Camera.h
-        src/Engine/Shader.cpp
-        src/Engine/Shader.h
+        src/Engine/components/Shader.cpp
+        src/Engine/components/Shader.h
+        src/Engine/Scene.h
+        src/Engine/components/Transform.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE

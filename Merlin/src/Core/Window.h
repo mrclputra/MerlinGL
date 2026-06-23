@@ -3,11 +3,11 @@
 
 namespace Merlin {
 class Window {
- public:
+public:
    Window(const std::string &title, int width, int height);
    void Shutdown() const;
 
-   bool shouldClose() const;  // no-discard?
+   bool shouldClose() const; // no-discard?
    void pollEvents() const;
    void swapBuffers() const;
 
@@ -17,11 +17,11 @@ class Window {
    // returns the raw glfw pointer
    GLFWwindow *getNative() const;
 
- private:
-   GLFWwindow *m_Window;
-   int m_Width;
-   int m_Height;
+private:
+   GLFWwindow *handle;
+   int width;
+   int height;
 };
-}  // namespace Merlin
+} // namespace Merlin
 
 #endif  // MERLINGL_WINDOW_H
