@@ -1,13 +1,16 @@
 #ifndef MERLINGL_SCENE_H
 #define MERLINGL_SCENE_H
+
 #include "Camera.h"
 #include "Framebuffer.h"
+#include "lights/Light.h"
 
 namespace Merlin {
+
 struct Viewport {
-   // consider moving this to own struct
+   // consider moving this to own file
    std::unique_ptr<Camera> camera;
-   std::unique_ptr<Framebuffer> framebuffer;
+   std::unique_ptr<Framebuffer> framebuffer; // color + depth
    bool focused = false;
    float width{0};
    float height{0};
@@ -15,8 +18,11 @@ struct Viewport {
 
 class Scene {
  public:
-   std::vector<Viewport> viewports;  // for multi screen rendering in gui
-   // std::vector<std::unique_ptr<SceneObject>> objects; // todo: rendering targets
+   std::vector<Viewport> viewports;  // for multi-camera rendering through gui
+   std::vector<std::unique_ptr<Light>> lights;
+   // std::vector<std::unique_ptr<SceneObject>> objects; // todo: implement rendering targets
+
 };
+
 }  // namespace Merlin
 #endif  // MERLINGL_SCENE_H

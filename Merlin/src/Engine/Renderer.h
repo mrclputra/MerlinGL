@@ -1,11 +1,18 @@
 #ifndef MERLINGL_RENDERER_H
 #define MERLINGL_RENDERER_H
+
 #include "Camera.h"
 #include "Framebuffer.h"
 #include "Scene.h"
 #include "components/Shader.h"
+#include "lights/DirectionalLight.h"
 
 namespace Merlin {
+// todo: we should refactor this class later down the line
+//    - the renderer should not own the scenegraph, it should only collect, sort, and batch draw calls
+//    - renderer functions should accept pointers to resources it needs but it should never own them as class instances; except the opengl specific ones
+//    - for actual ownership it should be managed by the scene graph as an independent instance (maybe owned by the application)
+//    - basically this class should be more of an OpenGL draw call functions interface than anything else
 class Renderer {
  public:
    Renderer(int width, int height);

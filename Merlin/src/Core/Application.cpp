@@ -10,23 +10,26 @@ Application::Application(const std::string &title, int width, int height) {
    guiModule = std::make_unique<GuiModule>(window->getNative());
    renderer = std::make_unique<Renderer>(width, height);
 
+   // lights
+   renderer->scene.lights.push_back(std::make_unique<DirectionalLight>(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f)));
+
    // callbacks
    EventBus::get().on<KeyPressedEvent>([this](const KeyPressedEvent& e) {
-       auto& vp = renderer->scene.viewports[0];
+       const auto& vp = renderer->scene.viewports[0];
        if (!vp.focused) return;
        vp.camera->onKeyPress(e.key);
    });
    EventBus::get().on<KeyReleasedEvent>([this](const KeyReleasedEvent& e) {
-       auto& vp = renderer->scene.viewports[0];
+       const auto& vp = renderer->scene.viewports[0];
        vp.camera->onKeyRelease(e.key);
    });
    EventBus::get().on<MouseMovedEvent>([this](const MouseMovedEvent& e) {
-       auto& vp = renderer->scene.viewports[0];
+       const auto& vp = renderer->scene.viewports[0];
        if (!vp.focused) return;
        vp.camera->onMouseMove(e.dx, e.dy);
    });
    EventBus::get().on<MouseScrolledEvent>([this](const MouseScrolledEvent& e) {
-       auto& vp = renderer->scene.viewports[0];
+       const auto& vp = renderer->scene.viewports[0];
        if (!vp.focused) return;
        vp.camera->onScroll(e.delta);
    });

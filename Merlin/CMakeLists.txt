@@ -28,6 +28,8 @@ add_executable(MerlinEngine
         src/Engine/components/Transform.h
         src/Core/Events.h
         src/Core/EventBus.h
+        src/Engine/lights/DirectionalLight.h
+        src/Engine/lights/Light.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE

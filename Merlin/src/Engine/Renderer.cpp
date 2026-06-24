@@ -1,5 +1,4 @@
 #include "Renderer.h"
-
 #include "Camera.h"
 
 namespace Merlin {
@@ -32,7 +31,7 @@ void Renderer::initialize() {
    scene.viewports.push_back(std::move(vp));
 
    // debug pyramid,
-   // note that these are in NDC coords bcs no transformations are applied in shader
+   // note that these are in NDC coordinates
    float vertices[] = {
        // position             // color
        -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  // Base BL
@@ -82,15 +81,24 @@ void Renderer::render() {
    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   // update camera
-   // scene.camera.update(delta); // todo: wire up delta
-
-   // debug
+   // this is the base shader;
+   // we will need to add support for multiple shaders and targets in the future
    shader->bind();
 
-   // upload shader uniforms
+   // upload camera uniforms
    shader->setMat4("view", vp.camera->getViewMatrix());
    shader->setMat4("projection", vp.camera->getProjectionMatrix());
+
+   // upload light uniforms
+   for (int i = 0; i < scene.lights.size(); i++) {
+      // todo: will need to refactor this loop to support more light types when we get to it
+      auto* dir = dynamic_cast<DirectionalLight*>(scene.lights[i].get());
+      if (!dir) continue; // check if it is actually a directional light;
+
+      // todo: implement shadow mapping later
+      // shader->setMat4("lightSpaceMatrices[" + std::to_string(i) + "]", dir->lightSpaceMatrix);
+   }
+   shader->setInt("numDirLights", static_cast<int>(scene.lights.size())); // not sure why clang wants this cast
 
    // render meshes
    glBindVertexArray(vao);

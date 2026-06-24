@@ -5,7 +5,7 @@
 namespace Merlin {
 class Camera {
  public:
-   Transform transform{};
+   Transform transform;
    glm::vec3 front{}, up{}, right{};
    float yaw = -90.0f;
    float pitch = 0.0f;
