@@ -14,6 +14,7 @@ enum class EventType {
 struct WindowCloseEvent {
    static constexpr EventType type = EventType::WindowClose;
 };
+//  we currently assume the opengl viewport == window; when docking is added in the future, we will need introduce a ViewportResizeEvent emitted by GuiModule when GetContentRegionAvail() changes
 struct WindowResizeEvent {
    static constexpr EventType type = EventType::WindowResize;
    int width;

@@ -43,14 +43,12 @@ ImGuiContext *GuiModule::GetContext() {
    return ImGui::GetCurrentContext();
 }
 
-void GuiModule::Draw(const unsigned int windowWidth, const unsigned int windowHeight, uint32_t sceneTexture) {
+void GuiModule::Draw(uint32_t sceneTexture) {
    ImGui_ImplOpenGL3_NewFrame();
-   ImGui_ImplGlfw_NewFrame();
+   ImGui_ImplGlfw_NewFrame();  // sets io.DisplaySize from GLFW
    ImGui::NewFrame();
 
    ImGuiIO &io = ImGui::GetIO();
-   io.DisplaySize.x = static_cast<float>(windowWidth);
-   io.DisplaySize.y = static_cast<float>(windowHeight);
 
    // opengl viewport
    // todo: in the future implement gui class modules like QT

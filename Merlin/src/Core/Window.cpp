@@ -17,6 +17,7 @@ Window::Window(const std::string &title, const int width, const int height) {
    // setup callbacks
    glfwSetWindowUserPointer(handle, this);
    glfwSetFramebufferSizeCallback(handle, [](GLFWwindow *window, const int lwidth, const int lheight) {
+      EventBus::get().emit(WindowResizeEvent{.width = lwidth, .height = lheight});
       auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
       self->width = lwidth;
       self->height = lheight;

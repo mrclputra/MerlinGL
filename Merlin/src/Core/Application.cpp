@@ -14,6 +14,10 @@ Application::Application(const std::string &title, int width, int height) {
    renderer->scene.lights.push_back(std::make_unique<DirectionalLight>(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f)));
 
    // callbacks
+   EventBus::get().on<WindowResizeEvent>([this](const WindowResizeEvent& e) {
+      SPDLOG_INFO("WINDOW_RESIZE_EVENT: {},{}", e.width, e.height);
+      renderer->resize(e.width, e.height);
+   });
    EventBus::get().on<KeyPressedEvent>([this](const KeyPressedEvent& e) {
        const auto& vp = renderer->scene.viewports[0];
        if (!vp.focused) return;
@@ -64,8 +68,7 @@ void Application::run() {
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      guiModule->Draw(window->getWidth(), window->getHeight(), renderer->scene.viewports.front().framebuffer->colorAttachments[0]);
-      renderer->resize(static_cast<int>(guiModule->viewportWidth), static_cast<int>(guiModule->viewportHeight));
+      guiModule->Draw(renderer->scene.viewports.front().framebuffer->colorAttachments[0]);
 
       window->swapBuffers();
    }
