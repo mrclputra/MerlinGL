@@ -1,6 +1,7 @@
 #include "Core/Application.h"
 #include "Core/EventBus.h"
 #include "Core/Events.h"
+#include "Engine/Loader.h"
 
 namespace Merlin {
 Application::Application(const std::string &title, int width, int height) {
@@ -10,11 +11,16 @@ Application::Application(const std::string &title, int width, int height) {
    guiModule = std::make_unique<GuiModule>(window->getNative());
    renderer = std::make_unique<Renderer>(width, height);
 
+   // load models
+   Loader::load("C:/Users/Marcelino/Desktop/tests/meshes/stanford_dragon_pbr/scene.gltf", renderer->scene.registry);
+
    // lights
    auto sun = renderer->scene.registry.create();
    auto& dir = renderer->scene.registry.emplace<DirectionalLight>(sun);
-   dir.direction = glm::vec3(1.0f, -1.0f, 0.0f);
-   dir.updateLightSpaceMatrix();
+   dir.color = glm::vec3(1.0f, 0.93f, 0.83f);
+   // dir.color = glm::vec3(1.0f, 0.79f, 0.58f);
+   dir.direction = glm::vec3(0.5f, -1.0f, 0.0f);
+   // dir.updateLightSpaceMatrix();
 
    // callbacks
    EventBus::get().on<WindowResizeEvent>([this](const WindowResizeEvent &e) {

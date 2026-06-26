@@ -52,8 +52,9 @@ target_include_directories(MerlinEngine PRIVATE
 
 target_precompile_headers(MerlinEngine PRIVATE src/pch.h)
 
-add_custom_command(TARGET MerlinEngine POST_BUILD
+add_custom_target(CopyShaders ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/shaders"
         "$<TARGET_FILE_DIR:MerlinEngine>/shaders"
 )
+add_dependencies(MerlinEngine CopyShaders)

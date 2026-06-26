@@ -12,7 +12,7 @@ class Camera {
    float pitch = 0.0f;
    float sensitivity = 0.07f;
    float speed = 3.0f;
-   float fov = 80.0f;
+   float fov = 50.0f;
    float near = 0.1f;
    float far = 10000.0f;
 

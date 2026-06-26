@@ -1,7 +1,6 @@
 #include "Engine/Renderer.h"
 #include "Engine/Camera.h"
 #include "Engine/Framebuffer.h"
-#include "Engine/Loader.h"
 #include "Engine/lights/DirectionalLight.h"
 #include "Engine/components/Transform.h"
 #include "Engine/components/Mesh.h"
@@ -32,8 +31,6 @@ void Renderer::initialize() {
 
    // setup scene
    scene.viewports.push_back(std::move(vp));
-
-   Loader::load(scene);
 }
 
 void Renderer::render() {

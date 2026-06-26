@@ -1,10 +1,5 @@
 #include "GUI/GuiModule.h"
 
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#include <spdlog/spdlog.h>
-
 namespace Merlin {
 GuiModule::GuiModule(void *native_window) {
    IMGUI_CHECKVERSION();
@@ -76,9 +71,14 @@ void GuiModule::Draw(uint32_t sceneTexture) {
    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
    ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);
    ImGui::SetNextWindowBgAlpha(0.0f);
-   ImGui::Begin("Log", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav);
+   ImGui::Begin("Log", nullptr,
+      ImGuiWindowFlags_NoDecoration |
+      ImGuiWindowFlags_NoInputs |
+      ImGuiWindowFlags_AlwaysAutoResize |
+      ImGuiWindowFlags_NoNav);
    for (auto &msg : ringSink->last_formatted())
-      ImGui::TextUnformatted(msg.c_str());
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.35f), "%s", msg.c_str());
+      // ImGui::TextUnformatted(msg.c_str());
    ImGui::End();
    ImGui::PopStyleVar();
    // end draw calls
