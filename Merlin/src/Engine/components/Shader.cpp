@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "Engine/components/Shader.h"
 
 namespace Merlin {
 Shader::Shader(const std::string &vertex_path, const std::string &fragment_path) {

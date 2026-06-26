@@ -1,4 +1,6 @@
-#include "Window.h"
+#include "Core/Window.h"
+#include "Core/EventBus.h"
+#include "Core/Events.h"
 
 namespace Merlin {
 Window::Window(const std::string &title, const int width, const int height) {

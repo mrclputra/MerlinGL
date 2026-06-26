@@ -1,7 +1,7 @@
 #ifndef MERLINGL_EVENTBUS_H
 #define MERLINGL_EVENTBUS_H
 
-#include "Events.h"
+#include "Core/Events.h"
 
 namespace Merlin {
 

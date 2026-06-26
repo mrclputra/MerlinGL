@@ -1,7 +1,7 @@
 #ifndef MERLINGL_DIRECTIONALLIGHT_H
 #define MERLINGL_DIRECTIONALLIGHT_H
 
-#include "Light.h"
+#include "Engine/lights/Light.h"
 
 namespace Merlin {
 

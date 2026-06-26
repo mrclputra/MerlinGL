@@ -1,5 +1,7 @@
-#include "Renderer.h"
-#include "Camera.h"
+#include "Engine/Renderer.h"
+#include "Engine/Camera.h"
+#include "Engine/Framebuffer.h"
+#include "Engine/lights/DirectionalLight.h"
 
 namespace Merlin {
 Renderer::Renderer(int width, int height) {

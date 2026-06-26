@@ -1,6 +1,7 @@
 #ifndef MERLINGL_CAMERA_H
 #define MERLINGL_CAMERA_H
-#include "components/Transform.h"
+
+#include "Engine/components/Transform.h"
 
 namespace Merlin {
 class Camera {

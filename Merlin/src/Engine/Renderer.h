@@ -1,11 +1,8 @@
 #ifndef MERLINGL_RENDERER_H
 #define MERLINGL_RENDERER_H
 
-#include "Camera.h"
-#include "Framebuffer.h"
-#include "Scene.h"
-#include "components/Shader.h"
-#include "lights/DirectionalLight.h"
+#include "Engine/Scene.h"
+#include "Engine/components/Shader.h"
 
 namespace Merlin {
 // todo: we should refactor this class later down the line

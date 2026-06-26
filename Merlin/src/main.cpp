@@ -1,5 +1,5 @@
-#include "Core/Application.h"
 #include "pch.h"
+#include "Core/Application.h"
 #include "utils.h"
 
 int main() {

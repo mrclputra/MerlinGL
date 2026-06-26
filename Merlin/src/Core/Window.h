@@ -1,9 +1,6 @@
 #ifndef MERLINGL_WINDOW_H
 #define MERLINGL_WINDOW_H
 
-#include "Events.h" // todo: maybe make this a transient import
-#include "EventBus.h"
-
 namespace Merlin {
 class Window {
  public:

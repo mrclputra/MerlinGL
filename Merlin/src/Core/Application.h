@@ -2,8 +2,6 @@
 #define MERLINGL_APPLICATION_H
 
 #include "Core/Window.h"
-#include "Core/EventBus.h"
-#include "Core/Events.h"
 #include "Engine/Renderer.h"
 #include "GUI/GuiModule.h"
 
