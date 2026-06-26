@@ -1,7 +1,11 @@
 #include "Engine/Renderer.h"
 #include "Engine/Camera.h"
 #include "Engine/Framebuffer.h"
+#include "Engine/Loader.h"
 #include "Engine/lights/DirectionalLight.h"
+#include "Engine/components/Transform.h"
+#include "Engine/components/Mesh.h"
+#include "Engine/components/Material.h"
 
 namespace Merlin {
 Renderer::Renderer(int width, int height) {
@@ -12,13 +16,10 @@ Renderer::Renderer(int width, int height) {
 }
 
 void Renderer::initialize() {
-   // opengl configs
    glEnable(GL_DEPTH_TEST);
 
-   // load shader from files
    shader = std::make_shared<Shader>("shaders/model.vert", "shaders/model.frag");
 
-   // configure a viewport
    Viewport vp;
    vp.camera = std::make_unique<Camera>();
    vp.camera->transform.position = glm::vec3(0.0f, 0.0f, 2.0f);
@@ -32,47 +33,7 @@ void Renderer::initialize() {
    // setup scene
    scene.viewports.push_back(std::move(vp));
 
-   // debug pyramid,
-   // note that these are in NDC coordinates
-   float vertices[] = {
-       // position             // color
-       -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,  // Base BL
-       0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f,   // Base BR
-       0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,    // Base TR
-       -0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f,   // Base TL
-       0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f      // Apex
-   };
-
-   unsigned int indices[] = {
-       0, 1, 2,  // base
-       2, 3, 0,
-       0, 1, 4,  // sides
-       1, 2, 4,
-       2, 3, 4,
-       3, 0, 4};
-
-   glGenVertexArrays(1, &vao);
-   glGenBuffers(1, &vbo);
-   glGenBuffers(1, &ebo);
-
-   // bind vao
-   glBindVertexArray(vao);
-   // upload vertices
-   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-   // upload indices
-   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-   // upload attributes, stuff to VAO
-   // position attribute
-   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
-   glEnableVertexAttribArray(0);
-   // color attribute
-   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-   glEnableVertexAttribArray(1);
-
-   glBindVertexArray(0);
+   Loader::load(scene);
 }
 
 void Renderer::render() {
@@ -91,24 +52,30 @@ void Renderer::render() {
    shader->setMat4("view", vp.camera->getViewMatrix());
    shader->setMat4("projection", vp.camera->getProjectionMatrix());
 
-   // upload light uniforms
-   for (int i = 0; i < scene.lights.size(); i++) {
-      // todo: will need to refactor this loop to support more light types when we get to it
-      auto* dir = dynamic_cast<DirectionalLight*>(scene.lights[i].get());
-      if (!dir) continue; // check if it is actually a directional light;
-
-      // todo: implement shadow mapping later
-      // shader->setMat4("lightSpaceMatrices[" + std::to_string(i) + "]", dir->lightSpaceMatrix);
+   // upload lights
+   int numDirLights = 0;
+   for (auto [entity, dir] : scene.registry.view<DirectionalLight>().each()) {
+      std::string base = "dirLights[" + std::to_string(numDirLights) + "]";
+      shader->setVec3(base + ".direction", dir.direction);
+      shader->setVec3(base + ".color",     dir.color);
+      numDirLights++;
    }
-   shader->setInt("numDirLights", static_cast<int>(scene.lights.size())); // not sure why clang wants this cast
+   shader->setInt("numDirLights", numDirLights);
 
    // render meshes
-   glBindVertexArray(vao);
-   glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
+   for (auto [entity, t, mesh, mat] : scene.registry.view<Transform, Mesh, Material>().each()) {
+      shader->setMat4("model",              t.getTransformMatrix());
+      shader->setVec3("material.albedo",    mat.albedo);
+      shader->setFloat("material.roughness", mat.roughness);
+      shader->setFloat("material.metallic",  mat.metallic);
+      shader->setFloat("material.ao",        mat.ao);
+      glBindVertexArray(mesh.vao);
+      glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+   }
+
    glBindVertexArray(0);
    shader->unbind();
 
-   // unbind framebuffer
    vp.framebuffer->unbind();
 }
 
@@ -116,11 +83,8 @@ void Renderer::resize(int width, int height) {
    this->width = width;
    this->height = height;
 
-   // update framebuffer
-   auto &vp = scene.viewports.front();
+   auto& vp = scene.viewports.front();
    vp.framebuffer->resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
-
-   // update camera
    vp.camera->setViewport(width, height);
 }
 }  // namespace Merlin

@@ -3,7 +3,6 @@
 
 #include "Engine/Camera.h"
 #include "Engine/Framebuffer.h"
-#include "Engine/lights/Light.h"
 
 namespace Merlin {
 
@@ -19,7 +18,9 @@ struct Viewport {
 class Scene {
  public:
    std::vector<Viewport> viewports;  // for multi-camera rendering
-   std::vector<std::unique_ptr<Light>> lights;
+   entt::registry registry; // ecs
+
+   // std::vector<std::unique_ptr<Light>> lights;
    // std::vector<std::unique_ptr<SceneObject>> objects; // todo: implement rendering targets
 
 };

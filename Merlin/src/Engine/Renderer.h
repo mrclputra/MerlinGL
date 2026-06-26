@@ -3,6 +3,9 @@
 
 #include "Engine/Scene.h"
 #include "Engine/components/Shader.h"
+#include "Engine/components/Mesh.h"
+#include "Engine/components/Material.h"
+#include "Engine/lights/DirectionalLight.h"
 
 namespace Merlin {
 // todo: we should refactor this class later down the line
@@ -24,9 +27,6 @@ class Renderer {
  private:
    int width;
    int height;
-   uint32_t vao = 0;
-   uint32_t vbo = 0;
-   uint32_t ebo = 0;
 };
 }  // namespace Merlin
 #endif  // MERLINGL_RENDERER_H

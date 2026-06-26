@@ -11,7 +11,10 @@ Application::Application(const std::string &title, int width, int height) {
    renderer = std::make_unique<Renderer>(width, height);
 
    // lights
-   renderer->scene.lights.push_back(std::make_unique<DirectionalLight>(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f)));
+   auto sun = renderer->scene.registry.create();
+   auto& dir = renderer->scene.registry.emplace<DirectionalLight>(sun);
+   dir.direction = glm::vec3(1.0f, -1.0f, 0.0f);
+   dir.updateLightSpaceMatrix();
 
    // callbacks
    EventBus::get().on<WindowResizeEvent>([this](const WindowResizeEvent &e) {
