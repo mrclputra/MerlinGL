@@ -64,8 +64,8 @@ glm::mat4 Camera::getProjectionMatrix() const {
    return glm::perspective(
        glm::radians(fov),
        static_cast<float>(viewportWidth) / static_cast<float>(viewportHeight),
-       near,
-       far);
+       nearPlane,
+       farPlane);
 }
 
 void Camera::rotate(float xOffset, float yOffset) {

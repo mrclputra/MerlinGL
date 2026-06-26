@@ -73,7 +73,7 @@ void Loader::processMesh(const aiMesh *mesh, const glm::mat4 &worldTransform, en
       if (mesh->HasTextureCoords(0)) {
          vertex.uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
       }
-      
+
       vertices.push_back(vertex);
    }
 
@@ -126,6 +126,19 @@ void Loader::processMesh(const aiMesh *mesh, const glm::mat4 &worldTransform, en
    registry.emplace<Transform>(e, t);
    registry.emplace<Mesh>(e, vao, vbo, ebo, (uint32_t)indices.size());
    registry.emplace<Material>(e); // todo: load from assimp material when texture support is added
+}
+
+void Loader::wipe(entt::registry &registry) {
+   // wipes the rendering buffer
+   // wipes the registry
+   auto view = registry.view<Mesh>();
+   for (auto entity : view) {
+      auto& mesh = view.get<Mesh>(entity);
+      glDeleteVertexArrays(1, &mesh.vao);
+      glDeleteBuffers(1, &mesh.vbo);
+      glDeleteBuffers(1, &mesh.ebo);
+   }
+   registry.clear();
 }
 
 glm::mat4 Loader::convertMatrix(const aiMatrix4x4& from) {

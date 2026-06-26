@@ -7,6 +7,7 @@ find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
+find_path(PORTABLE_FILE_DIALOGS_INCLUDE_DIRS "portable-file-dialogs.h")
 
 add_executable(MerlinEngine
         src/main.cpp
@@ -48,6 +49,7 @@ target_link_libraries(MerlinEngine PRIVATE
 
 target_include_directories(MerlinEngine PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    ${PORTABLE_FILE_DIALOGS_INCLUDE_DIRS}
 )
 
 target_precompile_headers(MerlinEngine PRIVATE src/pch.h)

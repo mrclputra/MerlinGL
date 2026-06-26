@@ -13,8 +13,8 @@ class Camera {
    float sensitivity = 0.07f;
    float speed = 3.0f;
    float fov = 50.0f;
-   float near = 0.1f;
-   float far = 10000.0f;
+   float nearPlane = 0.1f;
+   float farPlane = 10000.0f;
 
    explicit Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f));
 

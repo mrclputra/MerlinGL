@@ -1,4 +1,5 @@
 #include "GUI/GuiModule.h"
+#include "Engine/Loader.h"
 
 namespace Merlin {
 GuiModule::GuiModule(void *native_window) {
@@ -38,7 +39,7 @@ ImGuiContext *GuiModule::GetContext() {
    return ImGui::GetCurrentContext();
 }
 
-void GuiModule::Draw(uint32_t sceneTexture) {
+void GuiModule::Draw(uint32_t sceneTexture, entt::registry& registry) {
    ImGui_ImplOpenGL3_NewFrame();
    ImGui_ImplGlfw_NewFrame();  // sets io.DisplaySize from GLFW
    ImGui::NewFrame();
@@ -69,19 +70,39 @@ void GuiModule::Draw(uint32_t sceneTexture) {
 
    // logger
    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-   ImGui::SetNextWindowPos({10, 10}, ImGuiCond_Always);
+   ImGui::SetNextWindowPos({10, io.DisplaySize.y - 10}, ImGuiCond_Always, {0.0f, 1.0f});
    ImGui::SetNextWindowBgAlpha(0.0f);
    ImGui::Begin("Log", nullptr,
       ImGuiWindowFlags_NoDecoration |
       ImGuiWindowFlags_NoInputs |
       ImGuiWindowFlags_AlwaysAutoResize |
       ImGuiWindowFlags_NoNav);
+   ImGui::SetWindowFontScale(0.82f);
    for (auto &msg : ringSink->last_formatted())
-      ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.35f), "%s", msg.c_str());
-      // ImGui::TextUnformatted(msg.c_str());
+      ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.7f), "%s", msg.c_str());
+   ImGui::SetWindowFontScale(1.0f);
    ImGui::End();
    ImGui::PopStyleVar();
-   // end draw calls
+
+   // config
+   ImGui::SetNextWindowPos({10, 50}, ImGuiCond_Once);
+   ImGui::Begin("Config", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+   // TODO: load button should open the windows file api
+   //    -> pass resulting string to the loader and update registry
+
+   ImGui::Text("MerlinGL!!!");
+   if (ImGui::Button("load mesh")) {
+      SPDLOG_INFO("load file button pressed");
+      if (const auto results = pfd::open_file("Load Mesh", ".", {"3D Models", "*.gltf *.glb *.ply *.obj", "All Files", "*"}).result(); !results.empty()) {
+         Loader::wipe(registry);
+         Loader::load(results[0], registry);
+      } else {
+         SPDLOG_INFO("no file selected");
+      }
+   }
+
+   ImGui::End();
 
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

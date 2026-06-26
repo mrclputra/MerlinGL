@@ -24,5 +24,8 @@
   }, {
     "name" : "entt",
     "version>=" : "3.16.0"
+  }, {
+    "name" : "portable-file-dialogs",
+    "version>=" : "0.1.0"
   } ]
 }

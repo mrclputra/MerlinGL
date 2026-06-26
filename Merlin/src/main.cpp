@@ -22,7 +22,7 @@ int main() {
    // - this is a rewrite of the rendering engine; use ../.src/ for old system reference
    // - I should turn it into a library later down the line once everything is in the right place
 
-   auto app = Merlin::Application("MerlinGL", 1280, 720);
+   auto app = Merlin::Application("Merlin", 1280, 720);
    app.run();
 
    return 0;

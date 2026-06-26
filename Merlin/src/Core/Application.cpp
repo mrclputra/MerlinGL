@@ -12,7 +12,7 @@ Application::Application(const std::string &title, int width, int height) {
    renderer = std::make_unique<Renderer>(width, height);
 
    // load models
-   Loader::load("C:/Users/Marcelino/Desktop/tests/meshes/stanford_dragon_pbr/scene.gltf", renderer->scene.registry);
+   // Loader::load("C:/Users/Marcelino/Desktop/tests/meshes/stanford_dragon_pbr/scene.gltf", renderer->scene.registry);
 
    // lights
    auto sun = renderer->scene.registry.create();
@@ -80,7 +80,7 @@ void Application::run() {
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      guiModule->Draw(renderer->scene.viewports.front().framebuffer->colorAttachments[0]);
+      guiModule->Draw(renderer->scene.viewports.front().framebuffer->colorAttachments[0], renderer->scene.registry);
 
       window->swapBuffers();
    }
