@@ -22,7 +22,11 @@ Application::Application(const std::string &title, int width, int height) {
    dir.direction = glm::vec3(0.5f, -1.0f, 0.0f);
    // dir.updateLightSpaceMatrix();
 
-   // callbacks
+   // event callbacks
+   EventBus::get().on<LoadModelEvent>([this](const LoadModelEvent &e) {
+      loader.wipe(renderer->scene.registry);
+      loader.load(e.path);
+   });
    EventBus::get().on<WindowResizeEvent>([this](const WindowResizeEvent &e) {
       SPDLOG_INFO("WINDOW_RESIZE_EVENT: {},{}", e.width, e.height);
       renderer->resize(e.width, e.height);
@@ -73,6 +77,9 @@ void Application::run() {
 
       glfwSetInputMode(window->getNative(), GLFW_CURSOR, vp.focused ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 
+      // todo: not sure if this is the right place to put it
+      loader.poll(renderer->scene.registry);
+
       window->pollEvents();
       renderer->render();
 
@@ -80,7 +87,7 @@ void Application::run() {
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      guiModule->Draw(renderer->scene.viewports.front().framebuffer->colorAttachments[0], renderer->scene.registry);
+      guiModule->Draw(renderer->scene.viewports.front().framebuffer->colorAttachments[0]);
 
       window->swapBuffers();
    }

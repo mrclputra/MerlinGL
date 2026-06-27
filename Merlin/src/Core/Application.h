@@ -3,6 +3,7 @@
 
 #include "Core/Window.h"
 #include "Engine/Renderer.h"
+#include "Engine/Loader.h"
 #include "GUI/GuiModule.h"
 
 namespace Merlin {
@@ -18,6 +19,8 @@ class Application {
    std::unique_ptr<Window> window;
    std::unique_ptr<GuiModule> guiModule;
    std::unique_ptr<Renderer> renderer;
+
+   Loader loader;
 };
 }  // namespace Merlin
 #endif  // MERLINGL_APPLICATION_H

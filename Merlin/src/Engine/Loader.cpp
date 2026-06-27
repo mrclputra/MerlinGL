@@ -5,9 +5,22 @@
 
 namespace Merlin {
 
-void Loader::load(const std::string &path, entt::registry &registry) {
+void Loader::load(const std::string &path) {
    SPDLOG_INFO("assimp load: {}", path);
+   loadFuture = std::async(std::launch::async, [this, path] { loadWorker(path); });
+}
 
+void Loader::poll(entt::registry &registry) {
+   if (!loadFuture.valid())
+      return;
+   if (loadFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+      return;
+   loadFuture.get();
+   done(registry);
+   SPDLOG_INFO("model loaded successfully");
+}
+
+void Loader::loadWorker(const std::string &path) {
    Assimp::Importer importer;
    const aiScene* scene = importer.ReadFile(path,
       aiProcess_Triangulate |
@@ -28,36 +41,33 @@ void Loader::load(const std::string &path, entt::registry &registry) {
    // size_t lastSlash = path.find_last_of('/');
    // directory = (lastSlash != std::string::npos) ? path.substr(0, lastSlash + 1) : "";
 
-   processNode(scene->mRootNode, scene, glm::mat4(1.0f), registry); // recursive
-
-   SPDLOG_INFO("model loaded successfully");
+   processNode(scene->mRootNode, scene, glm::mat4(1.0f)); // recursive
 }
 
-void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, entt::registry &registry) {
+void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform) {
    glm::mat4 nodeTransform = convertMatrix(node->mTransformation);
    glm::mat4 globalTransform = parentTransform * nodeTransform;
 
    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      processMesh(mesh, globalTransform, registry);
+      processMesh(mesh, globalTransform);
    }
 
    for (unsigned int i = 0; i < node->mNumChildren; i++) {
       // recursively process children
-      processNode(node->mChildren[i], scene, globalTransform, registry);
+      processNode(node->mChildren[i], scene, globalTransform);
    }
 }
 
-void Loader::processMesh(const aiMesh *mesh, const glm::mat4 &worldTransform, entt::registry &registry) {
+void Loader::processMesh(const aiMesh *mesh, const glm::mat4 &worldTransform) {
    SPDLOG_INFO("mesh '{}': {} verts, {} faces", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
    if (!mesh->HasNormals())
       SPDLOG_WARN("mesh '{}' has no normals", mesh->mName.C_Str());
    if (!mesh->HasTextureCoords(0))
       SPDLOG_WARN("mesh '{}' has no UVs", mesh->mName.C_Str());
 
-   std::vector<Vertex> vertices;
-   std::vector<unsigned int> indices;
-   vertices.reserve(mesh->mNumVertices);
+   MeshData meshData;
+   meshData.vertices.reserve(mesh->mNumVertices);
 
    // process each vertex in a mesh
    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -74,58 +84,69 @@ void Loader::processMesh(const aiMesh *mesh, const glm::mat4 &worldTransform, en
          vertex.uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
       }
 
-      vertices.push_back(vertex);
+      meshData.vertices.push_back(vertex);
    }
 
    // process indices
    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
       aiFace& face = mesh->mFaces[i];
       for (unsigned int j = 0; j < face.mNumIndices; j++) {
-         indices.push_back(face.mIndices[j]);
+         meshData.indices.push_back(face.mIndices[j]);
       }
    }
 
-   uint32_t vao, vbo, ebo;
-   glGenVertexArrays(1, &vao);
-   glGenBuffers(1, &vbo);
-   glGenBuffers(1, &ebo);
+   meshLoadQueue.emplace(meshData); // add to the uploading queue
 
-   glBindVertexArray(vao);
+}
+void Loader::done(entt::registry& registry) {
+   // loops through all meshdata in the queue and upload
+   while (!meshLoadQueue.empty()) {
+      auto meshData = meshLoadQueue.front(); // this creates a copy so we should be able to pop safely
+      meshLoadQueue.pop();
 
-   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+      uint32_t vao, vbo, ebo;
+      glGenVertexArrays(1, &vao);
+      glGenBuffers(1, &vbo);
+      glGenBuffers(1, &ebo);
 
-   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+      glBindVertexArray(vao);
 
-   // attributes
-   // position
-   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-   glEnableVertexAttribArray(0);
-   // normal
-   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-   glEnableVertexAttribArray(1);
-   // uv
-   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
-   glEnableVertexAttribArray(2);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glBufferData(GL_ARRAY_BUFFER, meshData.vertices.size() * sizeof(Vertex), meshData.vertices.data(), GL_STATIC_DRAW);
 
-   glBindVertexArray(0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshData.indices.size() * sizeof(unsigned int), meshData.indices.data(), GL_STATIC_DRAW);
 
-   // decompose world transform into position/rotation/scale for the Transform component
-   glm::vec3 position, scale, skew;
-   glm::vec4 perspective;
-   glm::quat orientation;
-   glm::decompose(worldTransform, scale, orientation, position, skew, perspective);
+      // attributes
+      // position
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+      glEnableVertexAttribArray(0);
+      // normal
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+      glEnableVertexAttribArray(1);
+      // uv
+      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+      glEnableVertexAttribArray(2);
 
-   Transform t;
-   t.position = position;
-   t.scale    = scale;
-   t.rotation = glm::degrees(glm::eulerAngles(orientation)); // quat -> euler -> degrees
+      glBindVertexArray(0);
 
-   auto e = registry.create();
-   registry.emplace<Transform>(e, t);
-   registry.emplace<Mesh>(e, vao, vbo, ebo, (uint32_t)indices.size());
-   registry.emplace<Material>(e); // todo: load from assimp material when texture support is added
+      // decompose world transform into position rotation and scale
+      // glm::vec3 position, scale, skew;
+      // glm::vec4 perspective;
+      // glm::quat orientation;
+      // glm::decompose(worldTransform, scale, orientation, position, skew, perspective);
+
+      Transform t;
+      // todo: TEMPORARY: WHILE I FIGURE OUT THREADING
+      // t.position = position;
+      // t.scale = scale;
+      // t.rotation = glm::degrees(glm::eulerAngles(orientation)); // quat -> euler -> degrees
+
+      auto e = registry.create();
+      registry.emplace<Transform>(e, t);
+      registry.emplace<Mesh>(e, vao, vbo, ebo, (uint32_t)meshData.indices.size());
+      registry.emplace<Material>(e);
+   }
 }
 
 void Loader::wipe(entt::registry &registry) {

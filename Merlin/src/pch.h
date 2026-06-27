@@ -20,6 +20,8 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <future>
+#include <queue>
 #include <set>
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>

@@ -9,7 +9,7 @@ class GuiModule {
 
    static ImGuiContext *GetContext();
 
-   void Draw(uint32_t sceneTexture, entt::registry& registry);
+   void Draw(uint32_t sceneTexture);
 
    // todo: refactor for multiviewports
    float viewportWidth;

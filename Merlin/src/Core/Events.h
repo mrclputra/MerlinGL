@@ -8,7 +8,8 @@ enum class EventType {
    KeyPressed,
    KeyReleased,
    MouseMoved,
-   MouseScrolled
+   MouseScrolled,
+   LoadModel
 };
 
 struct WindowCloseEvent {
@@ -37,6 +38,10 @@ struct MouseMovedEvent {
 struct MouseScrolledEvent {
    static constexpr EventType type = EventType::MouseScrolled;
    float delta;
+};
+struct LoadModelEvent {
+   static constexpr EventType type = EventType::LoadModel;
+   std::string path;
 };
 
 }  // namespace Merlin

@@ -3,25 +3,37 @@
 
 namespace Merlin {
 
-// todo: move to proper place
 struct Vertex {
    glm::vec3 position;
    glm::vec3 normal;
    glm::vec2 uv;
 };
 
-// this class should not own anything but rather write to existing datastructures
-// todo: implement multithreading; refer to my Calder engine on how to do this with std::thread
-//    -> just make sure the OpenGL api upload calls are back in the main thread
+// existing load functions needs to write to this struct
+// then we reuse it in the done function
+struct MeshData {
+   std::vector<Vertex> vertices;
+   std::vector<unsigned int> indices;
+};
+
 class Loader {
 public:
-   static void load(const std::string& path, entt::registry& registry);
-   static void wipe(entt::registry& registry);
+   void load(const std::string& path);
+   void poll(entt::registry& registry); // call this each frame; uploads when ready
+   void wipe(entt::registry& registry);
 
 private:
-   static void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, entt::registry& registry);
-   static void processMesh(const aiMesh* mesh, const glm::mat4& worldTransform, entt::registry& registry);
+   std::future<void> loadFuture;
+   std::queue<MeshData> meshLoadQueue;
+
+   void loadWorker(const std::string& path);
+   void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform);
+   void processMesh(const aiMesh* mesh, const glm::mat4& worldTransform);
    // todo: add texture loader
+
+   // this function will upload the loaded data to the gpu
+   // maybe should name it upload() instead?
+   void done(entt::registry& registry);
 
    // assimp matrix to opengl, necessary
    // https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/assimp_glm_helpers.h

@@ -1,5 +1,6 @@
 #include "GUI/GuiModule.h"
-#include "Engine/Loader.h"
+#include "Core/EventBus.h"
+#include "Core/Events.h"
 
 namespace Merlin {
 GuiModule::GuiModule(void *native_window) {
@@ -39,7 +40,7 @@ ImGuiContext *GuiModule::GetContext() {
    return ImGui::GetCurrentContext();
 }
 
-void GuiModule::Draw(uint32_t sceneTexture, entt::registry& registry) {
+void GuiModule::Draw(uint32_t sceneTexture) {
    ImGui_ImplOpenGL3_NewFrame();
    ImGui_ImplGlfw_NewFrame();  // sets io.DisplaySize from GLFW
    ImGui::NewFrame();
@@ -95,8 +96,7 @@ void GuiModule::Draw(uint32_t sceneTexture, entt::registry& registry) {
    if (ImGui::Button("load mesh")) {
       SPDLOG_INFO("load file button pressed");
       if (const auto results = pfd::open_file("Load Mesh", ".", {"3D Models", "*.gltf *.glb *.ply *.obj", "All Files", "*"}).result(); !results.empty()) {
-         Loader::wipe(registry);
-         Loader::load(results[0], registry);
+         EventBus::get().emit(LoadModelEvent{results[0]});
       } else {
          SPDLOG_INFO("no file selected");
       }
