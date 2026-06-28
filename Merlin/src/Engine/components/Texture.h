@@ -4,19 +4,10 @@
 #include <stb_image.h>
 
 namespace Merlin {
-enum class TextureType {
-   ALBEDO,
-   METALLIC_ROUGHNESS,
-   NORMAL,
-   OCCLUSION,
-   EMISSION
-};
-
 // api wrapper class for opengl textures
 class Texture {
 public:
-   Texture(const std::string& path, TextureType type = TextureType::ALBEDO) {
-      this->type = type;
+   Texture(const std::string& path) {
       this->path = path;
 
       stbi_set_flip_vertically_on_load(false);
@@ -38,7 +29,6 @@ public:
    }
 
    unsigned int id{0};
-   TextureType type{TextureType::ALBEDO};
    int width{0};
    int height{0};
    int channels{0};

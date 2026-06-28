@@ -105,13 +105,22 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const std::st
    // load textures
    if (mesh->mMaterialIndex < scene->mNumMaterials) {
       aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];
+
+      // base color
       aiColor4D color;
       if (AI_SUCCESS == aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
          meshData.material.albedo = glm::vec3(color.r, color.g, color.b);
       }
+
+      // diffuse map
       aiString texPath;
-      if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == AI_SUCCESS)
+      if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == AI_SUCCESS) {
          meshData.material.albedoMap = std::make_shared<Texture>(directory + texPath.C_Str());
+      }
+      // normal map
+      if (aiMat->GetTexture(aiTextureType_NORMALS, 0, &texPath) == AI_SUCCESS) {
+         meshData.material.normalMap = std::make_shared<Texture>(directory + texPath.C_Str());
+      }
    }
 
    meshLoadQueue.emplace(meshData); // add to upload queue
@@ -148,8 +157,11 @@ void Loader::upload(entt::registry& registry) {
 
       glBindVertexArray(0);
 
+      // upload textures
       if (meshData.material.albedoMap)
          meshData.material.albedoMap->upload();
+      if (meshData.material.normalMap)
+         meshData.material.normalMap->upload();
 
       // todo: TEMPORARY: WHILE I FIGURE OUT THREADING, may or not be needed actually
       // decompose world transform into position rotation and scale

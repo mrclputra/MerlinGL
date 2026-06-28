@@ -68,6 +68,13 @@ void Renderer::render() {
       } else {
          shader->setInt("hasAlbedoMap", 0);
       }
+      if (mat.normalMap) {
+         mat.normalMap->bind(1);
+         shader->setInt("uNormalMap", 1);
+         shader->setInt("hasNormalMap", 1);
+      } else {
+         shader->setInt("hasNormalMap", 0);
+      }
 
       shader->setMat4("model", t.getTransformMatrix());
       shader->setVec3("material.albedo", mat.albedo);
