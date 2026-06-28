@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "Engine/Loader.h"
 #include "Engine/components/Transform.h"
 #include "Engine/components/Mesh.h"
@@ -16,7 +17,7 @@ void Loader::poll(entt::registry &registry) {
    if (loadFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
       return;
    loadFuture.get();
-   done(registry);
+   upload(registry);
    SPDLOG_INFO("model loaded successfully");
 }
 
@@ -34,32 +35,37 @@ void Loader::loadWorker(const std::string &path) {
       return;
    }
 
-   SPDLOG_INFO("model info: {} meshes,", scene->mNumMeshes);
+   SPDLOG_INFO("model info: {} meshes, {} materials, {} textures",
+      scene->mNumMeshes, scene->mNumMaterials, scene->mNumTextures);
 
-   // this might be needed later when we do textures and multi-file references
-   // std::string directory;
-   // size_t lastSlash = path.find_last_of('/');
-   // directory = (lastSlash != std::string::npos) ? path.substr(0, lastSlash + 1) : "";
+   // assimp provides relative file path references
+   // as such we need to process with the directory in mind as well so we can retrieve said images
+   std::string directory;
+   size_t lastSlash = path.find_last_of("/\\");
+   directory = (lastSlash != std::string::npos) ? path.substr(0, lastSlash + 1) : "";
 
-   processNode(scene->mRootNode, scene, glm::mat4(1.0f)); // recursive
+   // todo: see if we need to implement conditional to process embedded textures
+   // todo: see old modelloader class in .src/, i think it is the best approach i have
+
+   processNode(scene->mRootNode, scene, glm::mat4(1.0f), directory); // recursive
 }
 
-void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform) {
+void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, const std::string& directory) {
    glm::mat4 nodeTransform = convertMatrix(node->mTransformation);
    glm::mat4 globalTransform = parentTransform * nodeTransform;
 
    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      processMesh(mesh, globalTransform);
+      processMesh(mesh, scene, directory);
    }
 
    for (unsigned int i = 0; i < node->mNumChildren; i++) {
       // recursively process children
-      processNode(node->mChildren[i], scene, globalTransform);
+      processNode(node->mChildren[i], scene, globalTransform, directory);
    }
 }
 
-void Loader::processMesh(const aiMesh *mesh, const glm::mat4 &worldTransform) {
+void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const std::string& directory) {
    SPDLOG_INFO("mesh '{}': {} verts, {} faces", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
    if (!mesh->HasNormals())
       SPDLOG_WARN("mesh '{}' has no normals", mesh->mName.C_Str());
@@ -95,10 +101,22 @@ void Loader::processMesh(const aiMesh *mesh, const glm::mat4 &worldTransform) {
       }
    }
 
-   meshLoadQueue.emplace(meshData); // add to the uploading queue
 
+   // load textures
+   if (mesh->mMaterialIndex < scene->mNumMaterials) {
+      aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];
+      aiColor4D color;
+      if (AI_SUCCESS == aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
+         meshData.material.albedo = glm::vec3(color.r, color.g, color.b);
+      }
+      aiString texPath;
+      if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == AI_SUCCESS)
+         meshData.material.albedoMap = std::make_shared<Texture>(directory + texPath.C_Str());
+   }
+
+   meshLoadQueue.emplace(meshData); // add to upload queue
 }
-void Loader::done(entt::registry& registry) {
+void Loader::upload(entt::registry& registry) {
    // loops through all meshdata in the queue and upload
    while (!meshLoadQueue.empty()) {
       auto meshData = meshLoadQueue.front(); // this creates a copy so we should be able to pop safely
@@ -130,14 +148,16 @@ void Loader::done(entt::registry& registry) {
 
       glBindVertexArray(0);
 
+      if (meshData.material.albedoMap)
+         meshData.material.albedoMap->upload();
+
+      // todo: TEMPORARY: WHILE I FIGURE OUT THREADING, may or not be needed actually
       // decompose world transform into position rotation and scale
       // glm::vec3 position, scale, skew;
       // glm::vec4 perspective;
       // glm::quat orientation;
       // glm::decompose(worldTransform, scale, orientation, position, skew, perspective);
-
       Transform t;
-      // todo: TEMPORARY: WHILE I FIGURE OUT THREADING
       // t.position = position;
       // t.scale = scale;
       // t.rotation = glm::degrees(glm::eulerAngles(orientation)); // quat -> euler -> degrees
@@ -145,7 +165,7 @@ void Loader::done(entt::registry& registry) {
       auto e = registry.create();
       registry.emplace<Transform>(e, t);
       registry.emplace<Mesh>(e, vao, vbo, ebo, (uint32_t)meshData.indices.size());
-      registry.emplace<Material>(e);
+      registry.emplace<Material>(e, std::move(meshData.material));
    }
 }
 

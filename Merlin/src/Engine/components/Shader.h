@@ -9,7 +9,6 @@ class Shader {
    ~Shader();
 
    void bind();
-
    void unbind();
 
    // uniforms

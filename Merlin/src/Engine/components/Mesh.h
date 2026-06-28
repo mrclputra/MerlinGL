@@ -4,6 +4,7 @@
 namespace Merlin {
 
 struct Mesh {
+   // note that these are implicitly converted to GLsizei on call
    uint32_t vao, vbo, ebo;
    uint32_t indexCount;
 };

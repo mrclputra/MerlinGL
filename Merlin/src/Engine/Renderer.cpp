@@ -51,7 +51,7 @@ void Renderer::render() {
 
    // upload lights
    int numDirLights = 0;
-   for (auto [entity, dir] : scene.registry.view<DirectionalLight>().each()) {
+   for (const auto& [entity, dir] : scene.registry.view<DirectionalLight>().each()) {
       std::string base = "dirLights[" + std::to_string(numDirLights) + "]";
       shader->setVec3(base + ".direction", dir.direction);
       shader->setVec3(base + ".color",     dir.color);
@@ -60,12 +60,20 @@ void Renderer::render() {
    shader->setInt("numDirLights", numDirLights);
 
    // render meshes
-   for (auto [entity, t, mesh, mat] : scene.registry.view<Transform, Mesh, Material>().each()) {
-      shader->setMat4("model",              t.getTransformMatrix());
-      shader->setVec3("material.albedo",    mat.albedo);
+   for (const auto [entity, t, mesh, mat] : scene.registry.view<Transform, Mesh, Material>().each()) {
+      if (mat.albedoMap) {
+         mat.albedoMap->bind(0);
+         shader->setInt("uAlbedoMap", 0);
+         shader->setInt("hasAlbedoMap", 1);
+      } else {
+         shader->setInt("hasAlbedoMap", 0);
+      }
+
+      shader->setMat4("model", t.getTransformMatrix());
+      shader->setVec3("material.albedo", mat.albedo);
       shader->setFloat("material.roughness", mat.roughness);
-      shader->setFloat("material.metallic",  mat.metallic);
-      shader->setFloat("material.ao",        mat.ao);
+      shader->setFloat("material.metallic", mat.metallic);
+      shader->setFloat("material.ao", mat.ao);
       glBindVertexArray(mesh.vao);
       glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
    }

@@ -27,5 +27,8 @@
   }, {
     "name" : "portable-file-dialogs",
     "version>=" : "0.1.0"
+  }, {
+    "name" : "stb",
+    "version>=" : "2024-07-29#1"
   } ]
 }

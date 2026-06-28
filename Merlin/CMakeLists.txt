@@ -8,6 +8,7 @@ find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 find_path(PORTABLE_FILE_DIALOGS_INCLUDE_DIRS "portable-file-dialogs.h")
+find_path(STB_INCLUDE_DIRS "stb_image.h")
 
 add_executable(MerlinEngine
         src/main.cpp
@@ -35,6 +36,7 @@ add_executable(MerlinEngine
         src/Engine/Loader.h
         src/Engine/components/Mesh.h
         src/Engine/components/Material.h
+        src/Engine/components/Texture.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE
@@ -50,6 +52,7 @@ target_link_libraries(MerlinEngine PRIVATE
 target_include_directories(MerlinEngine PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
     ${PORTABLE_FILE_DIALOGS_INCLUDE_DIRS}
+    ${STB_INCLUDE_DIRS}
 )
 
 target_precompile_headers(MerlinEngine PRIVATE src/pch.h)

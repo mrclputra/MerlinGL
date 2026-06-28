@@ -1,6 +1,8 @@
 #ifndef MERLINGL_LOADER_H
 #define MERLINGL_LOADER_H
 
+#include "components/Material.h"
+
 namespace Merlin {
 
 struct Vertex {
@@ -14,6 +16,7 @@ struct Vertex {
 struct MeshData {
    std::vector<Vertex> vertices;
    std::vector<unsigned int> indices;
+   Material material;
 };
 
 class Loader {
@@ -27,13 +30,13 @@ private:
    std::queue<MeshData> meshLoadQueue;
 
    void loadWorker(const std::string& path);
-   void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform);
-   void processMesh(const aiMesh* mesh, const glm::mat4& worldTransform);
+   void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, const std::string& directory);
+   void processMesh(const aiMesh *mesh, const aiScene* scene, const std::string& directory);
    // todo: add texture loader
 
    // this function will upload the loaded data to the gpu
    // maybe should name it upload() instead?
-   void done(entt::registry& registry);
+   void upload(entt::registry& registry);
 
    // assimp matrix to opengl, necessary
    // https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/assimp_glm_helpers.h

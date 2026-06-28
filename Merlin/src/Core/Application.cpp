@@ -18,7 +18,6 @@ Application::Application(const std::string &title, int width, int height) {
    auto sun = renderer->scene.registry.create();
    auto& dir = renderer->scene.registry.emplace<DirectionalLight>(sun);
    dir.color = glm::vec3(1.0f, 0.93f, 0.83f);
-   // dir.color = glm::vec3(1.0f, 0.79f, 0.58f);
    dir.direction = glm::vec3(0.5f, -1.0f, 0.0f);
    // dir.updateLightSpaceMatrix();
 
