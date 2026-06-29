@@ -45,18 +45,18 @@ void Loader::loadWorker(const std::string &path) {
    directory = (lastSlash != std::string::npos) ? path.substr(0, lastSlash + 1) : "";
 
    // todo: see if we need to implement conditional to process embedded textures
-   // todo: see old modelloader class in .src/, i think it is the best approach i have
+   // todo:    compiled binaries support, does not require directory though
 
    processNode(scene->mRootNode, scene, glm::mat4(1.0f), directory); // recursive
 }
 
 void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, const std::string& directory) {
    glm::mat4 nodeTransform = convertMatrix(node->mTransformation);
-   glm::mat4 globalTransform = parentTransform * nodeTransform;
+   glm::mat4 globalTransform = parentTransform * nodeTransform; // relative to 0,0,0
 
    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      processMesh(mesh, scene, directory);
+      processMesh(mesh, scene, globalTransform, directory);
    }
 
    for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -65,7 +65,7 @@ void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::ma
    }
 }
 
-void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const std::string& directory) {
+void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory) {
    SPDLOG_INFO("mesh '{}': {} verts, {} faces", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
    if (!mesh->HasNormals())
       SPDLOG_WARN("mesh '{}' has no normals", mesh->mName.C_Str());
@@ -74,6 +74,8 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const std::st
 
    MeshData meshData;
    meshData.vertices.reserve(mesh->mNumVertices);
+
+   meshData.transform = globalTransform;
 
    // process each vertex in a mesh
    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -165,19 +167,21 @@ void Loader::upload(entt::registry& registry) {
 
       // todo: TEMPORARY: WHILE I FIGURE OUT THREADING, may or not be needed actually
       // decompose world transform into position rotation and scale
-      // glm::vec3 position, scale, skew;
-      // glm::vec4 perspective;
-      // glm::quat orientation;
-      // glm::decompose(worldTransform, scale, orientation, position, skew, perspective);
+      glm::vec3 position, scale, skew;
+      glm::vec4 perspective;
+      glm::quat orientation;
+      glm::decompose(meshData.transform, scale, orientation, position, skew, perspective);
+
       Transform t;
-      // t.position = position;
-      // t.scale = scale;
-      // t.rotation = glm::degrees(glm::eulerAngles(orientation)); // quat -> euler -> degrees
+      t.position = position;
+      t.scale = scale;
+      t.rotation = glm::degrees(glm::eulerAngles(orientation)); // quat -> euler -> degrees, maybe a different convention would be good?
 
       auto e = registry.create();
       registry.emplace<Transform>(e, t);
-      registry.emplace<Mesh>(e, vao, vbo, ebo, (uint32_t)meshData.indices.size());
+      registry.emplace<Mesh>(e, vao, vbo, ebo, static_cast<uint32_t>(meshData.indices.size()));
       registry.emplace<Material>(e, std::move(meshData.material));
+      SPDLOG_INFO("uploaded registry entity {} @ ({}, {}, {})", static_cast<uint32_t>(e), t.position.x, t.position.y, t.position.z);
    }
 }
 

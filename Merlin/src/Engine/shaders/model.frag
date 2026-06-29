@@ -32,7 +32,7 @@ void main() {
 
     vec3 albedo = hasAlbedoMap ? texture(uAlbedoMap, vUV).rgb : material.albedo;
     vec3 normal = hasNormalMap ? normalize(texture(uNormalMap, vUV).rgb * 2.0 - 1.0) : vec3(1.0f, 0.0f, 1.0f);
-    FragColor = vec4(normal, 1.0f);
+//    FragColor = vec4(normal, 1.0f);
 
     // preview vertex normals
 //    vec3 nm = vNormal * 0.5 + 0.5;
@@ -40,9 +40,8 @@ void main() {
 
 //    vec3 diff = dot(-normalize(dirLights[0].direction), normalize(vNormal)) * dirLights[0].color * material.albedo;
 
-    // some silly formulas
+    // silly formulas for diffuse
     // https://lisyarus.github.io/blog/posts/a-silly-diffuse-shading-model.html
-//    vec3 diff = pow(0.5 + 0.5 * dot(-normalize(dirLights[0].direction), normalize(vNormal)), 2.0) * vNormal * dirLights[0].color;
-//    vec3 diff = pow(0.5 + 0.5 * dot(-normalize(dirLights[0].direction), normalize(vNormal)), 2.0) * albedo * dirLights[0].color;
-//    FragColor = vec4(diff, 1.0f);
+    vec3 diff = pow(0.5 + 0.5 * dot(-normalize(dirLights[0].direction), normalize(vNormal)), 2.0) * albedo * dirLights[0].color;
+    FragColor = vec4(diff, 1.0f);
 }

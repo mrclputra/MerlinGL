@@ -2,6 +2,7 @@
 #define MERLINGL_LOADER_H
 
 #include "components/Material.h"
+#include "components/Transform.h"
 
 namespace Merlin {
 
@@ -16,6 +17,7 @@ struct Vertex {
 struct MeshData {
    std::vector<Vertex> vertices;
    std::vector<unsigned int> indices;
+   glm::mat4 transform;
    Material material;
 };
 
@@ -31,8 +33,7 @@ private:
 
    void loadWorker(const std::string& path);
    void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, const std::string& directory);
-   void processMesh(const aiMesh *mesh, const aiScene* scene, const std::string& directory);
-   // todo: add texture loader
+   void processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory);
 
    // this function will upload the loaded data to the gpu
    // maybe should name it upload() instead?
