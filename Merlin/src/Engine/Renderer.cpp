@@ -1,10 +1,12 @@
 #include "Engine/Renderer.h"
+
 #include "Engine/Camera.h"
 #include "Engine/Framebuffer.h"
-#include "Engine/lights/DirectionalLight.h"
-#include "Engine/components/Transform.h"
-#include "Engine/components/Mesh.h"
 #include "Engine/components/Material.h"
+#include "Engine/components/Mesh.h"
+#include "Engine/components/Transform.h"
+#include "Engine/lights/DirectionalLight.h"
+#include "Engine/components/PointCloud.h"
 
 namespace Merlin {
 Renderer::Renderer(int width, int height) {
@@ -16,8 +18,10 @@ Renderer::Renderer(int width, int height) {
 
 void Renderer::initialize() {
    glEnable(GL_DEPTH_TEST);
+   glEnable(GL_PROGRAM_POINT_SIZE);
 
-   shader = std::make_shared<Shader>("shaders/model.vert", "shaders/model.frag");
+   pcdShader = std::make_shared<Shader>("shaders/pcd.vert", "shaders/pcd.frag");
+   meshShader = std::make_shared<Shader>("shaders/mesh.vert", "shaders/mesh.frag");
 
    Viewport vp;
    vp.camera = std::make_unique<Camera>();
@@ -43,50 +47,63 @@ void Renderer::render() {
 
    // this is the base shader;
    // we will need to add support for multiple shaders and targets in the future
-   shader->bind();
+   meshShader->bind();
 
    // upload camera uniforms
-   shader->setMat4("view", vp.camera->getViewMatrix());
-   shader->setMat4("projection", vp.camera->getProjectionMatrix());
+   meshShader->setMat4("view", vp.camera->getViewMatrix());
+   meshShader->setMat4("projection", vp.camera->getProjectionMatrix());
 
    // upload lights
    int numDirLights = 0;
    for (const auto& [entity, dir] : scene.registry.view<DirectionalLight>().each()) {
       std::string base = "dirLights[" + std::to_string(numDirLights) + "]";
-      shader->setVec3(base + ".direction", dir.direction);
-      shader->setVec3(base + ".color",     dir.color);
+      meshShader->setVec3(base + ".direction", dir.direction);
+      meshShader->setVec3(base + ".color",     dir.color);
       numDirLights++;
    }
-   shader->setInt("numDirLights", numDirLights);
+   meshShader->setInt("numDirLights", numDirLights);
 
    // render meshes
    for (const auto [entity, t, mesh, mat] : scene.registry.view<Transform, Mesh, Material>().each()) {
       if (mat.albedoMap) {
          mat.albedoMap->bind(0);
-         shader->setInt("uAlbedoMap", 0);
-         shader->setInt("hasAlbedoMap", 1);
+         meshShader->setInt("uAlbedoMap", 0);
+         meshShader->setInt("hasAlbedoMap", 1);
       } else {
-         shader->setInt("hasAlbedoMap", 0);
+         meshShader->setInt("hasAlbedoMap", 0);
       }
       if (mat.normalMap) {
          mat.normalMap->bind(1);
-         shader->setInt("uNormalMap", 1);
-         shader->setInt("hasNormalMap", 1);
+         meshShader->setInt("uNormalMap", 1);
+         meshShader->setInt("hasNormalMap", 1);
       } else {
-         shader->setInt("hasNormalMap", 0);
+         meshShader->setInt("hasNormalMap", 0);
       }
 
-      shader->setMat4("model", t.getTransformMatrix());
-      shader->setVec3("material.albedo", mat.albedo);
-      shader->setFloat("material.roughness", mat.roughness);
-      shader->setFloat("material.metallic", mat.metallic);
-      shader->setFloat("material.ao", mat.ao);
+      meshShader->setMat4("model", t.getTransformMatrix());
+      meshShader->setVec3("material.albedo", mat.albedo);
+      meshShader->setFloat("material.roughness", mat.roughness);
+      meshShader->setFloat("material.metallic", mat.metallic);
+      meshShader->setFloat("material.ao", mat.ao);
       glBindVertexArray(mesh.vao);
       glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, nullptr);
    }
 
    glBindVertexArray(0);
-   shader->unbind();
+   meshShader->unbind();
+
+   // point clouds
+   pcdShader->bind();
+   pcdShader->setMat4("view", vp.camera->getViewMatrix());
+   pcdShader->setMat4("projection", vp.camera->getProjectionMatrix());
+
+   for (const auto [entity, t, pcd] : scene.registry.view<Transform, PointCloud>().each()) {
+      pcdShader->setMat4("model", t.getTransformMatrix());
+      glBindVertexArray(pcd.vao);
+      glDrawArrays(GL_POINTS, 0, pcd.vertexCount);
+   }
+   glBindVertexArray(0);
+   pcdShader->unbind();
 
    vp.framebuffer->unbind();
 }

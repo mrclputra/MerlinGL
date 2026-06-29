@@ -1,8 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "Engine/Loader.h"
+
 #include "Engine/components/Transform.h"
 #include "Engine/components/Mesh.h"
 #include "Engine/components/Material.h"
+#include "Engine/components/PointCloud.h"
 
 namespace Merlin {
 
@@ -21,6 +23,7 @@ void Loader::poll(entt::registry &registry) {
    SPDLOG_INFO("model loaded successfully");
 }
 
+// todo: rename this function to something more appealing/makes more sense, need better recall
 void Loader::loadWorker(const std::string &path) {
    Assimp::Importer importer;
    const aiScene* scene = importer.ReadFile(path,
@@ -35,8 +38,7 @@ void Loader::loadWorker(const std::string &path) {
       return;
    }
 
-   SPDLOG_INFO("model info: {} meshes, {} materials, {} textures",
-      scene->mNumMeshes, scene->mNumMaterials, scene->mNumTextures);
+   SPDLOG_INFO("model info: {} meshes, {} materials, {} textures", scene->mNumMeshes, scene->mNumMaterials, scene->mNumTextures);
 
    // assimp provides relative file path references
    // as such we need to process with the directory in mind as well so we can retrieve said images
@@ -56,7 +58,11 @@ void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::ma
 
    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      processMesh(mesh, scene, globalTransform, directory);
+
+      if (mesh->HasFaces())
+         processMesh(mesh, scene, globalTransform, directory);
+      else
+         processPCD(mesh, globalTransform);
    }
 
    for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -110,7 +116,6 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
       }
    }
 
-
    // load textures
    if (mesh->mMaterialIndex < scene->mNumMaterials) {
       aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];
@@ -137,24 +142,57 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
 
    meshLoadQueue.emplace(meshData); // add to upload queue
 }
+
+void Loader::processPCD(const aiMesh *pcd, const glm::mat4 &globalTransform) {
+   SPDLOG_INFO("pcd '{}': {} verts, {} faces", pcd->mName.C_Str(), pcd->mNumVertices, pcd->mNumFaces);
+
+   // todo: rename the struct datastructure to fit both pcd and meshes
+   MeshData meshData;
+   meshData.vertices.reserve(pcd->mNumVertices);
+
+   meshData.transform = globalTransform;
+
+   // process each vertex in the point cloud
+   for (unsigned int i = 0; i < pcd->mNumVertices; i++) {
+      Vertex vertex;
+
+      // position
+      vertex.position = glm::vec3(pcd->mVertices[i].x, pcd->mVertices[i].y, pcd->mVertices[i].z);
+
+      // normals
+      if (pcd->HasNormals()) {
+         SPDLOG_INFO("found normals for pcd {}", pcd->mName.C_Str());
+         vertex.normal = glm::vec3(pcd->mNormals[i].x, pcd->mNormals[i].y, pcd->mNormals[i].z);
+      }
+
+      // color(s)?
+      // todo: check what the index parameter refers to,
+      // todo: check convention, maybe a vertex can have multiple colors?
+      if (pcd->HasVertexColors(0)) {
+         SPDLOG_INFO("found vertex colors for pcd {}", pcd->mName.C_Str());
+         vertex.color = glm::vec3(pcd->mColors[0][i].r, pcd->mColors[0][i].g,pcd->mColors[0][i].b);
+      }
+
+      meshData.vertices.push_back(vertex);
+   }
+
+   meshLoadQueue.emplace(meshData); // add to upload queue
+}
+
 void Loader::upload(entt::registry& registry) {
    // loops through all meshData in the queue and uploads
    while (!meshLoadQueue.empty()) {
       auto meshData = meshLoadQueue.front(); // this creates a copy so we should be able to pop safely
       meshLoadQueue.pop();
 
-      uint32_t vao, vbo, ebo;
+      uint32_t vao, vbo;
       glGenVertexArrays(1, &vao);
       glGenBuffers(1, &vbo);
-      glGenBuffers(1, &ebo);
 
       glBindVertexArray(vao);
 
       glBindBuffer(GL_ARRAY_BUFFER, vbo);
       glBufferData(GL_ARRAY_BUFFER, meshData.vertices.size() * sizeof(Vertex), meshData.vertices.data(), GL_STATIC_DRAW);
-
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshData.indices.size() * sizeof(unsigned int), meshData.indices.data(), GL_STATIC_DRAW);
 
       // attributes ---
       // position
@@ -172,14 +210,10 @@ void Loader::upload(entt::registry& registry) {
       // uv
       glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
       glEnableVertexAttribArray(4);
+      // color
+      glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+      glEnableVertexAttribArray(5);
 
-      glBindVertexArray(0);
-
-      // upload textures
-      if (meshData.material.albedoMap)
-         meshData.material.albedoMap->upload();
-      if (meshData.material.normalMap)
-         meshData.material.normalMap->upload();
 
       // decompose world transform into position rotation and scale
       // note that this is an experimental feature, we may lose it in the future
@@ -191,12 +225,36 @@ void Loader::upload(entt::registry& registry) {
       Transform t;
       t.position = position;
       t.scale = scale;
-      t.rotation = glm::degrees(glm::eulerAngles(orientation)); // quat -> euler -> degrees, maybe a different convention would be good?
+      // quat -> euler -> degrees, maybe a different convention would be good?
+      t.rotation = glm::degrees(glm::eulerAngles(orientation));
 
       auto e = registry.create();
       registry.emplace<Transform>(e, t);
-      registry.emplace<Mesh>(e, vao, vbo, ebo, static_cast<uint32_t>(meshData.indices.size()));
-      registry.emplace<Material>(e, std::move(meshData.material));
+
+      if (!meshData.indices.empty()) {
+         // this is a triangulated mesh
+         // upload indices
+         uint32_t ebo;
+         glGenBuffers(1, &ebo);
+         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+         glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshData.indices.size() * sizeof(unsigned int), meshData.indices.data(), GL_STATIC_DRAW);
+
+         glBindVertexArray(0);
+
+         // upload textures
+         if (meshData.material.albedoMap)
+            meshData.material.albedoMap->upload();
+         if (meshData.material.normalMap)
+            meshData.material.normalMap->upload();
+
+         registry.emplace<Mesh>(e, vao, vbo, ebo, static_cast<uint32_t>(meshData.indices.size()));
+         registry.emplace<Material>(e, std::move(meshData.material));
+      } else {
+         // this is a point cloud
+         glBindVertexArray(0);
+         registry.emplace<PointCloud>(e, vao, vbo, static_cast<uint32_t>(meshData.vertices.size()));
+      }
+
       SPDLOG_INFO("uploaded registry entity {} @ ({}, {}, {})", static_cast<uint32_t>(e), t.position.x, t.position.y, t.position.z);
    }
 }
@@ -204,14 +262,23 @@ void Loader::upload(entt::registry& registry) {
 void Loader::wipe(entt::registry &registry) {
    // wipes the rendering buffer
    // wipes the registry
-   auto view = registry.view<Mesh>();
-   for (auto entity : view) {
-      auto& mesh = view.get<Mesh>(entity);
+
+   auto meshView = registry.view<Mesh>();
+   for (auto entity : meshView) {
+      auto& mesh = meshView.get<Mesh>(entity);
       glDeleteVertexArrays(1, &mesh.vao);
       glDeleteBuffers(1, &mesh.vbo);
       glDeleteBuffers(1, &mesh.ebo);
    }
-   registry.destroy(view.begin(), view.end());
+   registry.destroy(meshView.begin(), meshView.end());
+
+   auto pcdView = registry.view<PointCloud>();
+   for (auto entity : pcdView) {
+      auto& pcd = pcdView.get<PointCloud>(entity);
+      glDeleteVertexArrays(1, &pcd.vao);
+      glDeleteBuffers(1, &pcd.vbo);
+   }
+   registry.destroy(pcdView.begin(), pcdView.end());
 }
 
 glm::mat4 Loader::convertMatrix(const aiMatrix4x4& from) {

@@ -2,17 +2,18 @@
 #define MERLINGL_LOADER_H
 
 #include "components/Material.h"
-#include "components/Transform.h"
 
 namespace Merlin {
 
-// note that per-vertex color is omitted in favor of a mesh-wide color in the material class
 struct Vertex {
    glm::vec3 position{0.0f};
    glm::vec3 normal{0.0f};
    glm::vec3 tangent{0.0f};
    glm::vec3 bitangent{0.0f};
    glm::vec2 uv{0.0f};
+
+   // point cloud only
+   glm::vec3 color{1.0f, 0.0f, 1.0f};
 };
 
 // existing load functions needs to write to this struct
@@ -37,7 +38,7 @@ private:
    void loadWorker(const std::string& path);
    void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, const std::string& directory);
    void processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory);
-   // todo: implement point cloud processing functions
+   void processPCD(const aiMesh *pcd, const glm::mat4& globalTransform); // no textures
 
    // this function will upload the loaded data to the gpu
    // maybe should name it upload() instead?

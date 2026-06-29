@@ -2,6 +2,7 @@
 #include "Core/EventBus.h"
 #include "Core/Events.h"
 #include "Engine/Loader.h"
+#include "Engine/lights/DirectionalLight.h"
 
 namespace Merlin {
 Application::Application(const std::string &title, int width, int height) {

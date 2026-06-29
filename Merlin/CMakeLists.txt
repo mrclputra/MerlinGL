@@ -37,6 +37,7 @@ add_executable(MerlinEngine
         src/Engine/components/Mesh.h
         src/Engine/components/Material.h
         src/Engine/components/Texture.h
+        src/Engine/components/PointCloud.h
 )
 
 target_link_libraries(MerlinEngine PRIVATE
