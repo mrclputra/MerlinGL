@@ -82,7 +82,7 @@ void Renderer::render() {
       shader->setFloat("material.metallic", mat.metallic);
       shader->setFloat("material.ao", mat.ao);
       glBindVertexArray(mesh.vao);
-      glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, nullptr);
    }
 
    glBindVertexArray(0);

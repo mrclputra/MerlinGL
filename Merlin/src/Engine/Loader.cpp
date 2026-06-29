@@ -67,10 +67,10 @@ void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::ma
 
 void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory) {
    SPDLOG_INFO("mesh '{}': {} verts, {} faces", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
-   if (!mesh->HasNormals())
-      SPDLOG_WARN("mesh '{}' has no normals", mesh->mName.C_Str());
-   if (!mesh->HasTextureCoords(0))
-      SPDLOG_WARN("mesh '{}' has no UVs", mesh->mName.C_Str());
+   // if (!mesh->HasNormals())
+   //    SPDLOG_WARN("mesh '{}' has no normals", mesh->mName.C_Str());
+   // if (!mesh->HasTextureCoords(0))
+   //    SPDLOG_WARN("mesh '{}' has no UVs", mesh->mName.C_Str());
 
    MeshData meshData;
    meshData.vertices.reserve(mesh->mNumVertices);
@@ -86,6 +86,7 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
 
       // normals
       if (mesh->HasNormals()) {
+         SPDLOG_INFO("found normals for mesh {}", mesh->mName.C_Str());
          vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
       }
       if (mesh->HasTangentsAndBitangents()) {
@@ -94,6 +95,7 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
       }
       // uvs
       if (mesh->HasTextureCoords(0)) {
+         SPDLOG_INFO("found UVs for mesh {}", mesh->mName.C_Str());
          vertex.uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
       }
 
