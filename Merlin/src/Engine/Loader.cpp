@@ -116,16 +116,19 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
       // base color
       aiColor4D color;
       if (AI_SUCCESS == aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
+         SPDLOG_INFO("mesh '{}' AI_MATKEY_COLOR_DIFFUSE found: {}, {}, {}", mesh->mName.C_Str(), color.r, color.g, color.b);
          meshData.material.albedo = glm::vec3(color.r, color.g, color.b);
       }
 
       // diffuse map
       aiString texPath;
       if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == AI_SUCCESS) {
+         SPDLOG_INFO("mesh '{}' aiTextureType_DIFFUSE found: {}", mesh->mName.C_Str(), texPath.C_Str());
          meshData.material.albedoMap = std::make_shared<Texture>(directory + texPath.C_Str());
       }
       // normal map
       if (aiMat->GetTexture(aiTextureType_NORMALS, 0, &texPath) == AI_SUCCESS) {
+         SPDLOG_INFO("mesh '{}' aiTextureType_NORMALS found: {}", mesh->mName.C_Str(), texPath.C_Str());
          meshData.material.normalMap = std::make_shared<Texture>(directory + texPath.C_Str());
       }
    }
@@ -206,7 +209,7 @@ void Loader::wipe(entt::registry &registry) {
       glDeleteBuffers(1, &mesh.vbo);
       glDeleteBuffers(1, &mesh.ebo);
    }
-   registry.clear();
+   registry.destroy(view.begin(), view.end());
 }
 
 glm::mat4 Loader::convertMatrix(const aiMatrix4x4& from) {

@@ -37,6 +37,7 @@ private:
    void loadWorker(const std::string& path);
    void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, const std::string& directory);
    void processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory);
+   // todo: implement point cloud processing functions
 
    // this function will upload the loaded data to the gpu
    // maybe should name it upload() instead?

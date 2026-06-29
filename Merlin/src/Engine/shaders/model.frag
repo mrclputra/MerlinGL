@@ -30,19 +30,15 @@ uniform sampler2D uNormalMap;
 uniform bool hasNormalMap;
 
 void main() {
-    // TBN matrix is the transformation from the cotangentspace to worldspace
-    // this is needed to apply object transformations to the normal map
-    mat3 TBN = mat3(normalize(vTangent), normalize(vBitangent), normalize(vNormal));
-    vec3 worldNormal;
+    vec3 N;
     if (hasNormalMap) {
-        worldNormal = texture(uNormalMap, vUV).rgb * 2.0 - 1.0;
+        // TBN matrix is the transformation from the cotangentspace to worldspace
+        // this is needed to apply object transformations to the normal map
+        mat3 TBN = mat3(normalize(vTangent), normalize(vBitangent), normalize(vNormal));
+        N = normalize(TBN * (texture(uNormalMap, vUV).rgb * 2.0 - 1.0));
     } else {
-        worldNormal = vec3(0.0, 0.0, 1.0);
+        N = normalize(vNormal);
     }
-    // transform to world space
-    vec3 N = normalize(TBN * worldNormal);
-//    FragColor = vec4(N * 0.5 + 0.5, 1.0f); // debug
-
     vec3 albedo = hasAlbedoMap ? texture(uAlbedoMap, vUV).rgb : material.albedo;
 
     // silly formulas for diffuse
