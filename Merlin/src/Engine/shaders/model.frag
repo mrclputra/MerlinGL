@@ -33,22 +33,20 @@ void main() {
     // TBN matrix is the transformation from the cotangentspace to worldspace
     // this is needed to apply object transformations to the normal map
     mat3 TBN = mat3(normalize(vTangent), normalize(vBitangent), normalize(vNormal));
-    vec3 tangentNormal;
+    vec3 worldNormal;
     if (hasNormalMap) {
-        tangentNormal = texture(uNormalMap, vUV).rgb * 2.0 - 1.0;
+        worldNormal = texture(uNormalMap, vUV).rgb * 2.0 - 1.0;
     } else {
-        tangentNormal = vec3(0.0, 0.0, 1.0);
+        worldNormal = vec3(0.0, 0.0, 1.0);
     }
     // transform to world space
-    vec3 N = normalize(TBN * tangentNormal);
-    FragColor = vec4(N * 0.5 + 0.5, 1.0f);
+    vec3 N = normalize(TBN * worldNormal);
+//    FragColor = vec4(N * 0.5 + 0.5, 1.0f); // debug
 
-//    vec3 albedo = hasAlbedoMap ? texture(uAlbedoMap, vUV).rgb : material.albedo;
-//    vec3 normal = hasNormalMap ? normalize(texture(uNormalMap, vUV).rgb * 2.0 - 1.0) : vec3(1.0f, 0.0f, 1.0f);
-//    FragColor = vec4(normal * 0.5 + 0.5, 1.0f);
+    vec3 albedo = hasAlbedoMap ? texture(uAlbedoMap, vUV).rgb : material.albedo;
 
-//    // silly formulas for diffuse
-//    // https://lisyarus.github.io/blog/posts/a-silly-diffuse-shading-model.html
-//    vec3 diff = pow(0.5 + 0.5 * dot(-normalize(dirLights[0].direction), normalize(vNormal)), 2.0) * albedo * dirLights[0].color;
-//    FragColor = vec4(diff, 1.0f);
+    // silly formulas for diffuse
+    // https://lisyarus.github.io/blog/posts/a-silly-diffuse-shading-model.html
+    vec3 diff = pow(0.5 + 0.5 * dot(-normalize(dirLights[0].direction), N), 2.0) * albedo * dirLights[0].color;
+    FragColor = vec4(diff, 1.0f);
 }
