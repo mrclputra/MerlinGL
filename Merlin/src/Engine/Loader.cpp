@@ -45,7 +45,7 @@ void Loader::loadWorker(const std::string &path) {
    directory = (lastSlash != std::string::npos) ? path.substr(0, lastSlash + 1) : "";
 
    // todo: see if we need to implement conditional to process embedded textures
-   // todo:    compiled binaries support, does not require directory though
+   // todo:    i.e. compiled binaries support, does not require directory though
 
    processNode(scene->mRootNode, scene, glm::mat4(1.0f), directory); // recursive
 }
@@ -83,9 +83,14 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
 
       // position
       vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+
       // normals
       if (mesh->HasNormals()) {
          vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+      }
+      if (mesh->HasTangentsAndBitangents()) {
+         vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+         vertex.bitangent = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
       }
       // uvs
       if (mesh->HasTextureCoords(0)) {
@@ -128,7 +133,7 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
    meshLoadQueue.emplace(meshData); // add to upload queue
 }
 void Loader::upload(entt::registry& registry) {
-   // loops through all meshdata in the queue and upload
+   // loops through all meshData in the queue and uploads
    while (!meshLoadQueue.empty()) {
       auto meshData = meshLoadQueue.front(); // this creates a copy so we should be able to pop safely
       meshLoadQueue.pop();
@@ -146,16 +151,22 @@ void Loader::upload(entt::registry& registry) {
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshData.indices.size() * sizeof(unsigned int), meshData.indices.data(), GL_STATIC_DRAW);
 
-      // attributes
+      // attributes ---
       // position
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
       glEnableVertexAttribArray(0);
       // normal
       glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
       glEnableVertexAttribArray(1);
-      // uv
-      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+      //tangent
+      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
       glEnableVertexAttribArray(2);
+      // bitangent
+      glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+      glEnableVertexAttribArray(3);
+      // uv
+      glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+      glEnableVertexAttribArray(4);
 
       glBindVertexArray(0);
 
@@ -165,8 +176,8 @@ void Loader::upload(entt::registry& registry) {
       if (meshData.material.normalMap)
          meshData.material.normalMap->upload();
 
-      // todo: TEMPORARY: WHILE I FIGURE OUT THREADING, may or not be needed actually
       // decompose world transform into position rotation and scale
+      // note that this is an experimental feature, we may lose it in the future
       glm::vec3 position, scale, skew;
       glm::vec4 perspective;
       glm::quat orientation;

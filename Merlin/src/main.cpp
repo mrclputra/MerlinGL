@@ -9,7 +9,8 @@ int main() {
    auto rbs_sink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(20);
    // auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("log", 1048576 * 5, 1); // warning: sinks only write
 
-   auto logger = std::make_shared<spdlog::logger>("main", spdlog::sinks_init_list{stdout_sink, rbs_sink});  // add sinks to the logger
+   spdlog::init_thread_pool(8192, 1);
+   auto logger = std::make_shared<spdlog::async_logger>("main", spdlog::sinks_init_list{stdout_sink, rbs_sink}, spdlog::thread_pool(), spdlog::async_overflow_policy::overrun_oldest);
    spdlog::set_default_logger(logger);
    spdlog::set_pattern("[%H:%M:%S] [%^%l%$] [%s:%#] %v");
    SPDLOG_INFO("logger configured");
