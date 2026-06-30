@@ -10,6 +10,5 @@ this project has only been tested on MSVC
 
 TODO: implement full API layer
 TODO: implement customizable shader layer
-TODO: shader hot reloading
 TODO: compile with llvm/clang
 TODO: implement multiple viewports, integrate cameras with registry

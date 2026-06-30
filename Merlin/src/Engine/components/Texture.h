@@ -16,8 +16,8 @@ public:
          SPDLOG_INFO("loaded texture {}", path);
    }
    ~Texture() {
-      if (!id)
-         glDeleteTextures(1, &id);
+      if (data) stbi_image_free(data);
+      if (id) glDeleteTextures(1, &id);
    }
 
    void bind(unsigned int slot) {

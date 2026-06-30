@@ -1,0 +1,19 @@
+i'm bad at remembering things, so add them here
+
+I want to turn this project into a flat callable api/library, it should only manage rendering.
+
+todo: convert base cmake output to add_library() instead of an executable
+todo: public headers should be self-contained, not relying on pch; because it will be compiled against their code
+todo: add programmatic methods for mesh and point cloud injection
+    -> the path for creating meshes and point clouds should not be from assimp only
+        -> createMesh(vertices, indices)
+        -> createPCD(points)
+    -> note that the registry should be initialized internally
+    -> we need to expose the suitable datastructures (Vertex)
+todo: make shader paths not build-baked, it should be runtime-resolved or caller-supplied
+
+other:
+todo: unflatten transform hierarchy
+todo: add camera to registry, make sure it works with the viewport structs and handles inputs properly
+todo: implement proper multi-lights, look into forward+ rendering
+todo: implement PBR pipeline
