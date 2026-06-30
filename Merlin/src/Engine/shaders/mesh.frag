@@ -40,6 +40,7 @@ void main() {
         N = normalize(vNormal);
     }
     vec3 albedo = hasAlbedoMap ? texture(uAlbedoMap, vUV).rgb : material.albedo;
+//    FragColor = vec4(albedo, 1.0f);
 
     // silly formulas for diffuse
     // https://lisyarus.github.io/blog/posts/a-silly-diffuse-shading-model.html

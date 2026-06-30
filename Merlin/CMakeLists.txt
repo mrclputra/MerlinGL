@@ -56,11 +56,13 @@ target_include_directories(MerlinEngine PRIVATE
     ${STB_INCLUDE_DIRS}
 )
 
+target_compile_definitions(MerlinEngine PRIVATE SHADER_DIR="${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/shaders")
 target_precompile_headers(MerlinEngine PRIVATE src/pch.h)
 
-add_custom_target(CopyShaders ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/shaders"
-        "$<TARGET_FILE_DIR:MerlinEngine>/shaders"
-)
-add_dependencies(MerlinEngine CopyShaders)
+# this defeats the point of shader hot reloading, disabled for now
+#add_custom_target(CopyShaders ALL
+#        COMMAND ${CMAKE_COMMAND} -E copy_directory
+#        "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/shaders"
+#        "$<TARGET_FILE_DIR:MerlinEngine>/shaders"
+#)
+#add_dependencies(MerlinEngine CopyShaders)

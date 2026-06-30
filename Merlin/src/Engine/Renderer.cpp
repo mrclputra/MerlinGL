@@ -1,12 +1,13 @@
 #include "Engine/Renderer.h"
 
+#include "Core/EventBus.h"
 #include "Engine/Camera.h"
 #include "Engine/Framebuffer.h"
 #include "Engine/components/Material.h"
 #include "Engine/components/Mesh.h"
+#include "Engine/components/PointCloud.h"
 #include "Engine/components/Transform.h"
 #include "Engine/lights/DirectionalLight.h"
-#include "Engine/components/PointCloud.h"
 
 namespace Merlin {
 Renderer::Renderer(int width, int height) {
@@ -14,14 +15,21 @@ Renderer::Renderer(int width, int height) {
    this->height = height;
 
    initialize();
+
+   // shader reload lambda
+   EventBus::get().on<ReloadShadersEvent>([this](const ReloadShadersEvent &e) {
+      // todo: delete and reinitialize the shaders, it should be thread-safe
+      pcdShader = std::make_shared<Shader>(SHADER_DIR "/pcd.vert", SHADER_DIR "/pcd.frag");
+      meshShader = std::make_shared<Shader>(SHADER_DIR "/mesh.vert", SHADER_DIR "/mesh.frag");
+   });
 }
 
 void Renderer::initialize() {
    glEnable(GL_DEPTH_TEST);
    glEnable(GL_PROGRAM_POINT_SIZE);
 
-   pcdShader = std::make_shared<Shader>("shaders/pcd.vert", "shaders/pcd.frag");
-   meshShader = std::make_shared<Shader>("shaders/mesh.vert", "shaders/mesh.frag");
+   pcdShader = std::make_shared<Shader>(SHADER_DIR "/pcd.vert", SHADER_DIR "/pcd.frag");
+   meshShader = std::make_shared<Shader>(SHADER_DIR "/mesh.vert", SHADER_DIR "/mesh.frag");
 
    Viewport vp;
    vp.camera = std::make_unique<Camera>();
@@ -42,7 +50,7 @@ void Renderer::render() {
    auto &vp = scene.viewports.front();
    vp.framebuffer->bind();
 
-   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+   glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // this is the base shader;

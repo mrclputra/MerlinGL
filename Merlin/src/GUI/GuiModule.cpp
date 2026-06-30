@@ -92,14 +92,18 @@ void GuiModule::Draw(uint32_t sceneTexture) {
    // TODO: load button should open the windows file api
    //    -> pass resulting string to the loader and update registry
 
-   ImGui::Text("MerlinGL!!!");
-   if (ImGui::Button("load mesh")) {
+   ImGui::Text("Welcome to my rendering engine");
+   if (ImGui::Button("load from file")) {
       SPDLOG_INFO("load file button pressed");
       if (const auto results = pfd::open_file("Load Mesh", ".", {"3D Models", "*.gltf *.glb *.ply *.obj", "All Files", "*"}).result(); !results.empty()) {
          EventBus::get().emit(LoadModelEvent{results[0]});
       } else {
          SPDLOG_INFO("no file selected");
       }
+   }
+   if (ImGui::Button("reload shaders")) {
+      SPDLOG_INFO("reload shader button pressed");
+      EventBus::get().emit(ReloadShadersEvent{});
    }
 
    ImGui::End();
