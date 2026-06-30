@@ -1,0 +1,34 @@
+{
+  "name" : "merlingl",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "b216ddff25a1f432870e6c340ce79357049ef86e",
+  "dependencies" : [ {
+    "name" : "glfw3",
+    "version>=" : "3.4#1"
+  }, {
+    "name" : "glad",
+    "version>=" : "0.1.36"
+  }, {
+    "name" : "glm",
+    "version>=" : "1.0.3"
+  }, {
+    "name" : "assimp",
+    "version>=" : "6.0.4#3"
+  }, {
+    "name" : "imgui",
+    "version>=" : "1.92.8",
+    "features" : [ "docking-experimental", "glfw-binding", "opengl3-binding" ]
+  }, {
+    "name" : "spdlog",
+    "version>=" : "1.17.0"
+  }, {
+    "name" : "entt",
+    "version>=" : "3.16.0"
+  }, {
+    "name" : "portable-file-dialogs",
+    "version>=" : "0.1.0"
+  }, {
+    "name" : "stb",
+    "version>=" : "2024-07-29#1"
+  } ]
+}

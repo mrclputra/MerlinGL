@@ -5,6 +5,4 @@ This project is a successor to my first engine, KestrelGL; because I couldn't fi
 ![Intel Sponza](docs/Sandbox_CJQ0hVdbmF.jpg)
 ![Office Teeth Scan](docs/Sandbox_YjYo35QXNg.png)
 
-Teeth model is from the 3D scanner at my job.
-
-Sponza model is Intel's
+note that .clang-format enforces 3 spacing :> ... this project has only been tested on MSVC
