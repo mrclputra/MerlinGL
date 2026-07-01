@@ -2,6 +2,7 @@
 #include "Core/EventBus.h"
 #include "Core/Events.h"
 #include "Engine/Loader.h"
+#include "Engine/Camera.h"
 #include "Engine/lights/DirectionalLight.h"
 
 namespace Merlin {
@@ -35,23 +36,23 @@ Application::Application(const std::string &title, int width, int height) {
       const auto &vp = renderer->scene.viewports[0];
       if (!vp.focused)
          return;
-      vp.camera->onKeyPress(e.key);
+      renderer->scene.registry.get<Camera>(vp.cameraEntity).onKeyPress(e.key);
    });
    EventBus::get().on<KeyReleasedEvent>([this](const KeyReleasedEvent &e) {
       const auto &vp = renderer->scene.viewports[0];
-      vp.camera->onKeyRelease(e.key);
+      renderer->scene.registry.get<Camera>(vp.cameraEntity).onKeyRelease(e.key);
    });
    EventBus::get().on<MouseMovedEvent>([this](const MouseMovedEvent &e) {
       const auto &vp = renderer->scene.viewports[0];
       if (!vp.focused)
          return;
-      vp.camera->onMouseMove(e.dx, e.dy);
+      renderer->scene.registry.get<Camera>(vp.cameraEntity).onMouseMove(e.dx, e.dy);
    });
    EventBus::get().on<MouseScrolledEvent>([this](const MouseScrolledEvent &e) {
       const auto &vp = renderer->scene.viewports[0];
       if (!vp.focused)
          return;
-      vp.camera->onScroll(e.delta);
+      renderer->scene.registry.get<Camera>(vp.cameraEntity).onScroll(e.delta);
    });
 
    SPDLOG_INFO("application initialized");
@@ -73,7 +74,7 @@ void Application::run() {
       auto &vp = renderer->scene.viewports.front();
       // bool wasFocused = vp.focused;
       vp.focused = guiModule->viewportFocused;
-      vp.camera->update(delta);
+      renderer->scene.registry.get<Camera>(vp.cameraEntity).update(delta);
 
       glfwSetInputMode(window->getNative(), GLFW_CURSOR, vp.focused ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 

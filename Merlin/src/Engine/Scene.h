@@ -8,7 +8,8 @@ namespace Merlin {
 
 struct Viewport {
    // consider moving this to own file
-   std::unique_ptr<Camera> camera;
+   // std::unique_ptr<Camera> camera;
+   entt::entity cameraEntity{entt::null};
    std::unique_ptr<Framebuffer> framebuffer; // color + depth
    bool focused = false;
    float width{0};

@@ -5,7 +5,7 @@
 namespace Merlin {
 Camera::Camera(glm::vec3 position) {
    transform.position = position;
-   SPDLOG_INFO("camera created; {}x{}", viewportWidth, viewportHeight);
+   SPDLOG_INFO("camera object created");
    updateVectors();
 }
 
@@ -37,18 +37,11 @@ void Camera::update(float delta) {
    updateVectors();
 }
 
-void Camera::onKeyPress(int key) {
-   heldKeys.insert(key);
-}
-
-void Camera::onKeyRelease(int key) {
-   heldKeys.erase(key);
-}
-
+void Camera::onKeyPress(int key) { heldKeys.insert(key); }
+void Camera::onKeyRelease(int key) { heldKeys.erase(key); }
 void Camera::onMouseMove(int dx, int dy) {
    rotate(static_cast<float>(dx), static_cast<float>(dy));
 }
-
 void Camera::onScroll(int delta) {
    constexpr float minSpeed = 2.0f;
    constexpr float maxSpeed = 140.0f;
@@ -59,11 +52,10 @@ void Camera::onScroll(int delta) {
 glm::mat4 Camera::getViewMatrix() const {
    return glm::lookAt(transform.position, transform.position + front, up);
 }
-
-glm::mat4 Camera::getProjectionMatrix() const {
+glm::mat4 Camera::getProjectionMatrix(int width, int height) const {
    return glm::perspective(
        glm::radians(fov),
-       static_cast<float>(viewportWidth) / static_cast<float>(viewportHeight),
+       static_cast<float>(width) / static_cast<float>(height), // viewport widths and heights
        nearPlane,
        farPlane);
 }
@@ -75,33 +67,11 @@ void Camera::rotate(float xOffset, float yOffset) {
    pitch = glm::clamp(pitch, -89.0f, 89.0f);
    updateVectors();
 }
+void Camera::moveForward(float delta) { transform.position += front * speed * delta; }
+void Camera::moveBackward(float delta) { transform.position -= front * speed * delta; }
+void Camera::moveRight(float delta) { transform.position += right * speed * delta; }
+void Camera::moveLeft(float delta) { transform.position -= right * speed * delta; }
+void Camera::moveUp(float delta) { transform.position += up * speed * 0.5f * delta; }
+void Camera::moveDown(float delta) { transform.position -= up * speed * 0.5f * delta; }
 
-void Camera::moveForward(float delta) {
-   transform.position += front * speed * delta;
-}
-
-void Camera::moveBackward(float delta) {
-   transform.position -= front * speed * delta;
-}
-
-void Camera::moveRight(float delta) {
-   transform.position += right * speed * delta;
-}
-
-void Camera::moveLeft(float delta) {
-   transform.position -= right * speed * delta;
-}
-
-void Camera::moveUp(float delta) {
-   transform.position += up * speed * 0.5f * delta;
-}
-
-void Camera::moveDown(float delta) {
-   transform.position -= up * speed * 0.5f * delta;
-}
-
-void Camera::setViewport(int width, int height) {
-   viewportWidth = width;
-   viewportHeight = height;
-}
 }  // namespace Merlin

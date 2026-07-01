@@ -11,7 +11,7 @@ class Camera {
    float yaw = -90.0f;
    float pitch = 0.0f;
    float sensitivity = 0.07f;
-   float speed = 3.0f;
+   float speed = 3.0f; // movement
    float fov = 50.0f;
    float nearPlane = 0.1f;
    float farPlane = 10000.0f;
@@ -21,7 +21,7 @@ class Camera {
    void update(float delta);
 
    glm::mat4 getViewMatrix() const;
-   glm::mat4 getProjectionMatrix() const;
+   glm::mat4 getProjectionMatrix(int width, int height) const;
 
    void rotate(float xOffset, float yOffset);
    void moveForward(float delta);
@@ -36,15 +36,12 @@ class Camera {
    void onKeyRelease(int key);
    void onMouseMove(int dx, int dy);
    void onScroll(int delta);  // controls speed
-   void setViewport(int width, int height);
 
  private:
    void updateVectors();
 
    std::set<int> heldKeys;
    glm::vec3 worldUp{0.0f, 1.0f, 0.0f};
-   int viewportWidth = 1280;
-   int viewportHeight = 720;
 };
 }  // namespace Merlin
 #endif  // MERLINGL_CAMERA_H

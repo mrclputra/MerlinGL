@@ -17,3 +17,7 @@ todo: unflatten transform hierarchy
 todo: add camera to registry, make sure it works with the viewport structs and handles inputs properly
 todo: implement proper multi-lights, look into forward+ rendering
 todo: implement PBR pipeline
+
+bugs:
+todo: gltf (and potentially binary) point clouds are triangulated in the loader for some reason
+    -> fix could be making it more restrictive?
