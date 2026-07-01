@@ -44,6 +44,6 @@ void main() {
 
     // silly formulas for diffuse
     // https://lisyarus.github.io/blog/posts/a-silly-diffuse-shading-model.html
-    vec3 diff = pow(0.5 + 0.5 * dot(-normalize(dirLights[0].direction), N), 2.0) * albedo * dirLights[0].color;
+    vec3 diff = pow(0.5 + 0.5 * dot(-normalize(dirLights[0].direction), N), 2.0) * albedo * dirLights[0].color; // todo: add multilight support
     FragColor = vec4(diff, 1.0f);
 }

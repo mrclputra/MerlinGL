@@ -55,6 +55,7 @@ public:
          glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
          stbi_image_free(data);
+         data = nullptr;
       } else {
          SPDLOG_ERROR("failed to load texture '{}': {}", path, stbi_failure_reason());
       }

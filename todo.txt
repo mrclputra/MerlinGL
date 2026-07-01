@@ -1,4 +1,4 @@
-i'm bad at remembering things, so add them here
+I'm bad at remembering things, so I'll add stuff here
 
 I want to turn this project into a flat callable api/library, it should only manage rendering.
 
