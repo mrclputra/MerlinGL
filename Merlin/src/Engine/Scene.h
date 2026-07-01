@@ -11,7 +11,8 @@ struct Viewport {
    // std::unique_ptr<Camera> camera;
    entt::entity cameraEntity{entt::null};
    std::unique_ptr<Framebuffer> framebuffer; // color + depth
-   bool focused = false;
+   bool focused = false; // OS cursor and input lock
+   bool hovered = false; // click-to-focus
    float width{0};
    float height{0};
 };
@@ -21,9 +22,18 @@ class Scene {
    std::vector<Viewport> viewports;  // for multi-camera rendering
    entt::registry registry; // ecs
 
-   // std::vector<std::unique_ptr<Light>> lights;
-   // std::vector<std::unique_ptr<SceneObject>> objects; // todo: implement rendering targets
-
+   Viewport* getFocusedViewport() {
+      for (auto &vp : viewports)
+         if (vp.focused)
+            return &vp;
+      return nullptr;
+   }
+   const Viewport* getFocusedViewport() const {
+      for (const auto &vp : viewports)
+         if (vp.focused)
+            return &vp;
+      return nullptr;
+   }
 };
 
 }  // namespace Merlin

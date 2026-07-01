@@ -11,15 +11,19 @@ class Renderer {
 
    void initialize();
    void render();
-   void resize(int width, int height);
+   // void resize(int width, int height);
 
    std::shared_ptr<Shader> pcdShader; // point clouds
    std::shared_ptr<Shader> meshShader; // meshes
    Scene scene;
 
- private:
-   int width;
-   int height;
+   Viewport& createViewport(uint32_t width, uint32_t height);
+   void resizeViewport(Viewport &vp, uint32_t width, uint32_t height);
+
+ // private:
+ //   // todo: I believe this should be deprecated? width and heights should be stored and managed by guimodule
+ //   int width;
+ //   int height;
 };
 }  // namespace Merlin
 #endif  // MERLINGL_RENDERER_H

@@ -1,9 +1,11 @@
 #ifndef MERLINGL_FRAMEBUFFER_H
 #define MERLINGL_FRAMEBUFFER_H
 
+#include <cstdint>
+
 namespace Merlin {
 enum class TextureFormat {
-   // allowed framebuffer color attachment formats
+   // allowed color attachment formats
    RGBA8,
    RGB16F,
    RedInt,

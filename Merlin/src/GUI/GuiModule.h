@@ -2,6 +2,8 @@
 #define MERLINGL_GUIMODULE_H
 
 namespace Merlin {
+class Scene;
+
 class GuiModule {
  public:
    GuiModule(void *native_window);  // requires the glfw window to attach to
@@ -9,12 +11,7 @@ class GuiModule {
 
    static ImGuiContext *GetContext();
 
-   void Draw(uint32_t sceneTexture);
-
-   // todo: refactor for multiviewports
-   float viewportWidth;
-   float viewportHeight;
-   bool viewportFocused = false;
+   void Draw(Scene &scene);
 
  private:
    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> ringSink;

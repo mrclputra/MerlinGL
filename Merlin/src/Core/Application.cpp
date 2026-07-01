@@ -13,6 +13,9 @@ Application::Application(const std::string &title, int width, int height) {
    guiModule = std::make_unique<GuiModule>(window->getNative());
    renderer = std::make_unique<Renderer>(width, height);
 
+   // manual multi-viewport test seed
+   renderer->createViewport(400, 300);
+
    // load models
    // Loader::load("C:/Users/Marcelino/Desktop/tests/meshes/stanford_dragon_pbr/scene.gltf", renderer->scene.registry);
 
@@ -28,31 +31,31 @@ Application::Application(const std::string &title, int width, int height) {
       loader.wipe(renderer->scene.registry);
       loader.load(e.path);
    });
-   EventBus::get().on<WindowResizeEvent>([this](const WindowResizeEvent &e) {
-      SPDLOG_INFO("WINDOW_RESIZE_EVENT: {},{}", e.width, e.height);
-      renderer->resize(e.width, e.height);
+   EventBus::get().on<ViewportResizeEvent>([this](const ViewportResizeEvent &e) {
+      if (e.viewportIndex >= renderer->scene.viewports.size())
+         return;
+      renderer->resizeViewport(renderer->scene.viewports[e.viewportIndex], static_cast<uint32_t>(e.width), static_cast<uint32_t>(e.height));
    });
    EventBus::get().on<KeyPressedEvent>([this](const KeyPressedEvent &e) {
-      const auto &vp = renderer->scene.viewports[0];
-      if (!vp.focused)
-         return;
-      renderer->scene.registry.get<Camera>(vp.cameraEntity).onKeyPress(e.key);
+      auto *vp = renderer->scene.getFocusedViewport();
+      if (!vp) return;
+      renderer->scene.registry.get<Camera>(vp->cameraEntity).onKeyPress(e.key);
    });
    EventBus::get().on<KeyReleasedEvent>([this](const KeyReleasedEvent &e) {
-      const auto &vp = renderer->scene.viewports[0];
-      renderer->scene.registry.get<Camera>(vp.cameraEntity).onKeyRelease(e.key);
+      // broadcast to every camera
+      for (auto [entity, cam] : renderer->scene.registry.view<Camera>().each())
+         cam.onKeyRelease(e.key);
    });
    EventBus::get().on<MouseMovedEvent>([this](const MouseMovedEvent &e) {
-      const auto &vp = renderer->scene.viewports[0];
-      if (!vp.focused)
-         return;
-      renderer->scene.registry.get<Camera>(vp.cameraEntity).onMouseMove(e.dx, e.dy);
+      auto *vp = renderer->scene.getFocusedViewport();
+      if (!vp) return;
+      renderer->scene.registry.get<Camera>(vp->cameraEntity).onMouseMove(e.dx, e.dy);
    });
+
    EventBus::get().on<MouseScrolledEvent>([this](const MouseScrolledEvent &e) {
-      const auto &vp = renderer->scene.viewports[0];
-      if (!vp.focused)
-         return;
-      renderer->scene.registry.get<Camera>(vp.cameraEntity).onScroll(e.delta);
+      auto *vp = renderer->scene.getFocusedViewport();
+      if (!vp) return;
+      renderer->scene.registry.get<Camera>(vp->cameraEntity).onScroll(e.delta);
    });
 
    SPDLOG_INFO("application initialized");
@@ -71,12 +74,12 @@ void Application::run() {
       float delta = now - lastTime;
       lastTime = now;
 
-      auto &vp = renderer->scene.viewports.front();
-      // bool wasFocused = vp.focused;
-      vp.focused = guiModule->viewportFocused;
-      renderer->scene.registry.get<Camera>(vp.cameraEntity).update(delta);
+      for (auto &vp : renderer->scene.viewports) {
+         renderer->scene.registry.get<Camera>(vp.cameraEntity).update(delta);
+      }
 
-      glfwSetInputMode(window->getNative(), GLFW_CURSOR, vp.focused ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+      auto* focusedVp = renderer->scene.getFocusedViewport();
+      glfwSetInputMode(window->getNative(), GLFW_CURSOR, focusedVp ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 
       // todo: not sure if this is the right place to put it
       loader.poll(renderer->scene.registry);
@@ -88,7 +91,7 @@ void Application::run() {
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      guiModule->Draw(renderer->scene.viewports.front().framebuffer->colorAttachments[0]);
+      guiModule->Draw(renderer->scene);
 
       window->swapBuffers();
    }
