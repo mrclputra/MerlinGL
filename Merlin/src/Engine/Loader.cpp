@@ -59,14 +59,25 @@ void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::ma
    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-      if (mesh->HasFaces())
+      // debug
+      // SPDLOG_INFO("pcd load test");
+      // processPCD(mesh, globalTransform); // this works with gltf point cloud files
+
+      // hasfaces() is apparently a very bad qualifier for gltf point clouds?
+      //    i am not entirely sure why, but i think it s just because of sketchfab doing funny stuff
+      // todo: dont try to autodetermine if it is a mesh or a point cloud, hardcode the paths from ui
+      if (mesh->HasFaces()) {
+         SPDLOG_INFO("this is a mesh");
          processMesh(mesh, scene, globalTransform, directory);
-      else
+      }
+      else {
+         SPDLOG_INFO("this is a point cloud");
          processPCD(mesh, globalTransform);
+      }
    }
 
    for (unsigned int i = 0; i < node->mNumChildren; i++) {
-      // recursively process children
+      // process children
       processNode(node->mChildren[i], scene, globalTransform, directory);
    }
 }
@@ -92,7 +103,7 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
 
       // normals
       if (mesh->HasNormals()) {
-         SPDLOG_INFO("found normals for mesh {}", mesh->mName.C_Str());
+         // SPDLOG_INFO("found normals for mesh {}", mesh->mName.C_Str());
          vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
       }
       if (mesh->HasTangentsAndBitangents()) {
@@ -101,7 +112,7 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
       }
       // uvs
       if (mesh->HasTextureCoords(0)) {
-         SPDLOG_INFO("found UVs for mesh {}", mesh->mName.C_Str());
+         // SPDLOG_INFO("found UVs for mesh {}", mesh->mName.C_Str());
          vertex.uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
       }
 
@@ -123,19 +134,19 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
       // base color
       aiColor4D color;
       if (AI_SUCCESS == aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
-         SPDLOG_INFO("mesh '{}' AI_MATKEY_COLOR_DIFFUSE found: {}, {}, {}", mesh->mName.C_Str(), color.r, color.g, color.b);
+         // SPDLOG_INFO("mesh '{}' AI_MATKEY_COLOR_DIFFUSE found: {}, {}, {}", mesh->mName.C_Str(), color.r, color.g, color.b);
          meshData.material.albedo = glm::vec3(color.r, color.g, color.b);
       }
 
       // diffuse map
       aiString texPath;
       if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == AI_SUCCESS) {
-         SPDLOG_INFO("mesh '{}' aiTextureType_DIFFUSE found: {}", mesh->mName.C_Str(), texPath.C_Str());
+         // SPDLOG_INFO("mesh '{}' aiTextureType_DIFFUSE found: {}", mesh->mName.C_Str(), texPath.C_Str());
          meshData.material.albedoMap = std::make_shared<Texture>(directory + texPath.C_Str());
       }
       // normal map
       if (aiMat->GetTexture(aiTextureType_NORMALS, 0, &texPath) == AI_SUCCESS) {
-         SPDLOG_INFO("mesh '{}' aiTextureType_NORMALS found: {}", mesh->mName.C_Str(), texPath.C_Str());
+         // SPDLOG_INFO("mesh '{}' aiTextureType_NORMALS found: {}", mesh->mName.C_Str(), texPath.C_Str());
          meshData.material.normalMap = std::make_shared<Texture>(directory + texPath.C_Str());
       }
    }
@@ -144,7 +155,7 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
 }
 
 void Loader::processPCD(const aiMesh *pcd, const glm::mat4 &globalTransform) {
-   SPDLOG_INFO("pcd '{}': {} verts, {} faces", pcd->mName.C_Str(), pcd->mNumVertices, pcd->mNumFaces);
+   // SPDLOG_INFO("pcd '{}': {} verts, {} faces", pcd->mName.C_Str(), pcd->mNumVertices, pcd->mNumFaces);
 
    // todo: rename the struct datastructure to fit both pcd and meshes
    MeshData meshData;
@@ -161,7 +172,7 @@ void Loader::processPCD(const aiMesh *pcd, const glm::mat4 &globalTransform) {
 
       // normals
       if (pcd->HasNormals()) {
-         SPDLOG_INFO("found normals for pcd {}", pcd->mName.C_Str());
+         // SPDLOG_INFO("found normals for pcd {}", pcd->mName.C_Str());
          vertex.normal = glm::vec3(pcd->mNormals[i].x, pcd->mNormals[i].y, pcd->mNormals[i].z);
       }
 
@@ -169,7 +180,7 @@ void Loader::processPCD(const aiMesh *pcd, const glm::mat4 &globalTransform) {
       // todo: check what the index parameter refers to,
       // todo: check convention, maybe a vertex can have multiple colors?
       if (pcd->HasVertexColors(0)) {
-         SPDLOG_INFO("found vertex colors for pcd {}", pcd->mName.C_Str());
+         // SPDLOG_INFO("found vertex colors for pcd {}", pcd->mName.C_Str());
          vertex.color = glm::vec3(pcd->mColors[0][i].r, pcd->mColors[0][i].g,pcd->mColors[0][i].b);
       }
 
@@ -255,7 +266,7 @@ void Loader::upload(entt::registry& registry) {
          registry.emplace<PointCloud>(e, vao, vbo, static_cast<uint32_t>(meshData.vertices.size()));
       }
 
-      SPDLOG_INFO("uploaded registry entity {} @ ({}, {}, {})", static_cast<uint32_t>(e), t.position.x, t.position.y, t.position.z);
+      // SPDLOG_INFO("uploaded registry entity {} @ ({}, {}, {})", static_cast<uint32_t>(e), t.position.x, t.position.y, t.position.z);
    }
 }
 
