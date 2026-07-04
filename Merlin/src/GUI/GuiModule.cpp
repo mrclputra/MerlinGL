@@ -103,14 +103,23 @@ void GuiModule::Draw(Scene &scene) {
    //    -> pass resulting string to the loader and update registry
 
    ImGui::Text("Welcome to my rendering engine");
-   if (ImGui::Button("load from file")) {
-      SPDLOG_INFO("load file button pressed");
+   if (ImGui::Button("load mesh")) {
+      SPDLOG_INFO("load mesh file button pressed");
       if (const auto results = pfd::open_file("Load Mesh", ".", {"3D Models", "*.gltf *.glb *.ply *.obj", "All Files", "*"}).result(); !results.empty()) {
-         EventBus::get().emit(LoadModelEvent{results[0]});
+         EventBus::get().emit(LoadMeshEvent{results[0]});
       } else {
          SPDLOG_INFO("no file selected");
       }
    }
+   if (ImGui::Button("load point cloud")) {
+      SPDLOG_INFO("load point cloud button pressed");
+      if (const auto results = pfd::open_file("Load Point Cloud", ".", {"3D Models", "*.gltf *.glb *.ply *.obj", "All Files", "*"}).result(); !results.empty()) {
+         EventBus::get().emit(LoadPCDEvent{results[0]});
+      } else {
+         SPDLOG_INFO("no file selected");
+      }
+   }
+
    if (ImGui::Button("reload shaders")) {
       SPDLOG_INFO("reload shader button pressed");
       EventBus::get().emit(ReloadShadersEvent{});

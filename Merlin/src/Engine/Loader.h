@@ -25,9 +25,12 @@ struct MeshData {
    Material material;
 };
 
+enum class LoadType { MESH, PCD };
+
 class Loader {
 public:
-   void load(const std::string& path);
+   // void load(const std::string& path);
+   void load(const std::string& path, const LoadType loadType);
    void poll(entt::registry& registry); // call this each frame; uploads when ready
    void wipe(entt::registry& registry);
 
@@ -35,8 +38,8 @@ private:
    std::future<void> loadFuture;
    std::queue<MeshData> meshLoadQueue;
 
-   void loadWorker(const std::string& path);
-   void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, const std::string& directory);
+   void loadWorker(const std::string& path, const LoadType loadType);
+   void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, const LoadType loadType, const std::string& directory);
    void processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory);
    void processPCD(const aiMesh *pcd, const glm::mat4& globalTransform); // no textures
 

@@ -8,9 +8,9 @@
 
 namespace Merlin {
 
-void Loader::load(const std::string &path) {
+void Loader::load(const std::string &path, const LoadType loadType) {
    SPDLOG_INFO("assimp load: {}", path);
-   loadFuture = std::async(std::launch::async, [this, path] { loadWorker(path); });
+   loadFuture = std::async(std::launch::async, [this, path, loadType] { loadWorker(path, loadType); });
 }
 
 void Loader::poll(entt::registry &registry) {
@@ -24,7 +24,7 @@ void Loader::poll(entt::registry &registry) {
 }
 
 // todo: rename this function to something more appealing/makes more sense, need better recall
-void Loader::loadWorker(const std::string &path) {
+void Loader::loadWorker(const std::string &path, const LoadType loadType) {
    Assimp::Importer importer;
    const aiScene* scene = importer.ReadFile(path,
       aiProcess_Triangulate |
@@ -49,41 +49,37 @@ void Loader::loadWorker(const std::string &path) {
    // todo: see if we need to implement conditional to process embedded textures
    // todo:    i.e. compiled binaries support, does not require directory though
 
-   processNode(scene->mRootNode, scene, glm::mat4(1.0f), directory); // recursive
+   processNode(scene->mRootNode, scene, glm::mat4(1.0f), loadType, directory); // recursive
 }
 
-void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, const std::string& directory) {
+void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, const LoadType loadType, const std::string& directory) {
    glm::mat4 nodeTransform = convertMatrix(node->mTransformation);
    glm::mat4 globalTransform = parentTransform * nodeTransform; // relative to 0,0,0
 
    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-      // debug
-      // SPDLOG_INFO("pcd load test");
-      // processPCD(mesh, globalTransform); // this works with gltf point cloud files
-
-      // hasfaces() is apparently a very bad qualifier for gltf point clouds?
-      //    i am not entirely sure why, but i think it s just because of sketchfab doing funny stuff
-      // todo: dont try to autodetermine if it is a mesh or a point cloud, hardcode the paths from ui
-      if (mesh->HasFaces()) {
-         SPDLOG_INFO("this is a mesh");
+      if (loadType == LoadType::MESH) {
          processMesh(mesh, scene, globalTransform, directory);
-      }
-      else {
-         SPDLOG_INFO("this is a point cloud");
+      } else if (loadType == LoadType::PCD) {
          processPCD(mesh, globalTransform);
+      } else {
+         // unreachable
+         SPDLOG_ERROR("unable to determine loadtype");
       }
+
+      // // hasfaces() is apparently a very bad qualifier for gltf point clouds?
+      // //    i am not entirely sure why, but i think it s just because of sketchfab doing funny stuff
    }
 
    for (unsigned int i = 0; i < node->mNumChildren; i++) {
       // process children
-      processNode(node->mChildren[i], scene, globalTransform, directory);
+      processNode(node->mChildren[i], scene, globalTransform, loadType, directory);
    }
 }
 
 void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory) {
-   SPDLOG_INFO("mesh '{}': {} verts, {} faces", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
+   // SPDLOG_INFO("mesh '{}': {} verts, {} faces", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
    // if (!mesh->HasNormals())
    //    SPDLOG_WARN("mesh '{}' has no normals", mesh->mName.C_Str());
    // if (!mesh->HasTextureCoords(0))

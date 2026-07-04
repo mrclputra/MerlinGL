@@ -10,7 +10,8 @@ enum class EventType {
    KeyReleased,
    MouseMoved,
    MouseScrolled,
-   LoadModel,
+   LoadMesh,
+   LoadPCD,
    ReloadShaders,
 };
 
@@ -49,8 +50,12 @@ struct MouseScrolledEvent {
    static constexpr EventType type = EventType::MouseScrolled;
    float delta;
 };
-struct LoadModelEvent {
-   static constexpr EventType type = EventType::LoadModel;
+struct LoadMeshEvent {
+   static constexpr EventType type = EventType::LoadMesh;
+   std::string path;
+};
+struct LoadPCDEvent {
+   static constexpr EventType type = EventType::LoadPCD;
    std::string path;
 };
 struct ReloadShadersEvent {

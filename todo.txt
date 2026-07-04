@@ -2,6 +2,7 @@ I'm bad at remembering things, so I'll add stuff here
 
 I want to turn this project into a flat callable api/library, it should only manage rendering.
 
+API stuff:
 todo: convert base cmake output to add_library() instead of an executable
 todo: public headers should be self-contained, not relying on pch; because it will be compiled against their code
 todo: add programmatic methods for mesh and point cloud injection
@@ -12,12 +13,15 @@ todo: add programmatic methods for mesh and point cloud injection
     -> we need to expose the suitable datastructures (Vertex)
 todo: make shader paths not build-baked, it should be runtime-resolved or caller-supplied
 
-other:
+generic:
 todo: unflatten transform hierarchy
-todo: add camera to registry, make sure it works with the viewport structs and handles inputs properly
-todo: implement proper multi-lights, look into forward+ rendering
-todo: implement PBR pipeline
+todo: implement scene graph tree builder and navigation in gui
+todo: implement gui per-mesh transform controls
+todo: implement viewport creation and deletion as a gui option, need to implement function to delete viewport
 
-bugs:
-todo: gltf (and potentially binary) point clouds are triangulated in the loader for some reason
-    -> fix could be making it more restrictive?
+todo: implement normals loading and lighting model for point clouds
+todo: unify pcd and mesh loading into a single pipeline in assimp, type should be determined programmatically instead of by user
+    also gltf point clouds are mistakenly labeled as triangulated meshes by assimp for whatever reason, I believe it is because of the file type
+
+todo: implement proper multi-lights, look into tiled forward+ rendering
+todo: add option for PBR pipeline for meshes
