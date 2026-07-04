@@ -52,7 +52,7 @@ void GuiModule::Draw(Scene &scene) {
    // opengl viewports
    // todo: in the future implement gui class modules like QT
    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-   for (size_t i = 0; i < scene.viewports.size(); ++i) {
+   for (unsigned int i = 0; i < scene.viewports.size(); ++i) { // currently we just automatically build opengl windows for the viewports
       auto &vp = scene.viewports[i];
       std::string label = "Viewport " + std::to_string(i);
       ImGui::Begin(label.c_str());
@@ -118,6 +118,9 @@ void GuiModule::Draw(Scene &scene) {
       } else {
          SPDLOG_INFO("no file selected");
       }
+   }
+   if (ImGui::Button("create viewport")) {
+      EventBus::get().emit(CreateViewportEvent{400, 400});
    }
 
    if (ImGui::Button("reload shaders")) {

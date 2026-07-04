@@ -22,6 +22,7 @@ todo: implement viewport creation and deletion as a gui option, need to implemen
 todo: implement normals loading and lighting model for point clouds
 todo: unify pcd and mesh loading into a single pipeline in assimp, type should be determined programmatically instead of by user
     also gltf point clouds are mistakenly labeled as triangulated meshes by assimp for whatever reason, I believe it is because of the file type
+todo: implement changeable shader per-viepwort
 
 todo: implement proper multi-lights, look into tiled forward+ rendering
 todo: add option for PBR pipeline for meshes

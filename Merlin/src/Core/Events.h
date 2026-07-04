@@ -5,6 +5,7 @@ namespace Merlin {
 enum class EventType {
    WindowClose,
    WindowResize,
+   CreateViewport,
    ViewportResize,
    KeyPressed,
    KeyReleased,
@@ -23,11 +24,12 @@ struct WindowResizeEvent {
    int width;
    int height;
 };
-//  we currently assume the opengl viewport == window;
-//  when/if docking is added in the future, we will need introduce a ViewportResizeEvent
-//    which is emitted by GuiModule when the GetContentRegionAvail() changes
+struct CreateViewportEvent {
+   static constexpr EventType type = EventType::CreateViewport;
+   int width;
+   int height;
+};
 struct ViewportResizeEvent {
-   // todo: this event type would require some kind of unbinding behaviour in the future
    static constexpr EventType type = EventType::ViewportResize;
    size_t viewportIndex;
    int width;

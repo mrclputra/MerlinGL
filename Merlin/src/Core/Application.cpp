@@ -12,9 +12,7 @@ Application::Application(const std::string &title, int width, int height) {
    window = std::make_unique<Window>(title, width, height);
    guiModule = std::make_unique<GuiModule>(window->getNative());
    renderer = std::make_unique<Renderer>(width, height);
-
-   // by default the renderer class will create a viewport, though we can also add more with createViewport
-   // renderer->createViewport(400, 300);
+   renderer->createViewport(400, 300); // make a default viewport
 
    // load models
    // Loader::load("C:/Users/Marcelino/Desktop/tests/meshes/stanford_dragon_pbr/scene.gltf", renderer->scene.registry);
@@ -34,6 +32,9 @@ Application::Application(const std::string &title, int width, int height) {
    EventBus::get().on<LoadPCDEvent>([this](const LoadPCDEvent &e) {
       loader.wipe(renderer->scene.registry);
       loader.load(e.path, LoadType::PCD);
+   });
+   EventBus::get().on<CreateViewportEvent>([this](const CreateViewportEvent &e) {
+      renderer->createViewport(e.width, e.height);
    });
    EventBus::get().on<ViewportResizeEvent>([this](const ViewportResizeEvent &e) {
       if (e.viewportIndex >= renderer->scene.viewports.size())

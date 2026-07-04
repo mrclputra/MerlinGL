@@ -12,7 +12,6 @@
 namespace Merlin {
 Renderer::Renderer(int width, int height) {
    initialize();
-   createViewport(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 
    // shader reload lambda
    EventBus::get().on<ReloadShadersEvent>([this](const ReloadShadersEvent &e) {
@@ -101,15 +100,14 @@ void Renderer::render() {
    }
 }
 
-Viewport &Renderer::createViewport(uint32_t width, uint32_t height) {
-   // create camera entity, set position, add to registry
-   // build framebufferspec and framebuffer; like in initialize, use width and height
-   // puchback into scene.viewports, return scene.viewports.back()
-
+void Renderer::createViewport(uint32_t width, uint32_t height) {
+   // viewport entity
    Viewport vp;
    vp.cameraEntity = scene.registry.create();
+   // todo: make sure to remove this cameraEntity from registry before any full viewport object deletion,
+   // todo:    unless entt:: has some kind of mechanism to do that already?
    auto& cam = scene.registry.emplace<Camera>(vp.cameraEntity);
-   // cam.transform.position = glm::vec3(0.0f, 0.0f, 2.0f);
+   cam.transform.position = glm::vec3(0.0f, 0.0f, 2.0f);
 
    FramebufferSpec fbSpec;
    fbSpec.width = width;
@@ -117,11 +115,10 @@ Viewport &Renderer::createViewport(uint32_t width, uint32_t height) {
    fbSpec.attachments = {TextureFormat::RGBA8, TextureFormat::Depth24Stencil8};
    vp.framebuffer = std::make_unique<Framebuffer>(fbSpec);
 
-   vp.width = width;
-   vp.height = height;
+   vp.width = static_cast<int>(width);
+   vp.height = static_cast<int>(height);
 
    scene.viewports.push_back(std::move(vp));
-   return scene.viewports.back();
 }
 
 void Renderer::resizeViewport(Viewport &vp, uint32_t width, uint32_t height) {

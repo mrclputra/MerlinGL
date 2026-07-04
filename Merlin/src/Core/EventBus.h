@@ -19,6 +19,9 @@ class EventBus {
       });
    }
 
+   // todo: implement event unbinding to handle stuff like viewport deletion
+   // todo:    this would need to properly index the functions vector to delete the associated function, I believe we can just use an iterator
+
    template <typename T>
    void emit(const T &event) {
       auto it = listeners.find(T::type);
