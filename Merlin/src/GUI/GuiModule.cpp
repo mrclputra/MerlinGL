@@ -3,6 +3,8 @@
 #include "Core/Events.h"
 #include "Engine/Scene.h"
 
+#include <imgui_internal.h> // dockbuilder;
+
 namespace Merlin {
 GuiModule::GuiModule(void *native_window) {
    IMGUI_CHECKVERSION();
@@ -45,7 +47,14 @@ void GuiModule::Draw(Scene &scene) {
    ImGui_ImplOpenGL3_NewFrame();
    ImGui_ImplGlfw_NewFrame();  // sets io.DisplaySize from GLFW
    ImGui::NewFrame();
-   ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+   ImGuiID dockspaceID = ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
+   static bool firstFrame = true;
+   if (firstFrame && !scene.viewports.empty()) {
+      firstFrame = false;
+      ImGui::DockBuilderDockWindow("Viewport 0", dockspaceID); // note that this name is pre-assigned
+      ImGui::DockBuilderFinish(dockspaceID);
+   }
 
    ImGuiIO &io = ImGui::GetIO();
 
