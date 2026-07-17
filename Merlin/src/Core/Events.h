@@ -6,6 +6,7 @@ enum class EventType {
    WindowClose,
    WindowResize,
    CreateViewport,
+   DeleteViewport,
    ViewportResize,
    KeyPressed,
    KeyReleased,
@@ -28,6 +29,10 @@ struct CreateViewportEvent {
    static constexpr EventType type = EventType::CreateViewport;
    int width;
    int height;
+};
+struct DeleteViewportEvent {
+   static constexpr EventType type = EventType::DeleteViewport;
+   size_t viewportIndex;
 };
 struct ViewportResizeEvent {
    static constexpr EventType type = EventType::ViewportResize;

@@ -61,10 +61,12 @@ void GuiModule::Draw(Scene &scene) {
    // opengl viewports
    // todo: in the future implement gui class modules like QT
    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+   int pendingDelete = -1;
    for (unsigned int i = 0; i < scene.viewports.size(); ++i) { // currently we just automatically build opengl windows for the viewports
       auto &vp = scene.viewports[i];
       std::string label = "Viewport " + std::to_string(i);
-      ImGui::Begin(label.c_str());
+      bool open = true;
+      ImGui::Begin(label.c_str(), &open);
 
       ImVec2 size = ImGui::GetContentRegionAvail();
       if (size.x > 0 && size.y > 0 &&
@@ -85,8 +87,15 @@ void GuiModule::Draw(Scene &scene) {
          vp.focused = false;
 
       ImGui::End();
+
+      if (!open)
+         pendingDelete = static_cast<int>(i);
    }
    ImGui::PopStyleVar();
+
+   if (pendingDelete >= 0) {
+      EventBus::get().emit(DeleteViewportEvent{static_cast<size_t>(pendingDelete)});
+   }
 
    // logger
    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);

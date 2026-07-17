@@ -36,6 +36,18 @@ Application::Application(const std::string &title, int width, int height) {
    EventBus::get().on<CreateViewportEvent>([this](const CreateViewportEvent &e) {
       renderer->createViewport(e.width, e.height);
    });
+   EventBus::get().on<DeleteViewportEvent>([this](const DeleteViewportEvent &e) {
+      if (e.viewportIndex >= renderer->scene.viewports.size()) {
+         SPDLOG_ERROR("viewport index to be deleted is out of range");
+         return;
+      }
+
+      auto &vp = renderer->scene.viewports[e.viewportIndex];
+      renderer->scene.registry.destroy(vp.cameraEntity); // delete camera entity from registry
+
+      // remove actual viewport
+      renderer->scene.viewports.erase(renderer->scene.viewports.begin() + static_cast<int>(e.viewportIndex));
+   });
    EventBus::get().on<ViewportResizeEvent>([this](const ViewportResizeEvent &e) {
       if (e.viewportIndex >= renderer->scene.viewports.size())
          return;
