@@ -1,6 +1,9 @@
 #ifndef MERLINGL_TRANSFORM_H
 #define MERLINGL_TRANSFORM_H
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Merlin {
 class Transform {
  public:

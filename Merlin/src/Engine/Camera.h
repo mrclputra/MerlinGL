@@ -3,6 +3,9 @@
 
 #include "Engine/components/Transform.h"
 
+#include <glm/glm.hpp>
+#include <set>
+
 namespace Merlin {
 class Camera {
  public:

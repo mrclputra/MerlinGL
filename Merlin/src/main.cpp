@@ -1,6 +1,23 @@
-#include "pch.h"
 #include "Core/Application.h"
-#include "utils.h"
+
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/ringbuffer_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/async.h>
+
+constexpr const char *getPlatformName() {
+#if defined(_WIN32)
+   return "Windows";
+#elif defined(__APPLE__) && defined(__MACH__)
+   return "macOS";
+#elif defined(__linux__)
+   return "Linux";
+#elif defined(__FreeBSD__)
+   return "FreeBSD";
+#else
+   return "Unknown Platform";
+#endif
+}
 
 int main() {
    // configure logger
@@ -17,11 +34,7 @@ int main() {
    SPDLOG_INFO("spdlog v{}.{}.{}", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 
    SPDLOG_INFO("hello MerlinGL!!");
-   SPDLOG_INFO("platform: {}", utils::getPlatformName());
-
-   // some notes
-   // - this is a rewrite of the rendering engine; use ../.src/ for old system reference
-   // - I should turn it into a library later down the line once everything is in the right place
+   SPDLOG_INFO("platform: {}", getPlatformName());
 
    auto app = Merlin::Application("Merlin", 1280, 720);
    app.run();

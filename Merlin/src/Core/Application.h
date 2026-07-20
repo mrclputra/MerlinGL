@@ -6,6 +6,9 @@
 #include "Engine/Loader.h"
 #include "GUI/GuiModule.h"
 
+#include <string>
+#include <memory>
+
 namespace Merlin {
 class Application {
  public:

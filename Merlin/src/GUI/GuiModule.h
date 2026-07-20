@@ -1,6 +1,10 @@
 #ifndef MERLINGL_GUIMODULE_H
 #define MERLINGL_GUIMODULE_H
 
+#include <imgui.h>
+#include <memory>
+#include <spdlog/sinks/ringbuffer_sink.h>
+
 namespace Merlin {
 class Scene;
 

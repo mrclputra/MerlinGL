@@ -2,6 +2,7 @@
 #include "Core/EventBus.h"
 #include "Core/Events.h"
 #include "Engine/Scene.h"
+#include "gui_pch.h"
 
 #include <imgui_internal.h> // dockbuilder;
 

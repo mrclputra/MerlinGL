@@ -1,6 +1,8 @@
 #ifndef MERLINGL_MESH_H
 #define MERLINGL_MESH_H
 
+#include <cstdint>
+
 namespace Merlin {
 
 struct Mesh {

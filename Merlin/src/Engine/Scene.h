@@ -4,6 +4,10 @@
 #include "Engine/Camera.h"
 #include "Engine/Framebuffer.h"
 
+#include <entt/entt.hpp>
+#include <memory>
+#include <vector>
+
 namespace Merlin {
 
 struct Viewport {

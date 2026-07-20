@@ -3,6 +3,10 @@
 
 #include <stb_image.h>
 
+#include <glad/glad.h>
+#include <spdlog/spdlog.h>
+#include <string>
+
 namespace Merlin {
 // api wrapper class for opengl textures
 class Texture {

@@ -1,6 +1,8 @@
 #ifndef MERLINGL_POINTCLOUD_H
 #define MERLINGL_POINTCLOUD_H
 
+#include <cstdint>
+
 namespace Merlin {
 
 struct PointCloud {

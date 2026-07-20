@@ -3,6 +3,9 @@
 
 #include "Texture.h"
 
+#include <glm/glm.hpp>
+#include <memory>
+
 namespace Merlin {
 
 // note that materials are uniform per-object

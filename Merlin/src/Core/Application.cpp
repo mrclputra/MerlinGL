@@ -5,6 +5,10 @@
 #include "Engine/Camera.h"
 #include "Engine/lights/DirectionalLight.h"
 
+#include <spdlog/spdlog.h>
+#include <glm/glm.hpp>
+#include <entt/entt.hpp>
+
 namespace Merlin {
 Application::Application(const std::string &title, int width, int height) {
    SPDLOG_INFO("initializing application");

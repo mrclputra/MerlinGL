@@ -12,7 +12,6 @@ find_path(STB_INCLUDE_DIRS "stb_image.h")
 
 add_executable(MerlinEngine
         src/main.cpp
-        src/utils.h
         src/Core/Application.cpp
         src/Core/Application.h
         src/GUI/GuiModule.cpp
@@ -57,7 +56,7 @@ target_include_directories(MerlinEngine PRIVATE
 )
 
 target_compile_definitions(MerlinEngine PRIVATE SHADER_DIR="${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/shaders")
-target_precompile_headers(MerlinEngine PRIVATE src/pch.h)
+target_precompile_headers(MerlinEngine PRIVATE src/core_pch.h)
 
 # this defeats the point of shader hot reloading, disabled for now
 #add_custom_target(CopyShaders ALL

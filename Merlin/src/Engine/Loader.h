@@ -3,6 +3,15 @@
 
 #include "components/Material.h"
 
+#include <assimp/scene.h>
+#include <atomic>
+#include <entt/entt.hpp>
+#include <glm/glm.hpp>
+#include <queue>
+#include <string>
+#include <thread>
+#include <vector>
+
 namespace Merlin {
 
 struct Vertex {

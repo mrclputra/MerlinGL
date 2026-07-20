@@ -4,6 +4,9 @@
 #include "Engine/Scene.h"
 #include "Engine/components/Shader.h"
 
+#include <cstdint>
+#include <memory>
+
 namespace Merlin {
 class Renderer {
  public:

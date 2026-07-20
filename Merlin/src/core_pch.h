@@ -1,5 +1,8 @@
-#ifndef MERLINGL_PCH_H
-#define MERLINGL_PCH_H
+#ifndef MERLINGL_CORE_PCH_H
+#define MERLINGL_CORE_PCH_H
+
+// precompiled header for Core and Engine files; main library
+// this is never included by a public header btw; as they should stay self-contained since consuming code will compile them without this pch
 
 #define GLM_ENABLE_EXPERIMENTAL
 
@@ -7,15 +10,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <entt/entt.hpp>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
 #include <functional>
 #include <unordered_map>
 #include <vector>
@@ -30,9 +31,8 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>
-#include <portable-file-dialogs.h>
 #include <fstream>
 #include <sstream>
 #include <string>
 
-#endif  // MERLINGL_PCH_H
+#endif  // MERLINGL_CORE_PCH_H

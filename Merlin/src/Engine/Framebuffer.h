@@ -2,6 +2,7 @@
 #define MERLINGL_FRAMEBUFFER_H
 
 #include <cstdint>
+#include <vector>
 
 namespace Merlin {
 enum class TextureFormat {

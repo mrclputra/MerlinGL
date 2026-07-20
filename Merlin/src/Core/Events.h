@@ -1,6 +1,9 @@
 #ifndef MERLINGL_EVENTS_H
 #define MERLINGL_EVENTS_H
 
+#include <cstddef>
+#include <string>
+
 namespace Merlin {
 enum class EventType {
    WindowClose,
@@ -12,8 +15,8 @@ enum class EventType {
    KeyReleased,
    MouseMoved,
    MouseScrolled,
-   LoadModel,
    ReloadShaders,
+   LoadModel,
 };
 
 struct WindowCloseEvent {

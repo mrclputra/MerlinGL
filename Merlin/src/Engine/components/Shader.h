@@ -1,6 +1,10 @@
 #ifndef MERLINGL_SHADER_H
 #define MERLINGL_SHADER_H
 
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <string>
+
 namespace Merlin {
 class Shader {
  public:

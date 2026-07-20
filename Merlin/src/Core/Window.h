@@ -1,6 +1,10 @@
 #ifndef MERLINGL_WINDOW_H
 #define MERLINGL_WINDOW_H
 
+#include <GLFW/glfw3.h>
+#include <functional>
+#include <string>
+
 namespace Merlin {
 class Window {
  public:
