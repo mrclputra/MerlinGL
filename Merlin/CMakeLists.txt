@@ -12,12 +12,12 @@ find_path(STB_INCLUDE_DIRS "stb_image.h")
 
 add_executable(MerlinEngine
         src/main.cpp
-        src/Core/Application.cpp
-        src/Core/Application.h
+        src/Application.cpp
+        src/Application.h
         src/GUI/GuiModule.cpp
         src/GUI/GuiModule.h
-        src/Core/Window.cpp
-        src/Core/Window.h
+        src/Engine/Window.cpp
+        src/Engine/Window.h
         src/Engine/Framebuffer.cpp
         src/Engine/Framebuffer.h
         src/Engine/Renderer.cpp
@@ -28,8 +28,8 @@ add_executable(MerlinEngine
         src/Engine/components/Shader.h
         src/Engine/Scene.h
         src/Engine/components/Transform.h
-        src/Core/Events.h
-        src/Core/EventBus.h
+        src/Engine/Events.h
+        src/Engine/EventBus.h
         src/Engine/lights/DirectionalLight.h
         src/Engine/Loader.cpp
         src/Engine/Loader.h

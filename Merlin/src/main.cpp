@@ -1,4 +1,5 @@
-#include "Core/Application.h"
+#include "Application.h"
+#include "Engine/Window.h"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
@@ -36,8 +37,12 @@ int main() {
    SPDLOG_INFO("hello MerlinGL!!");
    SPDLOG_INFO("platform: {}", getPlatformName());
 
-   auto app = Merlin::Application("Merlin", 1280, 720);
+   auto window = Merlin::Window("Merlin", 1280, 720);
+   auto app = Merlin::Application(window);
    app.run();
+
+   window.Shutdown();
+   glfwTerminate();
 
    return 0;
 }

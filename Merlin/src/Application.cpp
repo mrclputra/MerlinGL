@@ -1,6 +1,6 @@
-#include "Core/Application.h"
-#include "Core/EventBus.h"
-#include "Core/Events.h"
+#include "Application.h"
+#include "Engine/EventBus.h"
+#include "Engine/Events.h"
 #include "Engine/Loader.h"
 #include "Engine/Camera.h"
 #include "Engine/lights/DirectionalLight.h"
@@ -10,13 +10,19 @@
 #include <entt/entt.hpp>
 
 namespace Merlin {
-Application::Application(const std::string &title, int width, int height) {
+Application::Application(Window &window) : window(window) {
    SPDLOG_INFO("initializing application");
 
-   window = std::make_unique<Window>(title, width, height);
-   guiModule = std::make_unique<GuiModule>(window->getNative());
-   renderer = std::make_unique<Renderer>(width, height);
-   renderer->createViewport(400, 300); // make a default viewport
+   guiModule = std::make_unique<GuiModule>(window.getNative());
+
+   renderer = std::make_unique<Renderer>(window.getWidth(), window.getHeight(),
+      SHADER_DIR "/mesh.vert",
+      SHADER_DIR "/mesh.frag",
+      SHADER_DIR "/pcd.vert",
+      SHADER_DIR "/pcd.frag"
+      );
+
+   renderer->createViewport(400, 300);
 
    // load models
    // Loader::load("C:/Users/Marcelino/Desktop/tests/meshes/stanford_dragon_pbr/scene.gltf", renderer->scene.registry);
@@ -79,13 +85,12 @@ Application::Application(const std::string &title, int width, int height) {
 }
 
 Application::~Application() {
-   quit();
    SPDLOG_INFO("application destroyed");
 }
 
 void Application::run() {
    // application loop here
-   while (!window->shouldClose()) {
+   while (!window.shouldClose()) {
       static float lastTime = 0.0f;
       float now = static_cast<float>(glfwGetTime());
       float delta = now - lastTime;
@@ -96,27 +101,21 @@ void Application::run() {
       }
 
       auto* focusedVp = renderer->scene.getFocusedViewport();
-      glfwSetInputMode(window->getNative(), GLFW_CURSOR, focusedVp ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+      glfwSetInputMode(window.getNative(), GLFW_CURSOR, focusedVp ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 
       // todo: not sure if this is the right place to put it
       loader.poll(renderer->scene.registry);
 
-      window->pollEvents();
+      window.pollEvents();
       renderer->render();
 
-      // glViewport(0, 0, window->getWidth(), window->getHeight());
+      // glViewport(0, 0, window.getWidth(), window.getHeight());
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
       guiModule->Draw(renderer->scene);
 
-      window->swapBuffers();
+      window.swapBuffers();
    }
-}
-
-void Application::quit() {
-   // cleanup and stuff here
-   window->Shutdown();
-   glfwTerminate();
 }
 }  // namespace Merlin

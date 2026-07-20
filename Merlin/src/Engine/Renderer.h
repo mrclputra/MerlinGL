@@ -10,11 +10,11 @@
 namespace Merlin {
 class Renderer {
  public:
-   Renderer(int width, int height);
+   Renderer(int width, int height,
+      std::string vertexMeshShaderPath, std::string fragmentMeshShaderPath,
+      std::string vertexPCDShaderPath, std::string fragmentPCDShaderPath);
 
-   void initialize();
    void render();
-   // void resize(int width, int height);
 
    std::shared_ptr<Shader> pcdShader; // point clouds
    std::shared_ptr<Shader> meshShader; // meshes

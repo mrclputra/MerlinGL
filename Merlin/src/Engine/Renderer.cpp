@@ -1,6 +1,7 @@
 #include "Engine/Renderer.h"
 
-#include "Core/EventBus.h"
+#include "Engine/EventBus.h"
+#include "Engine/Events.h"
 #include "Engine/Camera.h"
 #include "Engine/Framebuffer.h"
 #include "Engine/components/Material.h"
@@ -10,23 +11,23 @@
 #include "Engine/lights/DirectionalLight.h"
 
 namespace Merlin {
-Renderer::Renderer(int width, int height) {
-   initialize();
-
-   // shader reload lambda
-   EventBus::get().on<ReloadShadersEvent>([this](const ReloadShadersEvent &e) {
-      // deletes and initializes new shaders
-      pcdShader = std::make_shared<Shader>(SHADER_DIR "/pcd.vert", SHADER_DIR "/pcd.frag");
-      meshShader = std::make_shared<Shader>(SHADER_DIR "/mesh.vert", SHADER_DIR "/mesh.frag");
-   });
-}
-
-void Renderer::initialize() {
+Renderer::Renderer(int width, int height,
+   std::string vertexMeshShaderPath, std::string fragmentMeshShaderPath,
+   std::string vertexPCDShaderPath, std::string fragmentPCDShaderPath) {
    glEnable(GL_DEPTH_TEST);
    glEnable(GL_PROGRAM_POINT_SIZE);
 
-   pcdShader = std::make_shared<Shader>(SHADER_DIR "/pcd.vert", SHADER_DIR "/pcd.frag");
-   meshShader = std::make_shared<Shader>(SHADER_DIR "/mesh.vert", SHADER_DIR "/mesh.frag");
+   // shader reload lambda
+   EventBus::get().on<ReloadShadersEvent>([this, vertexMeshShaderPath, fragmentMeshShaderPath, vertexPCDShaderPath, fragmentPCDShaderPath](const ReloadShadersEvent &e) {
+      // deletes and initializes new shaders
+      pcdShader = std::make_shared<Shader>(vertexPCDShaderPath, fragmentPCDShaderPath);
+      meshShader = std::make_shared<Shader>(vertexMeshShaderPath, fragmentMeshShaderPath);
+
+      // pcdShader = std::make_shared<Shader>(shaderDir + "/pcd.vert", shaderDir + "/pcd.frag");
+      // meshShader = std::make_shared<Shader>(shaderDir + "/mesh.vert", shaderDir + "/mesh.frag");
+   });
+
+   EventBus::get().emit(ReloadShadersEvent{});
 }
 
 void Renderer::render() {

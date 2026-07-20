@@ -1,9 +1,8 @@
 #ifndef MERLINGL_EVENTBUS_H
 #define MERLINGL_EVENTBUS_H
 
-#include "Core/Events.h"
-
 #include <functional>
+#include <typeindex>
 #include <unordered_map>
 #include <vector>
 
@@ -18,7 +17,7 @@ class EventBus {
 
    template <typename T>
    void on(std::function<void(const T &)> fn) {
-      listeners[T::type].push_back([fn](const void *data) {
+      listeners[std::type_index(typeid(T))].push_back([fn](const void *data) {
          fn(*static_cast<const T *>(data));
       });
    }
@@ -28,7 +27,7 @@ class EventBus {
 
    template <typename T>
    void emit(const T &event) {
-      auto it = listeners.find(T::type);
+      auto it = listeners.find(std::type_index(typeid(T)));
       if (it != listeners.end())
          for (auto &cb : it->second)
             cb(&event);
@@ -36,7 +35,7 @@ class EventBus {
 
  private:
    EventBus() = default;
-   std::unordered_map<EventType, std::vector<std::function<void(const void *)>>> listeners;
+   std::unordered_map<std::type_index, std::vector<std::function<void(const void *)>>> listeners;
 };
 
 }  // namespace Merlin
