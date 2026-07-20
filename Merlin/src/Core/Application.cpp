@@ -25,13 +25,9 @@ Application::Application(const std::string &title, int width, int height) {
    // dir.updateLightSpaceMatrix();
 
    // event callbacks
-   EventBus::get().on<LoadMeshEvent>([this](const LoadMeshEvent &e) {
-      loader.wipe(renderer->scene.registry);
-      loader.load(e.path, LoadType::MESH);
-   });
-   EventBus::get().on<LoadPCDEvent>([this](const LoadPCDEvent &e) {
-      loader.wipe(renderer->scene.registry);
-      loader.load(e.path, LoadType::PCD);
+   EventBus::get().on<LoadModelEvent>([this](const LoadModelEvent &e) {
+      loader.wipe(renderer->scene.registry); // clear; todo: change this to be controlled by the scene graph
+      loader.load(e.path);
    });
    EventBus::get().on<CreateViewportEvent>([this](const CreateViewportEvent &e) {
       renderer->createViewport(e.width, e.height);

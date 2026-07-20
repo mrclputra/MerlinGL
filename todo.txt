@@ -14,15 +14,15 @@ todo: add programmatic methods for mesh and point cloud injection
 todo: make shader paths not build-baked, it should be runtime-resolved or caller-supplied
 
 generic:
-todo: unflatten transform hierarchy
 todo: implement scene graph tree builder and navigation in gui
+todo: implement a parent-child system in the scenegraph; all transforms should still be unflattened and in world-space
 todo: implement gui per-mesh transform controls
-todo: implement viewport creation and deletion as a gui option, need to implement function to delete viewport
 
 todo: implement normals loading and lighting model for point clouds
-todo: unify pcd and mesh loading into a single pipeline in assimp, type should be determined programmatically instead of by user
-    also gltf point clouds are mistakenly labeled as triangulated meshes by assimp for whatever reason, I believe it is because of the file type
-todo: implement changeable shader per-viepwort
+todo: implement changeable shader per-viewport
 
 todo: implement proper multi-lights, look into tiled forward+ rendering
 todo: add option for PBR pipeline for meshes
+
+todo: add a .json based user configuration/settings system
+    I believe we can just use nlohmann/json

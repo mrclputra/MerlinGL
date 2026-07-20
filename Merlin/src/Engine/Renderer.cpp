@@ -91,7 +91,7 @@ void Renderer::render() {
       for (const auto [entity, t, pcd] : scene.registry.view<Transform, PointCloud>().each()) {
          pcdShader->setMat4("model", t.getTransformMatrix());
          glBindVertexArray(pcd.vao);
-         glDrawArrays(GL_POINTS, 0, pcd.vertexCount);
+         glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(pcd.vertexCount));
       }
       glBindVertexArray(0);
       pcdShader->unbind();

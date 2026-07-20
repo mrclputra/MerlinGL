@@ -18,33 +18,30 @@ struct Vertex {
 
 // existing load functions needs to write to this struct
 // then we reuse it in the done function
-struct MeshData {
+struct ModelData {
    std::vector<Vertex> vertices;
    std::vector<unsigned int> indices;
    glm::mat4 transform;
    Material material;
 };
 
-enum class LoadType { MESH, PCD };
-
 class Loader {
 public:
-   // void load(const std::string& path);
-   void load(const std::string& path, const LoadType loadType);
+   void load(const std::string& path);
    void poll(entt::registry& registry); // call this each frame; uploads when ready
    void wipe(entt::registry& registry);
 
 private:
-   std::future<void> loadFuture;
-   std::queue<MeshData> meshLoadQueue;
+   std::queue<ModelData> modelLoadQueue;
+   std::atomic<bool> loadDone{false};
+   std::jthread loadThread;
 
-   void loadWorker(const std::string& path, const LoadType loadType);
-   void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, const LoadType loadType, const std::string& directory);
+   void loadWorker(const std::string& path, const std::stop_token &token);
+   void processNode(const aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, const std::string& directory, const std::stop_token& token);
    void processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory);
    void processPCD(const aiMesh *pcd, const glm::mat4& globalTransform); // no textures
 
-   // this function will upload the loaded data to the gpu
-   // maybe should name it upload() instead?
+   // upload loaded data to the gpu
    void upload(entt::registry& registry);
 
    // assimp matrix to opengl, necessary

@@ -8,30 +8,45 @@
 
 namespace Merlin {
 
-void Loader::load(const std::string &path, const LoadType loadType) {
+void Loader::load(const std::string &path) {
    SPDLOG_INFO("assimp load: {}", path);
-   loadFuture = std::async(std::launch::async, [this, path, loadType] { loadWorker(path, loadType); });
+
+   if (loadThread.joinable()) {
+      loadThread.request_stop();
+      loadThread.join(); // wait for old worker to fully stop touching meshLoadQueue before starting a new one
+   }
+
+   loadDone = false;
+   // drop any partial results from a canceled load
+   std::queue<ModelData>().swap(modelLoadQueue);
+
+   loadThread = std::jthread([this, path](const std::stop_token& token) {
+      loadWorker(path, token);
+   });
 }
 
 void Loader::poll(entt::registry &registry) {
-   if (!loadFuture.valid())
+   if (!loadDone.exchange(false)) {
       return;
-   if (loadFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
-      return;
-   loadFuture.get();
+   }
    upload(registry);
    SPDLOG_INFO("model loaded successfully");
 }
 
-// todo: rename this function to something more appealing/makes more sense, need better recall
-void Loader::loadWorker(const std::string &path, const LoadType loadType) {
+void Loader::loadWorker(const std::string &path, const std::stop_token &token) {
    Assimp::Importer importer;
    const aiScene* scene = importer.ReadFile(path,
       aiProcess_Triangulate |
       aiProcess_GenSmoothNormals |
       aiProcess_FlipUVs |
-      aiProcess_CalcTangentSpace // for textures
+      aiProcess_CalcTangentSpace | // for textures
+      aiProcess_SortByPType // splits any mesh mixing point/line/triangle data into pure-topology meshes
    );
+
+   if (token.stop_requested()) {
+      SPDLOG_INFO("load of {} canceled", path);
+      return;
+   }
 
    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
       SPDLOG_ERROR("failed to load model, reason: {}", importer.GetErrorString());
@@ -49,43 +64,58 @@ void Loader::loadWorker(const std::string &path, const LoadType loadType) {
    // todo: see if we need to implement conditional to process embedded textures
    // todo:    i.e. compiled binaries support, does not require directory though
 
-   processNode(scene->mRootNode, scene, glm::mat4(1.0f), loadType, directory); // recursive
+   processNode(scene->mRootNode, scene, glm::mat4(1.0f), directory, token); // recursive
+
+   if (!token.stop_requested()) {
+      // signal poll() only if we actually finished;
+      // because a canceled load leaves the queue empty
+      loadDone = true;
+   }
 }
 
-void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, const LoadType loadType, const std::string& directory) {
+void Loader::processNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, const std::string& directory, const std::stop_token& token) {
+   if (token.stop_requested())
+      return;
+
    glm::mat4 nodeTransform = convertMatrix(node->mTransformation);
    glm::mat4 globalTransform = parentTransform * nodeTransform; // relative to 0,0,0
 
    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+      if (token.stop_requested())
+         return;
+
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
-      if (loadType == LoadType::MESH) {
-         processMesh(mesh, scene, globalTransform, directory);
-      } else if (loadType == LoadType::PCD) {
-         processPCD(mesh, globalTransform);
-      } else {
-         // unreachable
-         SPDLOG_ERROR("unable to determine loadtype");
-      }
+      // assimp's HasFaces() by itself can't tell a point cloud from a mesh; this is because gltf POINT primitives get imported with ony fake 1-index per vertex for some reason
+      // mPrimitiveTypes reflects the real source topology, so check that instead
+      bool isPointCloud = mesh->mNumFaces == 0 ||
+         (!(mesh->mPrimitiveTypes & (aiPrimitiveType_TRIANGLE | aiPrimitiveType_POLYGON)) &&
+           (mesh->mPrimitiveTypes & (aiPrimitiveType_POINT | aiPrimitiveType_LINE)));
 
-      // // hasfaces() is apparently a very bad qualifier for gltf point clouds?
-      // //    i am not entirely sure why, but i think it s just because of sketchfab doing funny stuff
+      if (isPointCloud) {
+         SPDLOG_INFO("point cloud file detected, processing");
+         processPCD(mesh, globalTransform);
+      }
+      else {
+         SPDLOG_INFO("mesh file detected, processing");
+         processMesh(mesh, scene, globalTransform, directory);
+      }
    }
 
    for (unsigned int i = 0; i < node->mNumChildren; i++) {
       // process children
-      processNode(node->mChildren[i], scene, globalTransform, loadType, directory);
+      processNode(node->mChildren[i], scene, globalTransform, directory, token);
    }
 }
 
 void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::mat4& globalTransform, const std::string& directory) {
-   // SPDLOG_INFO("mesh '{}': {} verts, {} faces", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
-   // if (!mesh->HasNormals())
-   //    SPDLOG_WARN("mesh '{}' has no normals", mesh->mName.C_Str());
-   // if (!mesh->HasTextureCoords(0))
-   //    SPDLOG_WARN("mesh '{}' has no UVs", mesh->mName.C_Str());
+   SPDLOG_INFO("mesh '{}': {} verts, {} faces", mesh->mName.C_Str(), mesh->mNumVertices, mesh->mNumFaces);
+   if (!mesh->HasNormals())
+      SPDLOG_WARN("mesh '{}' has no normals", mesh->mName.C_Str());
+   if (!mesh->HasTextureCoords(0))
+      SPDLOG_WARN("mesh '{}' has no UVs", mesh->mName.C_Str());
 
-   MeshData meshData;
+   ModelData meshData;
    meshData.vertices.reserve(mesh->mNumVertices);
 
    meshData.transform = globalTransform;
@@ -147,14 +177,14 @@ void Loader::processMesh(const aiMesh *mesh, const aiScene* scene, const glm::ma
       }
    }
 
-   meshLoadQueue.emplace(meshData); // add to upload queue
+   modelLoadQueue.emplace(meshData); // add to upload queue
 }
 
 void Loader::processPCD(const aiMesh *pcd, const glm::mat4 &globalTransform) {
-   // SPDLOG_INFO("pcd '{}': {} verts, {} faces", pcd->mName.C_Str(), pcd->mNumVertices, pcd->mNumFaces);
+   SPDLOG_INFO("pcd '{}': {} verts, {} faces", pcd->mName.C_Str(), pcd->mNumVertices, pcd->mNumFaces);
 
    // todo: rename the struct datastructure to fit both pcd and meshes
-   MeshData meshData;
+   ModelData meshData;
    meshData.vertices.reserve(pcd->mNumVertices);
 
    meshData.transform = globalTransform;
@@ -183,14 +213,14 @@ void Loader::processPCD(const aiMesh *pcd, const glm::mat4 &globalTransform) {
       meshData.vertices.push_back(vertex);
    }
 
-   meshLoadQueue.emplace(meshData); // add to upload queue
+   modelLoadQueue.emplace(meshData); // add to upload queue
 }
 
 void Loader::upload(entt::registry& registry) {
    // loops through all meshData in the queue and uploads
-   while (!meshLoadQueue.empty()) {
-      auto meshData = meshLoadQueue.front(); // this creates a copy so we should be able to pop safely
-      meshLoadQueue.pop();
+   while (!modelLoadQueue.empty()) {
+      auto modelData = modelLoadQueue.front(); // this creates a copy so we should be able to pop safely
+      modelLoadQueue.pop();
 
       uint32_t vao, vbo;
       glGenVertexArrays(1, &vao);
@@ -199,7 +229,7 @@ void Loader::upload(entt::registry& registry) {
       glBindVertexArray(vao);
 
       glBindBuffer(GL_ARRAY_BUFFER, vbo);
-      glBufferData(GL_ARRAY_BUFFER, meshData.vertices.size() * sizeof(Vertex), meshData.vertices.data(), GL_STATIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, modelData.vertices.size() * sizeof(Vertex), modelData.vertices.data(), GL_STATIC_DRAW);
 
       // attributes ---
       // position
@@ -227,7 +257,7 @@ void Loader::upload(entt::registry& registry) {
       glm::vec3 position, scale, skew;
       glm::vec4 perspective;
       glm::quat orientation;
-      glm::decompose(meshData.transform, scale, orientation, position, skew, perspective);
+      glm::decompose(modelData.transform, scale, orientation, position, skew, perspective);
 
       Transform t;
       t.position = position;
@@ -238,28 +268,28 @@ void Loader::upload(entt::registry& registry) {
       auto e = registry.create();
       registry.emplace<Transform>(e, t);
 
-      if (!meshData.indices.empty()) {
+      if (!modelData.indices.empty()) {
          // this is a triangulated mesh
          // upload indices
          uint32_t ebo;
          glGenBuffers(1, &ebo);
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-         glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshData.indices.size() * sizeof(unsigned int), meshData.indices.data(), GL_STATIC_DRAW);
+         glBufferData(GL_ELEMENT_ARRAY_BUFFER, modelData.indices.size() * sizeof(unsigned int), modelData.indices.data(), GL_STATIC_DRAW);
 
          glBindVertexArray(0);
 
          // upload textures
-         if (meshData.material.albedoMap)
-            meshData.material.albedoMap->upload();
-         if (meshData.material.normalMap)
-            meshData.material.normalMap->upload();
+         if (modelData.material.albedoMap)
+            modelData.material.albedoMap->upload();
+         if (modelData.material.normalMap)
+            modelData.material.normalMap->upload();
 
-         registry.emplace<Mesh>(e, vao, vbo, ebo, static_cast<uint32_t>(meshData.indices.size()));
-         registry.emplace<Material>(e, std::move(meshData.material));
+         registry.emplace<Mesh>(e, vao, vbo, ebo, static_cast<uint32_t>(modelData.indices.size()));
+         registry.emplace<Material>(e, std::move(modelData.material));
       } else {
          // this is a point cloud
          glBindVertexArray(0);
-         registry.emplace<PointCloud>(e, vao, vbo, static_cast<uint32_t>(meshData.vertices.size()));
+         registry.emplace<PointCloud>(e, vao, vbo, static_cast<uint32_t>(modelData.vertices.size()));
       }
 
       // SPDLOG_INFO("uploaded registry entity {} @ ({}, {}, {})", static_cast<uint32_t>(e), t.position.x, t.position.y, t.position.z);

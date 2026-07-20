@@ -21,6 +21,8 @@
 #include <vector>
 #include <memory>
 #include <future>
+#include <thread>
+#include <atomic>
 #include <queue>
 #include <set>
 #include <spdlog/sinks/ringbuffer_sink.h>

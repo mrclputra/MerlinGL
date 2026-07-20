@@ -13,8 +13,8 @@ struct Viewport {
    std::unique_ptr<Framebuffer> framebuffer; // color + depth
    bool focused = false; // OS cursor and input lock
    bool hovered = false; // click-to-focus
-   float width{0};
-   float height{0};
+   int width{0};
+   int height{0};
 };
 
 class Scene {
