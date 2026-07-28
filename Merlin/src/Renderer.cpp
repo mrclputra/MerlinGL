@@ -1,14 +1,14 @@
-#include "Engine/Renderer.h"
+#include "Renderer.h"
 
-#include "Engine/EventBus.h"
-#include "Engine/Events.h"
-#include "Engine/Camera.h"
-#include "Engine/Framebuffer.h"
-#include "Engine/components/Material.h"
-#include "Engine/components/Mesh.h"
-#include "Engine/components/PointCloud.h"
-#include "Engine/components/Transform.h"
-#include "Engine/lights/DirectionalLight.h"
+#include "EventBus.h"
+#include "Events.h"
+#include "Camera.h"
+#include "Framebuffer.h"
+#include "components/Material.h"
+#include "components/Mesh.h"
+#include "components/PointCloud.h"
+#include "components/Transform.h"
+#include "lights/DirectionalLight.h"
 
 namespace Merlin {
 Renderer::Renderer(int width, int height,

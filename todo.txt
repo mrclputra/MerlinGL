@@ -11,7 +11,9 @@ todo: add programmatic methods for mesh and point cloud injection
         -> createPCD(points)
     -> note that the registry should be initialized internally
     -> we need to expose the suitable datastructures (Vertex)
-todo: make shader paths not build-baked, it should be runtime-resolved or caller-supplied
+todo: base shaders currently load from SHADER_DIR, which is the source tree and is dev-only
+    when packaging the engine later for shipping, we need to embed their source into a generated header at build time instead,
+    this is so that a distributed build does not depend on a shaders for existing next to the user's exe.
 
 generic:
 todo: implement scene graph tree builder and navigation in gui
@@ -19,10 +21,11 @@ todo: implement a parent-child system in the scenegraph; all transforms should s
 todo: implement gui per-mesh transform controls
 
 todo: implement normals loading and lighting model for point clouds
-todo: implement changeable shader per-viewport
+todo: implement changeable shader per-viewport? 
 
 todo: implement proper multi-lights, look into tiled forward+ rendering
 todo: add option for PBR pipeline for meshes
 
-todo: add a .json based user configuration/settings system
+todo: add a .json based user configuration/settings system?
     I believe we can just use nlohmann/json
+    Though I am not sure what this would be useful for right now

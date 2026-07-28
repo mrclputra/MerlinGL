@@ -1,67 +1,51 @@
-project(MerlinEngine)
+project(Merlin)
 
 find_package(spdlog CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
-find_path(PORTABLE_FILE_DIALOGS_INCLUDE_DIRS "portable-file-dialogs.h")
 find_path(STB_INCLUDE_DIRS "stb_image.h")
 
-add_executable(MerlinEngine
-        src/main.cpp
-        src/Application.cpp
-        src/Application.h
-        src/GUI/GuiModule.cpp
-        src/GUI/GuiModule.h
-        src/Engine/Window.cpp
-        src/Engine/Window.h
-        src/Engine/Framebuffer.cpp
-        src/Engine/Framebuffer.h
-        src/Engine/Renderer.cpp
-        src/Engine/Renderer.h
-        src/Engine/Camera.cpp
-        src/Engine/Camera.h
-        src/Engine/components/Shader.cpp
-        src/Engine/components/Shader.h
-        src/Engine/Scene.h
-        src/Engine/components/Transform.h
-        src/Engine/Events.h
-        src/Engine/EventBus.h
-        src/Engine/lights/DirectionalLight.h
-        src/Engine/Loader.cpp
-        src/Engine/Loader.h
-        src/Engine/components/Mesh.h
-        src/Engine/components/Material.h
-        src/Engine/components/Texture.h
-        src/Engine/components/PointCloud.h
+# This is the engine library
+# todo: maybe figure out dynamic linking?
+add_library(Merlin STATIC
+        src/Window.cpp
+        src/Window.h
+        src/Framebuffer.cpp
+        src/Framebuffer.h
+        src/Renderer.cpp
+        src/Renderer.h
+        src/Camera.cpp
+        src/Camera.h
+        src/components/Shader.cpp
+        src/components/Shader.h
+        src/Scene.h
+        src/components/Transform.h
+        src/Events.h
+        src/EventBus.h
+        src/lights/DirectionalLight.h
+        src/Loader.cpp
+        src/Loader.h
+        src/components/Mesh.h
+        src/components/Material.h
+        src/components/Texture.h
+        src/components/PointCloud.h
 )
 
-target_link_libraries(MerlinEngine PRIVATE
+target_link_libraries(Merlin PUBLIC
         spdlog::spdlog
         assimp::assimp
         glfw
         glad::glad
         glm::glm
-        imgui::imgui
         EnTT::EnTT
 )
 
-target_include_directories(MerlinEngine PRIVATE
+target_include_directories(Merlin PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
-    ${PORTABLE_FILE_DIALOGS_INCLUDE_DIRS}
     ${STB_INCLUDE_DIRS}
 )
 
-target_compile_definitions(MerlinEngine PRIVATE SHADER_DIR="${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/shaders")
-target_precompile_headers(MerlinEngine PRIVATE src/core_pch.h)
-
-# this defeats the point of shader hot reloading, disabled for now
-#add_custom_target(CopyShaders ALL
-#        COMMAND ${CMAKE_COMMAND} -E copy_directory
-#        "${CMAKE_CURRENT_SOURCE_DIR}/src/Engine/shaders"
-#        "$<TARGET_FILE_DIR:MerlinEngine>/shaders"
-#)
-#add_dependencies(MerlinEngine CopyShaders)
+target_precompile_headers(Merlin PRIVATE src/core_pch.h)

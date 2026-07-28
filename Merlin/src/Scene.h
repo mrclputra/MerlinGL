@@ -1,8 +1,8 @@
 #ifndef MERLINGL_SCENE_H
 #define MERLINGL_SCENE_H
 
-#include "Engine/Camera.h"
-#include "Engine/Framebuffer.h"
+#include "Camera.h"
+#include "Framebuffer.h"
 
 #include <entt/entt.hpp>
 #include <memory>

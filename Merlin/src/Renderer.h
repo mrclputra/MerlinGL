@@ -1,8 +1,8 @@
 #ifndef MERLINGL_RENDERER_H
 #define MERLINGL_RENDERER_H
 
-#include "Engine/Scene.h"
-#include "Engine/components/Shader.h"
+#include "Scene.h"
+#include "components/Shader.h"
 
 #include <cstdint>
 #include <memory>

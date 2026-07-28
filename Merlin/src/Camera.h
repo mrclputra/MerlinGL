@@ -1,7 +1,7 @@
 #ifndef MERLINGL_CAMERA_H
 #define MERLINGL_CAMERA_H
 
-#include "Engine/components/Transform.h"
+#include "components/Transform.h"
 
 #include <glm/glm.hpp>
 #include <set>

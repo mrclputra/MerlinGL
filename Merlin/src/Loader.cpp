@@ -1,10 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include "Engine/Loader.h"
+#include "Loader.h"
 
-#include "Engine/components/Transform.h"
-#include "Engine/components/Mesh.h"
-#include "Engine/components/Material.h"
-#include "Engine/components/PointCloud.h"
+#include "components/Transform.h"
+#include "components/Mesh.h"
+#include "components/Material.h"
+#include "components/PointCloud.h"
 
 namespace Merlin {
 

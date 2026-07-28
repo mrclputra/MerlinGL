@@ -1,9 +1,9 @@
 #include "Application.h"
-#include "Engine/EventBus.h"
-#include "Engine/Events.h"
-#include "Engine/Loader.h"
-#include "Engine/Camera.h"
-#include "Engine/lights/DirectionalLight.h"
+#include "EventBus.h"
+#include "Events.h"
+#include "Loader.h"
+#include "Camera.h"
+#include "lights/DirectionalLight.h"
 
 #include <spdlog/spdlog.h>
 #include <glm/glm.hpp>
@@ -14,15 +14,13 @@ Application::Application(Window &window) : window(window) {
    SPDLOG_INFO("initializing application");
 
    guiModule = std::make_unique<GuiModule>(window.getNative());
-
    renderer = std::make_unique<Renderer>(window.getWidth(), window.getHeight(),
       SHADER_DIR "/mesh.vert",
       SHADER_DIR "/mesh.frag",
       SHADER_DIR "/pcd.vert",
       SHADER_DIR "/pcd.frag"
       );
-
-   renderer->createViewport(400, 300);
+   renderer->createViewport(400, 300); // base viewport
 
    // load models
    // Loader::load("C:/Users/Marcelino/Desktop/tests/meshes/stanford_dragon_pbr/scene.gltf", renderer->scene.registry);

@@ -1,4 +1,4 @@
-#include "Engine/Framebuffer.h"
+#include "Framebuffer.h"
 
 namespace Merlin {
 Framebuffer::Framebuffer(const FramebufferSpec &spec) {

@@ -8,6 +8,8 @@ Event system uses the observer/listener pattern
 note that my .clang-format enforces 3 spacing :> ... 
 this project has only been tested on MSVC
 
+cmake.exe --build C:\Work-TupelGit\MerlinGL\build --target Merlin -j 14
+
 TODO: implement full API layer
 TODO: implement customizable shader layer
 TODO: compile with llvm/clang

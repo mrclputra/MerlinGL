@@ -1,9 +1,9 @@
 #ifndef MERLINGL_APPLICATION_H
 #define MERLINGL_APPLICATION_H
 
-#include "Engine/Window.h"
-#include "Engine/Renderer.h"
-#include "Engine/Loader.h"
+#include "Window.h"
+#include "Renderer.h"
+#include "Loader.h"
 #include "GUI/GuiModule.h"
 
 #include <string>
